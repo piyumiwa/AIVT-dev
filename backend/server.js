@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const reportRoutes = require('./routes/reports');
 const authRoutes = require('./routes/auth');
-const { auth } = require('express-oauth2-jwt-bearer');
+// const { auth } = require('express-oauth2-jwt-bearer');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -16,11 +16,11 @@ app.use(cors({
   credentials: true
 }));
 app.use(bodyParser.json());
-app.use((req, res, next) => {
-  console.log('Authorization Header:', req.headers.authorization);
-  // console.log('Decoded User:', req.user);  
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log('Authorization Header:', req.headers.authorization);
+//   // console.log('Decoded User:', req.user);  
+//   next();
+// });
 
 // Use JWT middleware
 app.use('/api', reportRoutes);

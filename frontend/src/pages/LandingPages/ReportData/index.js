@@ -1,5 +1,6 @@
 import { useState } from "react";
 import * as React from "react";
+import axios from "axios";
 
 // @mui material components
 import Container from "@mui/material/Container";
@@ -29,6 +30,7 @@ import SignIn from "layouts/pages/authentication/sign-in";
 // import routes from "routes";
 import footerRoutes from "footer.routes";
 // import { Height } from "@mui/icons-material";
+
 const routes = [
   {
     name: "pages",
@@ -66,16 +68,6 @@ const signInRoute = routes
   ?.collapse.find((collapse) => collapse.name === "account")
   ?.collapse.find((item) => item.name === "sign in")?.route;
 
-// const attributes = [
-//   "0: Correct functioning",
-//   "1: Reduced functioning",
-//   "2: No actions",
-//   "3: Chaotic",
-//   "4: Directed actions",
-//   "5: Random actions OoB",
-//   "6: Directed actions OoB",
-// ];
-
 const attributes = [
   "Accuracy",
   "Fairness",
@@ -100,10 +92,66 @@ const VisuallyHiddenInput = styled("input")({
 
 function ReportData() {
   const [checked, setChecked] = useState(false);
-  const [artifact, setArtifact] = React.useState("");
+  // const [artifact, setArtifact] = React.useState("");
   const [phase, setPhase] = React.useState("");
   const [vulAttribute, setVulAttribute] = React.useState([]);
   const [effect, setEffect] = React.useState("");
+  const [title, setTitle] = useState("");
+  const [reportDescription, setReportDescription] = useState("");
+  const [artifactType, setArtifactType] = useState("");
+  const [developer, setDeveloper] = useState("");
+  const [deployer, setDeployer] = useState("");
+  const [phaseDescription, setPhaseDescription] = useState("");
+  const [attributeDescription, setAttributeDescription] = useState("");
+  const [effectDescription, setEffectDescription] = useState("");
+  const [attachments, setAttachments] = useState([]);
+
+  const handleFileChange = (event) => {
+    const newFiles = Array.from(event.target.files);
+    setAttachments((prevAttachments) => [...prevAttachments, ...newFiles]);
+  };
+
+  const handleDeleteFile = (index) => {
+    setAttachments((prevAttachments) => prevAttachments.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("report_description", reportDescription);
+    formData.append("artifactType", artifactType);
+    formData.append("developer", developer);
+    formData.append("deployer", deployer);
+    formData.append("phase", phase);
+    formData.append("phase_description", phaseDescription);
+    formData.append("attributeName", vulAttribute);
+    formData.append("attr_description", attributeDescription);
+    formData.append("effectName", effect);
+    formData.append("eff_description", effectDescription);
+
+    if (attachments.length > 0) {
+      attachments.forEach((file, index) => {
+        formData.append(`attachments[${index}]`, file);
+      });
+    }
+
+    console.log("Form data: ", formData);
+
+    axios
+      .post(`http://localhost:5000/api/report-data`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log("Report created successfully:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error creating report:", error);
+      });
+  };
 
   const handleAttributeChange = (event) => {
     const {
@@ -123,7 +171,7 @@ function ReportData() {
   };
 
   const handleArtifactChange = (event) => {
-    setArtifact(event.target.value);
+    setArtifactType(event.target.value);
   };
 
   const handleChecked = () => setChecked(!checked);
@@ -181,7 +229,15 @@ function ReportData() {
                   <MKInput variant="standard" label="Your Message" multiline fullWidth rows={6} />
                 </Grid> */}
                   <Grid item xs={12}>
-                    <MKInput variant="standard" label="Report Title" multiline fullWidth rows={2} />
+                    <MKInput
+                      variant="standard"
+                      label="Report Title"
+                      multiline
+                      fullWidth
+                      rows={2}
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
                   </Grid>
                   <Grid item xs={12}>
                     <MKInput
@@ -190,6 +246,8 @@ function ReportData() {
                       multiline
                       fullWidth
                       rows={6}
+                      value={reportDescription}
+                      onChange={(e) => setReportDescription(e.target.value)}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -198,21 +256,33 @@ function ReportData() {
                       <Select
                         labelId="demo-simple-select-standard-label"
                         id="demo-simple-select-standard"
-                        value={artifact}
-                        label="Artifact"
+                        value={artifactType}
+                        label=" Type"
                         onChange={handleArtifactChange}
                       >
-                        <MenuItem value={"web"}>Web</MenuItem>
+                        <MenuItem value={"web"}>Web Application</MenuItem>
                         <MenuItem value={"api"}>API</MenuItem>
-                        <MenuItem value={"mobile"}>Mobile</MenuItem>
+                        <MenuItem value={"mobile"}>Mobile Application</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
                   <Grid item xs={12}>
-                    <MKInput variant="standard" label="Developer" fullWidth />
+                    <MKInput
+                      variant="standard"
+                      label="Developer"
+                      fullWidth
+                      value={developer}
+                      onChange={(e) => setDeveloper(e.target.value)}
+                    />
                   </Grid>
                   <Grid item xs={12}>
-                    <MKInput variant="standard" label="Deployer" fullWidth />
+                    <MKInput
+                      variant="standard"
+                      label="Deployer"
+                      fullWidth
+                      value={deployer}
+                      onChange={(e) => setDeployer(e.target.value)}
+                    />
                   </Grid>
                   <Grid item xs={12}>
                     <FormControl variant="standard" fullWidth>
@@ -239,6 +309,8 @@ function ReportData() {
                       multiline
                       fullWidth
                       rows={4}
+                      value={phaseDescription}
+                      onChange={(e) => setPhaseDescription(e.target.value)}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -271,6 +343,8 @@ function ReportData() {
                       multiline
                       fullWidth
                       rows={4}
+                      value={attributeDescription}
+                      onChange={(e) => setAttributeDescription(e.target.value)}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -304,6 +378,8 @@ function ReportData() {
                       multiline
                       fullWidth
                       rows={4}
+                      value={effectDescription}
+                      onChange={(e) => setEffectDescription(e.target.value)}
                     />
                   </Grid>
                 </Grid>
@@ -321,7 +397,7 @@ function ReportData() {
                     provided above.
                   </MKTypography>
                 </Grid>
-                <Grid>
+                {/* <Grid>
                   <Button
                     component="label"
                     role={undefined}
@@ -335,7 +411,26 @@ function ReportData() {
                       onChange={(event) => console.log(event.target.files)}
                       multiple
                     />
+                    {formData.attachments.map((file, index) => (
+                      <div key={index}>
+                        <span>{file.name}</span>
+                        <button type="button" onClick={() => handleDeleteFile(index)}>x</button>
+                      </div>
+                    ))}
+                    <input type="file" multiple onChange={handleFileChange} />
                   </Button>
+                </Grid> */}
+                <Grid item xs={12}>
+                  <Button variant="contained" startIcon={<CloudUploadIcon />} component="label">
+                    Upload files
+                    <VisuallyHiddenInput type="file" multiple onChange={handleFileChange} />
+                  </Button>
+                  {attachments.map((file, index) => (
+                    <div key={index}>
+                      <span>{file.name}</span>
+                      <Button onClick={() => handleDeleteFile(index)}>Remove</Button>
+                    </div>
+                  ))}
                 </Grid>
                 <Grid item xs={12} alignItems="center" ml={-1}>
                   <Switch checked={checked} onChange={handleChecked} />
@@ -361,9 +456,11 @@ function ReportData() {
                 </Grid>
               </Grid>
               <Grid container item justifyContent="center" xs={12} my={2}>
-                <MKButton type="submit" variant="gradient" color="dark" fullWidth>
-                  Send Message
-                </MKButton>
+                <form onSubmit={handleSubmit}>
+                  <MKButton onClick={handleSubmit} variant="gradient" color="dark" fullWidth>
+                    Submit Vulnerability
+                  </MKButton>
+                </form>
               </Grid>
             </MKBox>
           </MKBox>

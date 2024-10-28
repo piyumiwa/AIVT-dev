@@ -1,4 +1,6 @@
 // import { useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
 
@@ -27,16 +29,17 @@ import InputIcon from "layouts/sections/input-areas/inputs/components/InputIcon"
 // Material Kit 2 React base styles
 // import breakpoints from "assets/theme/base/breakpoints";
 
-function DefaultNavbar({
-  brand,
-  transparent,
-  light,
-  action,
-  sticky,
-  relative,
-  onAuthClick,
-  isAuthenticated,
-}) {
+function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) {
+  const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
+
+  const handleAuthClick = () => {
+    if (isAuthenticated) {
+      logout({ returnTo: window.location.origin });
+    } else {
+      loginWithRedirect();
+    }
+  };
+
   return (
     <Container sx={sticky ? { position: "sticky", top: 0, zIndex: 10 } : null}>
       <MKBox
@@ -72,19 +75,22 @@ function DefaultNavbar({
             <InputIcon />
           </MKBox>
           <MKBox ml={{ xs: "auto", lg: 0 }}>
-            {action && (
-              <MKButton
-                component={Link}
-                to={action.route}
-                variant={
-                  action.color === "white" || action.color === "default" ? "contained" : "gradient"
-                }
-                color={action.color ? action.color : "info"}
-                size="small"
-                onClick={onAuthClick}
-              >
-                {isAuthenticated ? "Logout" : "Sign in"}
-              </MKButton>
+            <MKButton
+              component={Link}
+              to={action.route}
+              variant={
+                action.color === "white" || action.color === "default" ? "contained" : "gradient"
+              }
+              color={action.color ? action.color : "info"}
+              size="small"
+              onClick={handleAuthClick} // make sure this refers to handleAuthClick
+            >
+              {isAuthenticated ? "Logout" : "Sign in"}
+            </MKButton>
+            {isAuthenticated && user && (
+              <MKTypography variant="caption" color="dark" ml={2}>
+                Hello, {user.name}
+              </MKTypography>
             )}
             {/* (action.type === "internal" ? (
                 <MKButton

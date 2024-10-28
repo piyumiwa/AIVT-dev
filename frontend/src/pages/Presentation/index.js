@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+// import Icon from "@mui/material/Icon";
 
 // Material Kit 2 React components
 import MKBox from "components/MKBox";
@@ -71,8 +72,6 @@ function Presentation() {
         }}
         transparent
         light
-        onAuthClick={handleAuthClick}
-        isAuthenticated={isAuthenticated}
       />
       <MKBox
         minHeight="75vh"
