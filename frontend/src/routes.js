@@ -110,7 +110,7 @@ const routes = [
           },
           {
             name: "vulnerability details",
-            route: `/vulnerability/:id`,
+            route: `/vulnerability-db/:id`,
             component: <Vulnerability />,
           },
         ],

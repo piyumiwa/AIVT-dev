@@ -80,10 +80,11 @@ exports.getAllReports = async (req, res) => {
 };
 
 exports.createReport = async (req, res) => {
+    console.log('Received request for /report-data');
     const {
         title,
         report_description,
-        artifactName,
+        // artifactName,
         artifactType,
         developer,
         deployer,
@@ -123,8 +124,8 @@ exports.createReport = async (req, res) => {
 
         // Insert into Artifact
         const artifactResult = await client.query(
-            'INSERT INTO Artifact (artifactName, artifactType, developer, deployer, reportId) VALUES ($1, $2, $3, $4, $5) RETURNING artifactId',
-            [artifactName, artifactType, developer, deployer, reportId]
+            'INSERT INTO Artifact (artifactType, developer, deployer, reportId) VALUES ($1, $2, $3, $4, $5) RETURNING artifactId',
+            [artifactType, developer, deployer, reportId]
         );
         const artifactId = artifactResult.rows[0].artifactid;
 
