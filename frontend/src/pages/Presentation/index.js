@@ -52,15 +52,7 @@ import bgImage from "assets/images/bg-presentation.jpg";
 // ];
 
 function Presentation() {
-  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
-
-  const handleAuthClick = () => {
-    if (isAuthenticated) {
-      logout({ returnTo: window.location.origin });
-    } else {
-      loginWithRedirect();
-    }
-  };
+  const { isAuthenticated } = useAuth0();
   return (
     <>
       <DefaultNavbar
