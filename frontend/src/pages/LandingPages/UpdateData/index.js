@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as React from "react";
 import axios from "axios";
 
@@ -77,9 +77,10 @@ const style = {
   p: 4,
 };
 
-function ReportData() {
+function UpdateData() {
   const [checked, setChecked] = useState(false);
-  // const [artifact, setArtifact] = React.useState("");
+
+  const { id } = useParams();
   const [name, setName] = useState("");
   const [organization, setOrganization] = useState("");
   const [phase, setPhase] = useState("");
@@ -94,10 +95,10 @@ function ReportData() {
   const [attr_description, setAttr_description] = useState("");
   const [eff_description, setEff_description] = useState("");
   const [attachments, setAttachments] = useState([]);
+  const [existingAttachments, setExistingAttachments] = useState([]);
 
-  const { isAuthenticated, user } = useAuth0();
-  const [isEditable, setIsEditable] = useState({ name: true, organization: true });
-  const [reportCreated, setReportCreated] = useState(false);
+  const { isAuthenticated, loginWithRedirect, user } = useAuth0();
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -112,12 +113,54 @@ function ReportData() {
     setAttachments((prevAttachments) => prevAttachments.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (event) => {
-    if (!checked) {
-      alert("You must agree to the Terms and Conditions before submitting.");
-      return;
-    }
+  console.log("Rendering UpdateData");
+  useEffect(() => {
+    const fetchVulnerabilityDetails = async () => {
+      if (!isAuthenticated || !user) {
+        console.error("User is not authenticated or user object is unavailable.");
+        await loginWithRedirect();
+        return;
+      }
 
+      try {
+        const response = await axios.get(`http://localhost:5000/api/vulnerability-db/${id}`);
+        const vulnerability = response.data;
+
+        if (vulnerability.reporterEmail === user.email) {
+          setName(vulnerability.reporterName || "");
+          setOrganization(vulnerability.reporterOrganization || "");
+          setTitle(vulnerability.title || "");
+          setReport_description(vulnerability.report_description || "");
+          setArtifactType(vulnerability.artifactType || "");
+          setDeveloper(vulnerability.developer || "");
+          setDeployer(vulnerability.deployer || "");
+          setPhase(vulnerability.phase || "");
+          setPhase_description(vulnerability.phaseDescription || "");
+          setAttributeName(
+            vulnerability.attributeName ? vulnerability.attributeName.split(",") : []
+          );
+          setAttr_description(vulnerability.attr_Description || "");
+          setEffectName(vulnerability.effectName || "");
+          setEff_description(vulnerability.eff_Description || "");
+          setExistingAttachments(vulnerability.attachments || []);
+        } else {
+          alert("Unauthorized attempt to edit vulnerability. Please try again.");
+          navigate(`/vulnerability-db/${id}`);
+        }
+      } catch (error) {
+        console.error("Error fetching vulnerability details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchVulnerabilityDetails();
+  }, [id, isAuthenticated, user, loginWithRedirect, navigate]);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  const handleSubmit = (event) => {
     event.preventDefault();
 
     const formData = new FormData();
@@ -144,26 +187,19 @@ function ReportData() {
     console.log("Form data: ", formData);
 
     axios
-      .post(`http://localhost:5000/api/report-data`, formData, {
-        termsAgreed: checked,
+      .put(`http://localhost:5000/api/vulnerability-db/${id}/edit`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
       .then((response) => {
-        console.log("Report created successfully:", response.data);
-        setReportCreated(true);
-        handleClose();
-        // navigate("/vulnerability-db");
+        // console.log("Report created successfully:", response.data);
+        console.log("Report updated successfully:", response.data);
+        navigate("/vulnerability-db");
       })
       .catch((error) => {
-        console.error("Error creating report:", error);
+        console.error("Error updating report:", error);
       });
-
-    if (reportCreated) {
-      handleClose();
-      navigate("/vulnerability-db");
-    }
   };
 
   const handleAttributeChange = (event) => {
@@ -189,28 +225,6 @@ function ReportData() {
 
   const handleChecked = () => setChecked(!checked);
 
-  useEffect(() => {
-    if (!user.sub) return;
-
-    axios
-      .get(`http://localhost:5000/api/auth/current-user`, {
-        params: { sub: user.sub },
-      })
-      .then((response) => {
-        const { name, organization } = response.data;
-        console.log("Fetched user data: ", response.data);
-
-        setName(name || "");
-        setOrganization(organization || "");
-
-        setIsEditable({
-          name: !name,
-          organization: !organization,
-        });
-      })
-      .catch((error) => console.error("Error fetching user data:", error));
-  }, [user]);
-
   return (
     <>
       <NavbarDark transparent light />
@@ -226,11 +240,11 @@ function ReportData() {
           textAlign="center"
         >
           <MKTypography variant="h3" mb={1}>
-            Report New vulnerability
+            Update the vulnerability
           </MKTypography>
         </Grid>
         <Grid container item xs={12} lg={7} sx={{ mx: "auto" }}>
-          <MKBox width="100%" component="form" method="post" autoComplete="off">
+          <MKBox width="100%" component="form" method="put" autoComplete="off">
             <MKBox p={3}>
               <Grid container spacing={3}>
                 <Grid container spacing={3}>
@@ -240,23 +254,23 @@ function ReportData() {
                   <Grid item xs={12} md={6}>
                     <TextField
                       disabled
+                      id="filled-disabled"
                       variant="standard"
                       label="Name"
                       fullWidth
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      readOnly={!isEditable.name}
                     />
                   </Grid>
                   <Grid item xs={12} md={6}>
                     <TextField
                       disabled
+                      id="filled-disabled"
                       variant="standard"
                       label="Organization"
                       value={organization}
                       fullWidth
                       onChange={(e) => setOrganization(e.target.value)}
-                      readOnly={!isEditable.organization}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -307,6 +321,7 @@ function ReportData() {
                         value={artifactType}
                         label=" Type"
                         onChange={handleArtifactChange}
+                        disabled
                       >
                         <MenuItem value={"web"}>Web Application</MenuItem>
                         <MenuItem value={"api"}>API</MenuItem>
@@ -441,9 +456,16 @@ function ReportData() {
                     my={4}
                     mx={-4}
                   >
-                    Please attach any relevant documents or evidence that support the details
-                    provided above.
+                    Here are the existing attachments. Please attach if there is new documents.
                   </MKTypography>
+                </Grid>
+                <Grid item xs={12}>
+                  {existingAttachments.map((file, index) => (
+                    <div key={index}>
+                      <span>{file.name}</span>
+                      <Button onClick={() => handleDeleteFile(index)}>Remove</Button>
+                    </div>
+                  ))}
                 </Grid>
                 <Grid item xs={12}>
                   <Button variant="contained" startIcon={<CloudUploadIcon />} component="label">
@@ -483,7 +505,7 @@ function ReportData() {
               <Grid container item justifyContent="center" xs={12} my={2}>
                 <form>
                   <MKButton onClick={handleOpen} variant="gradient" color="dark" fullWidth>
-                    Submit Vulnerability
+                    Update Vulnerability
                   </MKButton>
                   <Modal
                     open={open}
@@ -497,13 +519,13 @@ function ReportData() {
                           Confirm Submission
                         </MKTypography>
                         <MKTypography variant="body2" gutterBottom>
-                          Are you sure you want to submit this report?
+                          Are you sure you want to update this report?
                         </MKTypography>
                       </Grid>
                       <Grid container item xs={12} justifyContent="center" spacing={2}>
                         <Grid item>
                           <MKButton variant="gradient" color="dark" onClick={handleSubmit}>
-                            Submit Report
+                            Update Report
                           </MKButton>
                         </Grid>
                         <Grid item>
@@ -527,4 +549,4 @@ function ReportData() {
   );
 }
 
-export default ReportData;
+export default UpdateData;

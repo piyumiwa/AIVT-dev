@@ -52,14 +52,14 @@ exports.getUserById = async (req, res) => {
     }
 };
 
-// A function to create a new user
-exports.createUser = async (req, res) => {
+// Function to submit new email from auth0
+exports.createEmail = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password, organization } = req.body;
+    const { reporterId, email } = req.body;
 
     try {
         let user = await findUserByEmail(email);
@@ -67,101 +67,65 @@ exports.createUser = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        const salt = await bcrypt.genSalt();
-        // console.log('Salt:', salt);  
-        
-        const hashedPassword = await bcrypt.hash(password, salt);
-        // console.log('Hashed Password:', hashedPassword);
-
         // Corrected SQL query and arguments
         const result = await pool.query(
-            'INSERT INTO Reporter (name, email, organization, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [name, email, organization, hashedPassword, salt]
+            'INSERT INTO Reporter (reporterId, email) VALUES ($1, $2) RETURNING *',
+            [reporterId, email]
         );
         user = result.rows[0];
 
         // Log the user object to ensure reporterid exists
-        // console.log('User object:', user);
+        console.log('User object:', user);
 
         if (!user || !user.reporterid) {
             return res.status(500).json({ message: 'Failed to create user or missing reporterid' });
         }
-
-        const token = jwt.sign({ id: user.reporterid }, JWT_SECRET);
-        res.json({ token });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
 };
 
-// A function to find a user by email and login
 exports.findUserByEmail = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { email } = req.body;
 
     try {
         const user = await findUserByEmail(email);
 
-        // Log the user object to ensure reporterid exists
-        // console.log('User object:', user);
-
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid Credentials' });
+        if (userData.rows.length) {
+            res.json(userData.rows[0]);
+        } else {
+            res.status(404).json({ message: 'User not found' });
         }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid Credentials' });
-        }
-
-        if (!user.reporterid) {
-            return res.status(500).json({ message: 'User ID not found' });
-        }
-
-        const token = jwt.sign({ id: user.reporterid }, JWT_SECRET);
-        res.json({ token });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
 };
 
-// Helper function to fetch user by ID
-exports.fetchUserById = async (auth0UserId) => {
-    try {
-        const result = await pool.query(
-            'SELECT reporterId AS id, name, email, organization, role FROM Reporter WHERE auth0UserId = $1',
-            [auth0UserId]
-        );
-
-        if (result.rows.length === 0) {
-            throw new Error('User not found');
-        }
-
-        return result.rows[0];
-    } catch (err) {
-        console.error('Error fetching user by ID:', err.message);
-        throw new Error('Internal server error');
-    }
-};
-
 exports.getCurrentUser = async (req, res) => {
-    try {
-        const auth0UserId = req.user?.sub; // Optional chaining to avoid undefined error
-        if (!auth0UserId) {
-            return res.status(401).json({ error: 'Unauthorized' });
-        }
-        const user = await this.fetchUserById(auth0UserId);
-        res.json(user);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ error: 'Internal server error' });
+    const { sub } = req.query;
+
+  if (!sub) {
+    return res.status(400).json({ error: "User should log in." });
+  }
+
+  try {
+    const result = await pool.query("SELECT * FROM Reporter WHERE reporterId = $1", [sub]);
+    if (result.rows.length === 0) {
+      return res.status(403).json({ error: "User not authorized" });
     }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error fetching user role:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 exports.viewProfile = (req, res) => {

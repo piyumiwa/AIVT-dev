@@ -1,0 +1,174 @@
+2024-11-29 14:39:33.830 EET [21240] LOG:  starting PostgreSQL 17.0 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit
+2024-11-29 14:39:33.839 EET [21240] LOG:  listening on IPv6 address "::1", port 5432
+2024-11-29 14:39:33.839 EET [21240] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-11-29 14:39:33.974 EET [21024] LOG:  database system was interrupted; last known up at 2024-11-29 04:54:13 EET
+2024-11-29 14:39:35.038 EET [21024] LOG:  database system was not properly shut down; automatic recovery in progress
+2024-11-29 14:39:35.046 EET [21024] LOG:  redo starts at 0/1BE9B88
+2024-11-29 14:39:35.046 EET [21024] LOG:  invalid record length at 0/1BE9C90: expected at least 24, got 0
+2024-11-29 14:39:35.046 EET [21024] LOG:  redo done at 0/1BE9C58 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2024-11-29 14:39:35.054 EET [2228] LOG:  checkpoint starting: end-of-recovery immediate wait
+2024-11-29 14:39:35.071 EET [2228] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.005 s, sync=0.003 s, total=0.020 s; sync files=2, longest=0.002 s, average=0.002 s; distance=0 kB, estimate=0 kB; lsn=0/1BE9C90, redo lsn=0/1BE9C90
+2024-11-29 14:39:35.122 EET [21240] LOG:  database system is ready to accept connections
+2024-11-29 14:49:35.092 EET [2228] LOG:  checkpoint starting: time
+2024-11-29 14:49:37.331 EET [2228] LOG:  checkpoint complete: wrote 21 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.206 s, sync=0.016 s, total=2.240 s; sync files=21, longest=0.002 s, average=0.001 s; distance=11 kB, estimate=11 kB; lsn=0/1BECBD8, redo lsn=0/1BECB80
+2024-11-30 14:19:33.002 EET [2528] LOG:  starting PostgreSQL 17.0 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit
+2024-11-30 14:19:33.008 EET [2528] LOG:  listening on IPv6 address "::1", port 5432
+2024-11-30 14:19:33.008 EET [2528] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-11-30 14:19:33.096 EET [8224] LOG:  database system was interrupted; last known up at 2024-11-29 14:49:37 EET
+2024-11-30 14:19:33.561 EET [8224] LOG:  database system was not properly shut down; automatic recovery in progress
+2024-11-30 14:19:33.565 EET [8224] LOG:  redo starts at 0/1BECB80
+2024-11-30 14:19:33.565 EET [8224] LOG:  invalid record length at 0/1BECC88: expected at least 24, got 0
+2024-11-30 14:19:33.565 EET [8224] LOG:  redo done at 0/1BECC50 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2024-11-30 14:19:33.570 EET [2076] LOG:  checkpoint starting: end-of-recovery immediate wait
+2024-11-30 14:19:33.579 EET [2076] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.010 s; sync files=2, longest=0.002 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/1BECC88, redo lsn=0/1BECC88
+2024-11-30 14:19:33.607 EET [2528] LOG:  database system is ready to accept connections
+2024-11-30 16:03:28.673 EET [27512] ERROR:  invalid input syntax for type integer: "undefined"
+2024-11-30 16:03:28.673 EET [27512] CONTEXT:  unnamed portal parameter $1 = '...'
+2024-11-30 16:03:28.673 EET [27512] STATEMENT:  
+	            SELECT 
+	                v.reportId AS id, 
+	                v.date_added,
+	                v.title, 
+	                v.report_description,
+	                v.last_updated,
+	                v.approval_status,
+	                array_agg(DISTINCT ad.review_comments) AS review_comments, 
+	                a.artifactType,
+	                a.developer, 
+	                a.deployer, 
+	                a.artifactId, 
+	                r.reporterId,
+	                r.name AS reporterName,
+	                r.email AS reporterEmail,
+	                r.organization AS reporterOrganization,
+	                r.role AS reporterRole, 
+	                p.phase,
+	                p.phase_description AS phaseDescription,
+	                array_agg(DISTINCT an.attributeName) AS attributes,
+	                attr.attr_description AS attr_Description,
+	                eff.effectName AS effect,
+	                eff.eff_description AS eff_Description,
+	                array_agg(DISTINCT att.attachments) AS attachments,
+	                array_agg(DISTINCT att.filename) AS attachmentFilenames,
+	                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
+	            FROM 
+	                Vul_report v
+	            JOIN 
+	                Artifact a ON v.reportId = a.reportId
+	            JOIN 
+	                Reporter r ON v.reporterId = r.reporterId
+	            JOIN 
+	                Vul_phase p ON v.reportId = p.reportId
+	            LEFT JOIN
+	                Admin_review ad ON v.reportId = ad.reportId
+	            LEFT JOIN 
+	                All_attributes aa ON p.phId = aa.attributeTypeId
+	            LEFT JOIN 
+	                Attribute_names an ON aa.attributeId = an.attributeId
+	            LEFT JOIN 
+	                Attribute attr ON p.phId = attr.phId
+	            LEFT JOIN 
+	                Effect eff ON p.phId = eff.phId
+	            LEFT JOIN 
+	                Attachments att ON a.artifactId = att.artifactId
+	            WHERE 
+	                v.reportId = $1
+	            GROUP BY 
+	                -- v.reportId, a.artifactType, a.developer, a.deployer, a.artifactId, r.reporterId, r.name, r.email, r.organization, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	                v.reportId, a.artifactId, r.reporterId, ad.review_id, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	        
+2024-12-02 13:29:35.965 EET [2528] LOG:  server process (PID 21856) was terminated by exception 0xC000013A
+2024-12-02 13:29:35.965 EET [2528] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-12-02 13:29:35.966 EET [2528] LOG:  terminating any other active server processes
+2024-12-02 13:29:35.981 EET [2528] LOG:  all server processes terminated; reinitializing
+2024-12-02 13:29:36.044 EET [2528] LOG:  startup process (PID 29596) was terminated by exception 0xC0000142
+2024-12-02 13:29:36.044 EET [2528] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-12-02 13:29:36.044 EET [2528] LOG:  aborting startup due to startup process failure
+2024-12-02 13:29:36.046 EET [2528] LOG:  database system is shut down
+2024-12-09 22:12:16.436 EET [26604] LOG:  starting PostgreSQL 17.0 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit
+2024-12-09 22:12:16.446 EET [26604] LOG:  listening on IPv6 address "::1", port 5432
+2024-12-09 22:12:16.446 EET [26604] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-12-09 22:12:16.590 EET [3276] LOG:  database system was interrupted; last known up at 2024-11-30 14:19:33 EET
+2024-12-09 22:12:17.411 EET [3276] LOG:  database system was not properly shut down; automatic recovery in progress
+2024-12-09 22:12:17.419 EET [3276] LOG:  redo starts at 0/1BECD00
+2024-12-09 22:12:17.420 EET [3276] LOG:  invalid record length at 0/1BECD38: expected at least 24, got 0
+2024-12-09 22:12:17.421 EET [3276] LOG:  redo done at 0/1BECD00 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2024-12-09 22:12:17.430 EET [25480] LOG:  checkpoint starting: end-of-recovery immediate wait
+2024-12-09 22:12:17.445 EET [25480] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.003 s, total=0.017 s; sync files=2, longest=0.002 s, average=0.002 s; distance=0 kB, estimate=0 kB; lsn=0/1BECD38, redo lsn=0/1BECD38
+2024-12-09 22:12:17.491 EET [26604] LOG:  database system is ready to accept connections
+2024-12-10 13:20:58.704 EET [25480] LOG:  checkpoint starting: time
+2024-12-10 13:21:01.134 EET [25480] LOG:  checkpoint complete: wrote 23 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.381 s, sync=0.026 s, total=2.430 s; sync files=23, longest=0.010 s, average=0.002 s; distance=12 kB, estimate=12 kB; lsn=0/1BF0110, redo lsn=0/1BF00B8
+2024-12-10 13:25:58.122 EET [25480] LOG:  checkpoint starting: time
+2024-12-10 13:26:00.254 EET [25480] LOG:  checkpoint complete: wrote 20 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.093 s, sync=0.024 s, total=2.132 s; sync files=20, longest=0.009 s, average=0.002 s; distance=13 kB, estimate=13 kB; lsn=0/1BF3760, redo lsn=0/1BF3708
+2024-12-10 13:27:46.608 EET [23888] ERROR:  canceling statement due to user request
+2024-12-10 13:27:46.609 EET [26604] LOG:  received fast shutdown request
+2024-12-10 13:27:46.619 EET [26604] LOG:  aborting any active transactions
+2024-12-10 13:27:46.620 EET [26604] LOG:  background worker "logical replication launcher" (PID 23888) exited with exit code 1
+2024-12-10 13:27:46.630 EET [25480] LOG:  shutting down
+2024-12-10 13:27:46.634 EET [25480] LOG:  checkpoint starting: shutdown immediate
+2024-12-10 13:27:46.649 EET [25480] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.019 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=12 kB; lsn=0/1BF3810, redo lsn=0/1BF3810
+2024-12-10 13:27:46.664 EET [26604] LOG:  database system is shut down
+2024-12-10 13:28:19.447 EET [24072] LOG:  starting PostgreSQL 17.0 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit
+2024-12-10 13:28:19.456 EET [24072] LOG:  listening on IPv6 address "::1", port 5432
+2024-12-10 13:28:19.457 EET [24072] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-12-10 13:28:19.600 EET [25956] LOG:  database system was shut down at 2024-12-10 13:27:46 EET
+2024-12-10 13:28:19.657 EET [24072] LOG:  database system is ready to accept connections
+2024-12-10 13:33:19.586 EET [30476] LOG:  checkpoint starting: time
+2024-12-10 13:33:19.746 EET [30476] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.117 s, sync=0.017 s, total=0.161 s; sync files=3, longest=0.011 s, average=0.006 s; distance=0 kB, estimate=0 kB; lsn=0/1BF3918, redo lsn=0/1BF38C0
+2024-12-10 13:40:55.422 EET [25408] ERROR:  invalid input syntax for type integer: "pending&phase=&attribute=&effect=&startDate=&endDate="
+2024-12-10 13:40:55.422 EET [25408] CONTEXT:  unnamed portal parameter $1 = '...'
+2024-12-10 13:40:55.422 EET [25408] STATEMENT:  
+	            SELECT 
+	                v.reportId AS id, 
+	                v.date_added,
+	                v.title, 
+	                v.report_description,
+	                v.last_updated,
+	                v.approval_status,
+	                array_agg(DISTINCT ad.review_comments) AS review_comments, 
+	                a.artifactType,
+	                a.developer, 
+	                a.deployer, 
+	                a.artifactId, 
+	                r.reporterId,
+	                r.name AS reporterName,
+	                r.email AS reporterEmail,
+	                r.organization AS reporterOrganization,
+	                r.role AS reporterRole, 
+	                p.phase,
+	                p.phase_description AS phaseDescription,
+	                array_agg(DISTINCT an.attributeName) AS attributes,
+	                attr.attr_description AS attr_Description,
+	                eff.effectName AS effect,
+	                eff.eff_description AS eff_Description,
+	                array_agg(DISTINCT att.attachments) AS attachments,
+	                array_agg(DISTINCT att.filename) AS attachmentFilenames,
+	                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
+	            FROM 
+	                Vul_report v
+	            JOIN 
+	                Artifact a ON v.reportId = a.reportId
+	            JOIN 
+	                Reporter r ON v.reporterId = r.reporterId
+	            JOIN 
+	                Vul_phase p ON v.reportId = p.reportId
+	            LEFT JOIN
+	                Admin_review ad ON v.reportId = ad.reportId
+	            LEFT JOIN 
+	                All_attributes aa ON p.phId = aa.attributeTypeId
+	            LEFT JOIN 
+	                Attribute_names an ON aa.attributeId = an.attributeId
+	            LEFT JOIN 
+	                Attribute attr ON p.phId = attr.phId
+	            LEFT JOIN 
+	                Effect eff ON p.phId = eff.phId
+	            LEFT JOIN 
+	                Attachments att ON a.artifactId = att.artifactId
+	            WHERE 
+	                v.reportId = $1
+	            GROUP BY 
+	                -- v.reportId, a.artifactType, a.developer, a.deployer, a.artifactId, r.reporterId, r.name, r.email, r.organization, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	                v.reportId, a.artifactId, r.reporterId, ad.review_id, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	        
+2024-12-10 13:48:19.757 EET [30476] LOG:  checkpoint starting: time
+2024-12-10 13:48:20.326 EET [30476] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.549 s, sync=0.005 s, total=0.570 s; sync files=6, longest=0.002 s, average=0.001 s; distance=10 kB, estimate=10 kB; lsn=0/1BF62B0, redo lsn=0/1BF6258

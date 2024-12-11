@@ -15,12 +15,12 @@ import DefaultInfoCard from "examples/Cards/InfoCards/DefaultInfoCard";
 import bgFront from "assets/images/rotating-card-bg-front.jpeg";
 import bgBack from "assets/images/rotating-card-bg-back.jpeg";
 
-import routes from "routes";
+// import routes from "routes";
 
-const reportRoute = routes
-  .find((route) => route.name === "pages")
-  ?.collapse.find((collapse) => collapse.name === "report")
-  ?.collapse.find((item) => item.name === "new report")?.route;
+// const reportRoute = routes
+//   .find((route) => route.name === "pages")
+//   ?.collapse.find((collapse) => collapse.name === "report")
+//   ?.collapse.find((item) => item.name === "new report")?.route;
 
 function Information() {
   return (
@@ -47,7 +47,7 @@ function Information() {
                 description="Complete your report to help improve AI safety. Click below to begin."
                 action={{
                   type: "internal",
-                  route: reportRoute,
+                  route: "/report-data",
                   label: "start reporting",
                 }}
               />

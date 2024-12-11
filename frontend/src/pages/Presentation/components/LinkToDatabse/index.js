@@ -1,18 +1,3 @@
-/*
-=========================================================
-* Material Kit 2 React - v2.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-kit-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 // @mui material components
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -22,7 +7,7 @@ import Icon from "@mui/material/Icon";
 import MKBox from "components/MKBox";
 import MKTypography from "components/MKTypography";
 
-function BuiltByDevelopers() {
+function LinkToDatabse() {
   const bgImage =
     "https://raw.githubusercontent.com/creativetimofficial/public-assets/master/soft-ui-design-system/assets/img/desktop.jpg";
 
@@ -46,20 +31,20 @@ function BuiltByDevelopers() {
       <Container>
         <Grid container item xs={12} lg={6} sx={{ ml: { xs: 0, lg: 6 } }}>
           <MKTypography variant="h4" color="white" fontWeight="bold">
-            Built by developers
+            Buitl by OUSPG
           </MKTypography>
-          <MKTypography variant="h1" color="white" mb={1}>
-            Complex Documentation
+          <MKTypography variant="h1" color="white" mb={1} sx={{ mt: 3 }}>
+            AIVT Database
           </MKTypography>
           <MKTypography variant="body1" color="white" opacity={0.8} mb={2}>
-            From colors, cards, typography to complex elements, you will find the full
-            documentation. Play with the utility classes and you will create unlimited combinations
-            for our components.
+            A thorough documentation has been prepared, outlining the specific attributes modified
+            due to the vulnerability, the resulting system effects, and the rigorous verification
+            process conducted by our seasoned team of experts.
           </MKTypography>
           <MKTypography
             component="a"
-            href="https://www.creative-tim.com/learning-lab/react/overview/material-kit/"
-            target="_blank"
+            href="/vulnerability-db"
+            // target="_blank"
             rel="noreferrer"
             variant="body2"
             color="white"
@@ -79,7 +64,7 @@ function BuiltByDevelopers() {
               },
             }}
           >
-            Read docs <Icon sx={{ fontWeight: "bold" }}>arrow_forward</Icon>
+            Access database <Icon sx={{ fontWeight: "bold" }}>arrow_forward</Icon>
           </MKTypography>
         </Grid>
       </Container>
@@ -87,4 +72,4 @@ function BuiltByDevelopers() {
   );
 }
 
-export default BuiltByDevelopers;
+export default LinkToDatabse;

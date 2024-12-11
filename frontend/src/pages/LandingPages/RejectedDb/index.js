@@ -27,7 +27,7 @@ import bgImage from "assets/images/bg-db.jpg";
 
 const paginationModel = { page: 0, pageSize: 5 };
 
-function VulnerabilityDb() {
+function RejectedDb() {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const [vulnerabilities, setVulnerabilities] = useState([]);
   const [phase, setPhase] = useState("");
@@ -40,7 +40,7 @@ function VulnerabilityDb() {
     // const url = "/api/vulnerability-db";
     // const url = "/api/test";
     // const url = `http://localhost:5000/api/vulnerability-db`;
-    const url = `http://localhost:5000/api/vulnerability-db?approval_status=approved&phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
+    const url = `http://localhost:5000/api/vulnerability-db/rejected/?approval_status=rejected&phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
 
     axios
       .get(url)
@@ -98,7 +98,7 @@ function VulnerabilityDb() {
       width: 160,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -111,7 +111,7 @@ function VulnerabilityDb() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -124,7 +124,7 @@ function VulnerabilityDb() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -137,7 +137,7 @@ function VulnerabilityDb() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -190,16 +190,10 @@ function VulnerabilityDb() {
                 },
               })}
             >
-              Vulnerability Database
+              Rejected Reports
             </MKTypography>
             <MKTypography variant="body1" color="white" opacity={0.8} mt={1} mb={3}>
-              Welcome to the AIVT Vulnerability Database—your ultimate destination for navigating
-              the complex landscape of AI vulnerabilities. This comprehensive repository is
-              meticulously curated to empower developers, researchers, and security professionals
-              with the knowledge they need to identify, assess, and mitigate risks in AI and ML
-              systems. Whether you&apos;re looking to safeguard your technology or contribute to the
-              collective understanding of AI security, our database is your key resource for staying
-              ahead of emerging threats and ensuring the future of AI remains secure and reliable.
+              All the rejected reports are shown here.
             </MKTypography>
           </Grid>
         </Container>
@@ -301,4 +295,4 @@ function VulnerabilityDb() {
   );
 }
 
-export default VulnerabilityDb;
+export default RejectedDb;

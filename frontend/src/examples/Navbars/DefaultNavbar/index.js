@@ -1,5 +1,6 @@
-// import { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import axios from "axios";
+import { useEffect } from "react";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
@@ -20,7 +21,7 @@ import Container from "@mui/material/Container";
 import MKBox from "components/MKBox";
 import MKTypography from "components/MKTypography";
 import MKButton from "components/MKButton";
-import InputIcon from "layouts/sections/input-areas/inputs/components/InputIcon";
+// import InputIcon from "layouts/sections/input-areas/inputs/components/InputIcon";
 
 // Material Kit 2 React example components
 // import DefaultNavbarDropdown from "examples/Navbars/DefaultNavbar/DefaultNavbarDropdown";
@@ -32,13 +33,41 @@ import InputIcon from "layouts/sections/input-areas/inputs/components/InputIcon"
 function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) {
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
 
-  const handleAuthClick = () => {
+  const handleAuthClick = async () => {
     if (isAuthenticated) {
       logout({ returnTo: window.location.origin });
     } else {
-      loginWithRedirect();
+      await loginWithRedirect();
     }
   };
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const submitEmailIfNew = async () => {
+        const reporterId = user.sub;
+        const email = user.email;
+
+        try {
+          const response = await axios.post("http://localhost:5000/api/auth/newaccount", {
+            reporterId,
+            email,
+          });
+          console.log(response.data.message || "Email submitted successfully");
+        } catch (error) {
+          if (
+            error.response &&
+            error.response.status === 400 &&
+            error.response.data.message === "User already exists"
+          ) {
+            console.log("User already exists; no need to submit again.");
+          } else {
+            console.error("Error submitting email:", error);
+          }
+        }
+      };
+      submitEmailIfNew();
+    }
+  }, [isAuthenticated, user]);
 
   return (
     <Container sx={sticky ? { position: "sticky", top: 0, zIndex: 10 } : null}>
@@ -71,27 +100,27 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
               {brand}
             </MKTypography>
           </MKBox>
-          <MKBox sx={{ width: "80%" }}>
+          {/* <MKBox sx={{ width: "80%" }}>
             <InputIcon />
-          </MKBox>
+          </MKBox> */}
           <MKBox ml={{ xs: "auto", lg: 0 }}>
             <MKButton
               component={Link}
-              to={action.route}
+              // to={action.route}
               variant={
                 action.color === "white" || action.color === "default" ? "contained" : "gradient"
               }
               color={action.color ? action.color : "info"}
               size="small"
-              onClick={handleAuthClick} // make sure this refers to handleAuthClick
+              onClick={handleAuthClick}
             >
               {isAuthenticated ? "Logout" : "Sign in"}
             </MKButton>
-            {isAuthenticated && user && (
+            {/* {isAuthenticated && user && (
               <MKTypography variant="caption" color="dark" ml={2}>
                 Hello, {user.name}
               </MKTypography>
-            )}
+            )} */}
             {/* (action.type === "internal" ? (
                 <MKButton
                   component={Link}
@@ -165,14 +194,14 @@ DefaultNavbar.defaultProps = {
 // Typechecking props for the DefaultNavbar
 DefaultNavbar.propTypes = {
   brand: PropTypes.string,
-  routes: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  // routes: PropTypes.arrayOf(PropTypes.shape).isRequired,
   transparent: PropTypes.bool,
   light: PropTypes.bool,
   action: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.shape({
       type: PropTypes.oneOf(["external", "internal"]).isRequired,
-      route: PropTypes.string.isRequired,
+      // route: PropTypes.string.isRequired,
       color: PropTypes.oneOf([
         "primary",
         "secondary",
