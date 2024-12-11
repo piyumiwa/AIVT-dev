@@ -2,6 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 // import * as React from "react";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
@@ -27,49 +28,89 @@ import bgImage from "assets/images/bg-db.jpg";
 
 const paginationModel = { page: 0, pageSize: 5 };
 
-function VulnerabilityDb() {
-  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+function ReviewDb() {
+  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
   const [vulnerabilities, setVulnerabilities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
   const [phase, setPhase] = useState("");
   const [attribute, setAttribute] = useState("");
   const [effect, setEffect] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        // Replace with the endpoint that fetches the user's role
+        const response = await axios.get(`http://localhost:5000/api/auth/current-user`, {
+          params: { sub: user.sub },
+          // headers: {
+          //   Authorization: `Bearer ${user.sub}`, // Replace with the actual token if needed
+          // },
+        });
+        console.log("User role response:", response.data);
+        const { role } = response.data;
+
+        setUserRole(role);
+
+        if (role !== "admin") {
+          alert("You are not authorized to access this page.");
+          navigate(`/vulnerability-db`);
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        navigate(`/vulnerability-db`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isAuthenticated && user) {
+      fetchUserRole();
+    } else {
+      loginWithRedirect();
+    }
+  }, [id, isAuthenticated, user, navigate, loginWithRedirect]);
 
   useEffect(() => {
     // const url = "/api/vulnerability-db";
     // const url = "/api/test";
     // const url = `http://localhost:5000/api/vulnerability-db`;
-    const url = `http://localhost:5000/api/vulnerability-db?approval_status=approved&phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
+    if (userRole === "admin") {
+      const url = `http://localhost:5000/api/vulnerability-db/pending?phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
 
-    axios
-      .get(url)
-      .then((response) => {
-        console.log("Response: ", response.data);
-        return response.data;
-      })
-      .then((data) => {
-        console.log("JSON response:", data);
-        if (Array.isArray(data)) {
-          const formattedRows = data.map((vul) => ({
-            id: vul.id,
-            date_added: vul.date_added,
-            title: vul.title,
-            artifact: vul.artifacttype,
-            phase: vul.phase,
-            effects: vul.effectname,
-            attributes: vul.attributes,
-          }));
-          setVulnerabilities(formattedRows);
-        } else {
-          console.error("Fetched data is not an array:", data);
-          setVulnerabilities([]);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching vulnerabilities:", error);
-      });
-  }, [phase, attribute, effect, startDate, endDate]);
+      axios
+        .get(url)
+        .then((response) => {
+          console.log("Response: ", response.data);
+          return response.data;
+        })
+        .then((data) => {
+          console.log("JSON response:", data);
+          if (Array.isArray(data)) {
+            const formattedRows = data.map((vul) => ({
+              id: vul.id,
+              date_added: vul.date_added,
+              title: vul.title,
+              artifact: vul.artifacttype,
+              phase: vul.phase,
+              effects: vul.effectname,
+              attributes: vul.attributes,
+            }));
+            setVulnerabilities(formattedRows);
+          } else {
+            console.error("Fetched data is not an array:", data);
+            setVulnerabilities([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching vulnerabilities:", error);
+        });
+    }
+  }, [phase, attribute, effect, startDate, endDate, userRole]);
 
   const clearFilters = () => {
     setPhase("");
@@ -98,7 +139,7 @@ function VulnerabilityDb() {
       width: 160,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -111,7 +152,7 @@ function VulnerabilityDb() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -124,7 +165,7 @@ function VulnerabilityDb() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -137,7 +178,7 @@ function VulnerabilityDb() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -145,6 +186,10 @@ function VulnerabilityDb() {
       ),
     },
   ];
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <>
@@ -190,16 +235,10 @@ function VulnerabilityDb() {
                 },
               })}
             >
-              Vulnerability Database
+              Reports Pending Approval
             </MKTypography>
             <MKTypography variant="body1" color="white" opacity={0.8} mt={1} mb={3}>
-              Welcome to the AIVT Vulnerability Database—your ultimate destination for navigating
-              the complex landscape of AI vulnerabilities. This comprehensive repository is
-              meticulously curated to empower developers, researchers, and security professionals
-              with the knowledge they need to identify, assess, and mitigate risks in AI and ML
-              systems. Whether you&apos;re looking to safeguard your technology or contribute to the
-              collective understanding of AI security, our database is your key resource for staying
-              ahead of emerging threats and ensuring the future of AI remains secure and reliable.
+              Chose whether the report is approved, rejected or need updates.
             </MKTypography>
           </Grid>
         </Container>
@@ -301,4 +340,4 @@ function VulnerabilityDb() {
   );
 }
 
-export default VulnerabilityDb;
+export default ReviewDb;

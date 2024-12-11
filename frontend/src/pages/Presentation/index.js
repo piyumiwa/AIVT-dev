@@ -1,5 +1,3 @@
-import { useAuth0 } from "@auth0/auth0-react";
-
 // @mui material components
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -21,7 +19,7 @@ import Counters from "pages/Presentation/sections/Counters";
 import Information from "pages/Presentation/sections/Information";
 
 // Presentation page components
-// import BuiltByDevelopers from "pages/Presentation/components/BuiltByDevelopers";
+import LinkToDatabse from "pages/Presentation/components/LinkToDatabse";
 
 // Routes
 // import routes from "routes";
@@ -30,41 +28,10 @@ import footerRoutes from "footer.routes";
 // Images
 import bgImage from "assets/images/bg-presentation.jpg";
 
-// const routes = [
-//   {
-//     name: "pages",
-//     icon: <Icon>dashboard</Icon>,
-//     columns: 1,
-//     rowsPerColumn: 2,
-//     collapse: [
-//       {
-//         name: "report data",
-//         collapse: [
-//           {
-//             name: "new report",
-//             route: "/report-data",
-//             component: <ReportData />,
-//           },
-//         ],
-//       },
-//     ],
-//   },
-// ];
-
 function Presentation() {
-  const { isAuthenticated } = useAuth0();
   return (
     <>
-      <DefaultNavbar
-        // routes={routes}
-        action={{
-          type: "internal",
-          label: isAuthenticated ? "Logout" : "Sign in",
-          color: "default",
-        }}
-        transparent
-        light
-      />
+      <DefaultNavbar transparent light />
       <MKBox
         minHeight="75vh"
         width="100%"
@@ -79,7 +46,7 @@ function Presentation() {
         <Container>
           <Grid container item xs={12} lg={7} justifyContent="center" mx="auto">
             <MKTypography
-              variant="h1"
+              variant="h2"
               color="white"
               mt={-6}
               mb={1}
@@ -118,6 +85,7 @@ function Presentation() {
       >
         <Counters />
         <Information />
+        <LinkToDatabse />
       </Card>
       <MKBox pt={6} px={1} mt={6}>
         <DefaultFooter content={footerRoutes} />

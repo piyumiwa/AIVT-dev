@@ -42,3 +42,4 @@ const combinedMiddleware = (req, res, next) => {
 
 // Export the middleware (use combinedMiddleware if needed)
 module.exports = combinedMiddleware;
+

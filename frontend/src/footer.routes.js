@@ -29,7 +29,7 @@ export default {
     },
     {
       icon: <GitHubIcon />,
-      link: "https://github.com/PiyumiUoR/AIVT",
+      link: "https://github.com/ouspg",
     },
     // {
     //   icon: <YouTubeIcon />,
@@ -37,15 +37,15 @@ export default {
     // },
   ],
   menus: [
-    {
-      name: "company",
-      items: [
-        { name: "about us", href: "/about-us" },
-        // { name: "freebies", href: "https://www.creative-tim.com/templates/free" },
-        // { name: "premium tools", href: "https://www.creative-tim.com/templates/premium" },
-        { name: "blog", href: "/blog" },
-      ],
-    },
+    // {
+    //   name: "company",
+    //   items: [
+    //     { name: "about us", href: "/about-us" },
+    //     // { name: "freebies", href: "https://www.creative-tim.com/templates/free" },
+    //     // { name: "premium tools", href: "https://www.creative-tim.com/templates/premium" },
+    //     { name: "blog", href: "/blog" },
+    //   ],
+    // },
     // {
     //   name: "resources",
     //   items: [
@@ -60,7 +60,7 @@ export default {
         { name: "contact us", href: "/contact-us" },
         // { name: "knowledge center", href: "https://www.creative-tim.com/knowledge-center" },
         // { name: "custom development", href: "https://services.creative-tim.com/" },
-        { name: "sponsorships", href: "https://www.creative-tim.com/sponsorships" },
+        // { name: "sponsorships", href: "https://www.creative-tim.com/sponsorships" },
       ],
     },
     {
@@ -74,10 +74,10 @@ export default {
   ],
   copyright: (
     <MKTypography variant="button" fontWeight="regular">
-      All rights reserved. Copyright &copy; {date} AIVT by{" "}
+      &copy; {date} AIVT by{" "}
       <MKTypography
         component="a"
-        href="https://www.creative-tim.com"
+        href="https://www.ouspg.org"
         target="_blank"
         rel="noreferrer"
         variant="button"

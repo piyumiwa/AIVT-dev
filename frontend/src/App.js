@@ -1,13 +1,19 @@
 import { useEffect } from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import theme from "assets/theme";
 import Presentation from "layouts/pages/presentation";
-
-import routes from "routes";
+import ProtectedRouteReporter from "ProtectedRouteReporter";
+import ReportData from "pages/LandingPages/ReportData";
+import VulnerabilityDb from "pages/LandingPages/VulnerabilityDb";
+import Vulnerability from "pages/LandingPages/Vulnerability";
+import UpdateData from "pages/LandingPages/UpdateData";
+import ReviewDb from "pages/LandingPages/ReviewDb";
+import ReviewData from "pages/LandingPages/ReviewData";
+import RejectedDb from "pages/LandingPages/RejectedDb";
 
 export default function App() {
   const { pathname } = useLocation();
@@ -17,26 +23,32 @@ export default function App() {
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
-  const getRoutes = (allRoutes) =>
-    allRoutes.map((route) => {
-      if (route.collapse) {
-        return getRoutes(route.collapse);
-      }
-
-      if (route.route) {
-        return <Route exact path={route.route} element={route.component} key={route.key} />;
-      }
-
-      return null;
-    });
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Routes>
-        {getRoutes(routes)}
         <Route path="/" element={<Presentation />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/report-data" element={<ProtectedRouteReporter element={ReportData} />} />
+        <Route path="/vulnerability-db" element={<VulnerabilityDb />} />
+        <Route path="/vulnerability-db/:id" element={<Vulnerability />} />
+        {/* <Route path="/vulnerability-db/:id/edit" element={<UpdateData />} /> */}
+        <Route
+          path="/vulnerability-db/:id/edit"
+          element={<ProtectedRouteReporter element={UpdateData} />}
+        />
+        <Route
+          path="/vulnerability-db/pending"
+          element={<ProtectedRouteReporter element={ReviewDb} />}
+        />
+        <Route
+          path="/vulnerability-db/rejected"
+          element={<ProtectedRouteReporter element={RejectedDb} />}
+        />
+        <Route
+          path="/vulnerability-db/:id/review"
+          element={<ProtectedRouteReporter element={ReviewData} />}
+        />
+        {/* <Route path="*" element={<Navigate to="/" />} /> */}
       </Routes>
     </ThemeProvider>
   );

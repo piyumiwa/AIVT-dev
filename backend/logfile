@@ -13,3 +13,766 @@
 2024-10-31 13:57:45.101 EET [22788] LOG:  checkpoint starting: shutdown immediate
 2024-10-31 13:57:45.116 EET [22788] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.018 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=185 kB; lsn=0/15A0A10, redo lsn=0/15A0A10
 2024-10-31 13:57:45.133 EET [23324] LOG:  database system is shut down
+2024-10-31 13:58:01.655 EET [22752] LOG:  starting PostgreSQL 17.0 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit
+2024-10-31 13:58:01.664 EET [22752] LOG:  listening on IPv6 address "::1", port 5432
+2024-10-31 13:58:01.664 EET [22752] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-10-31 13:58:01.789 EET [8000] LOG:  database system was shut down at 2024-10-31 13:57:45 EET
+2024-10-31 13:58:01.850 EET [22752] LOG:  database system is ready to accept connections
+2024-10-31 14:03:01.776 EET [15184] LOG:  checkpoint starting: time
+2024-10-31 14:03:01.803 EET [15184] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.005 s, total=0.029 s; sync files=2, longest=0.003 s, average=0.003 s; distance=0 kB, estimate=0 kB; lsn=0/15A0B18, redo lsn=0/15A0AC0
+2024-10-31 14:37:09.248 EET [14832] ERROR:  new collation (English_United States.1252) is incompatible with the collation of the template database (Finnish_Finland.1252)
+2024-10-31 14:37:09.248 EET [14832] HINT:  Use the same collation as in the template database, or use template0 as template.
+2024-10-31 14:37:09.248 EET [14832] STATEMENT:  CREATE DATABASE aivtdb
+	    WITH
+	    OWNER = postgres
+	    ENCODING = 'UTF8'
+	    LC_COLLATE = 'English_United States.1252'
+	    LC_CTYPE = 'English_United States.1252'
+	    LOCALE_PROVIDER = 'libc'
+	    TABLESPACE = pg_default
+	    CONNECTION LIMIT = -1
+	    IS_TEMPLATE = False;
+2024-10-31 14:37:33.078 EET [26516] FATAL:  database "aivtdb" does not exist
+2024-10-31 14:39:32.830 EET [14832] ERROR:  new collation (English_United States.1252) is incompatible with the collation of the template database (Finnish_Finland.1252)
+2024-10-31 14:39:32.830 EET [14832] HINT:  Use the same collation as in the template database, or use template0 as template.
+2024-10-31 14:39:32.830 EET [14832] STATEMENT:  CREATE DATABASE aivtdb WITH OWNER=postgres ENCODING = 'UTF8' LC_COLLATE = 'English_United States.1252' LC_CTYPE = 'English_United States.1252' LOCALE_PROVIDER = 'libc'  TABLESPACE = pg_default CONNECTION LIMIT = -1 IS_TEMPLATE = False;
+2024-10-31 14:43:24.517 EET [15184] LOG:  checkpoint starting: time
+2024-10-31 14:45:08.946 EET [15184] LOG:  checkpoint complete: wrote 963 buffers (5.9%); 0 WAL file(s) added, 0 removed, 0 recycled; write=104.157 s, sync=0.247 s, total=104.429 s; sync files=300, longest=0.028 s, average=0.001 s; distance=4532 kB, estimate=4532 kB; lsn=0/1A0DEF0, redo lsn=0/1A0DE60
+2024-10-31 22:43:46.960 EET [15184] LOG:  checkpoint starting: time
+2024-10-31 22:43:49.416 EET [15184] LOG:  checkpoint complete: wrote 23 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.430 s, sync=0.012 s, total=2.456 s; sync files=14, longest=0.003 s, average=0.001 s; distance=70 kB, estimate=4086 kB; lsn=0/1A1F878, redo lsn=0/1A1F7E8
+2024-11-01 03:44:18.969 EET [26576] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-01 04:13:39.086 EET [16652] ERROR:  relation "reporter" does not exist at character 15
+2024-11-01 04:13:39.086 EET [16652] STATEMENT:  SELECT * FROM Reporter WHERE email = $1
+2024-11-01 04:13:58.787 EET [24856] ERROR:  relation "reporter" does not exist at character 15
+2024-11-01 04:13:58.787 EET [24856] STATEMENT:  SELECT * FROM Reporter WHERE email = $1
+2024-11-01 12:12:18.444 EET [15184] LOG:  checkpoint starting: time
+2024-11-01 12:12:21.492 EET [15184] LOG:  checkpoint complete: wrote 28 buffers (0.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=3.001 s, sync=0.019 s, total=3.048 s; sync files=24, longest=0.003 s, average=0.001 s; distance=111 kB, estimate=3689 kB; lsn=0/1A3B620, redo lsn=0/1A3B5C8
+2024-11-02 00:48:48.449 EET [15184] LOG:  checkpoint starting: time
+2024-11-02 00:48:48.592 EET [15184] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.116 s, sync=0.006 s, total=0.144 s; sync files=2, longest=0.005 s, average=0.003 s; distance=0 kB, estimate=3320 kB; lsn=0/1A3B888, redo lsn=0/1A3B830
+2024-11-02 02:35:01.893 EET [832] ERROR:  syntax error at or near "SELECT" at character 54
+2024-11-02 02:35:01.893 EET [832] STATEMENT:  DELETE FROM Reporter where email=ken.adams@gmail.com
+	SELECT * FROM Reporter;
+2024-11-02 02:35:41.326 EET [832] ERROR:  missing FROM-clause entry for table "ken" at character 34
+2024-11-02 02:35:41.326 EET [832] STATEMENT:  DELETE FROM Reporter where email=ken.adams@gmail.com;
+2024-11-02 02:35:53.532 EET [832] ERROR:  column "ken.adams@gmail.com" does not exist at character 34
+2024-11-02 02:35:53.532 EET [832] STATEMENT:  DELETE FROM Reporter where email="ken.adams@gmail.com";
+2024-11-02 02:38:52.981 EET [15184] LOG:  checkpoint starting: time
+2024-11-02 02:38:53.123 EET [15184] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.119 s, sync=0.004 s, total=0.143 s; sync files=2, longest=0.004 s, average=0.002 s; distance=0 kB, estimate=2988 kB; lsn=0/1A3BAF8, redo lsn=0/1A3BAA0
+2024-11-02 13:16:41.456 EET [15184] LOG:  checkpoint starting: time
+2024-11-02 13:16:41.622 EET [15184] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.113 s, sync=0.005 s, total=0.168 s; sync files=2, longest=0.004 s, average=0.003 s; distance=0 kB, estimate=2689 kB; lsn=0/1A3BDB8, redo lsn=0/1A3BD60
+2024-11-02 13:23:12.223 EET [832] ERROR:  syntax error at or near "DELETE" at character 54
+2024-11-02 13:23:12.223 EET [832] STATEMENT:  DELETE FROM Reporter where email=ken.adams@gmail.com
+	DELETE FROM Reporter WHERE email = 'ken.adams@gmail.com';
+2024-11-02 13:26:41.640 EET [15184] LOG:  checkpoint starting: time
+2024-11-02 13:26:41.776 EET [15184] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.103 s, sync=0.006 s, total=0.136 s; sync files=2, longest=0.005 s, average=0.003 s; distance=0 kB, estimate=2420 kB; lsn=0/1A3C160, redo lsn=0/1A3C108
+2024-11-04 03:19:20.481 EET [832] ERROR:  syntax error at or near "TABLE" at character 8
+2024-11-04 03:19:20.481 EET [832] STATEMENT:  DELETE TABLE Reporter
+	DELETE TABLE Reporter;
+2024-11-04 03:19:50.986 EET [832] ERROR:  relation "reporter" does not exist at character 15
+2024-11-04 03:19:50.986 EET [832] STATEMENT:  SELECT * FROM Reporter;
+2024-11-04 03:21:59.113 EET [15184] LOG:  checkpoint starting: time
+2024-11-04 03:21:59.926 EET [15184] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.781 s, sync=0.018 s, total=0.815 s; sync files=7, longest=0.011 s, average=0.003 s; distance=35 kB, estimate=2182 kB; lsn=0/1A44D60, redo lsn=0/1A44D08
+2024-11-04 03:31:59.944 EET [15184] LOG:  checkpoint starting: time
+2024-11-04 03:32:02.172 EET [15184] LOG:  checkpoint complete: wrote 21 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.201 s, sync=0.015 s, total=2.228 s; sync files=20, longest=0.002 s, average=0.001 s; distance=101 kB, estimate=1974 kB; lsn=0/1A5E180, redo lsn=0/1A5E128
+2024-11-04 13:39:09.551 EET [832] ERROR:  syntax error at or near "." at character 41
+2024-11-04 13:39:09.551 EET [832] STATEMENT:  SELECT table_nameFROM INFORMATION_SCHEMA.TABLES;
+2024-11-04 13:39:41.103 EET [22752] LOG:  could not reserve shared memory region (addr=00000265CD8F0000) for child 0000000000001274: error code 487
+2024-11-04 13:41:23.776 EET [832] ERROR:  there is no unique constraint matching given keys for referenced table "reporter"
+2024-11-04 13:41:23.776 EET [832] STATEMENT:  CREATE TABLE Vul_report (    reportId SERIAL PRIMARY KEY,	date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    title VARCHAR(255),    report_description VARCHAR(510),    reporterId INTEGER, 	approval_status VARCHAR(50) DEFAULT 'pending',    FOREIGN KEY (reporterId) REFERENCES Reporter(reporterId));
+2024-11-04 13:45:17.915 EET [15184] LOG:  checkpoint starting: time
+2024-11-04 13:45:23.010 EET [15184] LOG:  checkpoint complete: wrote 46 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=5.006 s, sync=0.066 s, total=5.095 s; sync files=39, longest=0.013 s, average=0.002 s; distance=157 kB, estimate=1792 kB; lsn=0/1A85978, redo lsn=0/1A858E8
+2024-11-04 14:21:51.642 EET [15184] LOG:  checkpoint starting: time
+2024-11-04 14:21:55.521 EET [15184] LOG:  checkpoint complete: wrote 36 buffers (0.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=3.798 s, sync=0.050 s, total=3.880 s; sync files=32, longest=0.011 s, average=0.002 s; distance=172 kB, estimate=1630 kB; lsn=0/1AB0C58, redo lsn=0/1AB0C00
+2024-11-04 14:45:58.989 EET [832] ERROR:  foreign key constraint "vul_report_reporterid_fkey" cannot be implemented
+2024-11-04 14:45:58.989 EET [832] DETAIL:  Key columns "reporterid" and "reporterid" are of incompatible types: integer and character varying.
+2024-11-04 14:45:58.989 EET [832] STATEMENT:  CREATE TABLE Vul_report (    reportId SERIAL PRIMARY KEY,	date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    title VARCHAR(255),    report_description VARCHAR(510),    reporterId INTEGER, 	approval_status VARCHAR(50) DEFAULT 'pending',    FOREIGN KEY (reporterId) REFERENCES Reporter(reporterId));
+2024-11-04 14:47:42.409 EET [15184] LOG:  checkpoint starting: time
+2024-11-04 14:47:48.218 EET [15184] LOG:  checkpoint complete: wrote 53 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=5.726 s, sync=0.057 s, total=5.809 s; sync files=51, longest=0.010 s, average=0.002 s; distance=211 kB, estimate=1488 kB; lsn=0/1AE5C50, redo lsn=0/1AE5BC0
+2024-11-04 14:52:42.231 EET [15184] LOG:  checkpoint starting: time
+2024-11-04 14:52:48.551 EET [15184] LOG:  checkpoint complete: wrote 59 buffers (0.4%); 0 WAL file(s) added, 0 removed, 0 recycled; write=6.239 s, sync=0.063 s, total=6.321 s; sync files=58, longest=0.011 s, average=0.002 s; distance=282 kB, estimate=1368 kB; lsn=0/1B2C818, redo lsn=0/1B2C788
+2024-11-04 15:10:04.137 EET [24692] ERROR:  null value in column "reporterid" of relation "reporter" violates not-null constraint
+2024-11-04 15:10:04.137 EET [24692] DETAIL:  Failing row contains (null, Sample 1 , null, Sample 1 , reporter).
+2024-11-04 15:10:04.137 EET [24692] STATEMENT:  INSERT INTO Reporter (name, organization) VALUES ($1, $2) RETURNING reporterId
+2024-11-04 23:11:50.456 EET [22752] LOG:  server process (PID 832) was terminated by exception 0xC000013A
+2024-11-04 23:11:50.456 EET [22752] DETAIL:  Failed process was running: SELECT n.nspname as "Schema",
+	  c.relname as "Name",
+	  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as "Type",
+	  pg_catalog.pg_get_userbyid(c.relowner) as "Owner"
+	FROM pg_catalog.pg_class c
+	     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+	     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+	WHERE c.relkind IN ('r','p','')
+	      AND n.nspname <> 'pg_catalog'
+	      AND n.nspname !~ '^pg_toast'
+	      AND n.nspname <> 'information_schema'
+	  AND pg_catalog.pg_table_is_visible(c.oid)
+	ORDER BY 1,2;
+2024-11-04 23:11:50.456 EET [22752] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-11-04 23:11:50.456 EET [22752] LOG:  terminating any other active server processes
+2024-11-04 23:11:50.469 EET [22752] LOG:  all server processes terminated; reinitializing
+2024-11-04 23:11:50.516 EET [22752] LOG:  startup process (PID 21636) was terminated by exception 0xC0000142
+2024-11-04 23:11:50.516 EET [22752] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-11-04 23:11:50.516 EET [22752] LOG:  aborting startup due to startup process failure
+2024-11-04 23:11:50.518 EET [22752] LOG:  database system is shut down
+2024-11-04 23:25:25.517 EET [20784] LOG:  starting PostgreSQL 17.0 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit
+2024-11-04 23:25:25.522 EET [20784] LOG:  listening on IPv6 address "::1", port 5432
+2024-11-04 23:25:25.522 EET [20784] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-11-04 23:25:25.588 EET [4304] LOG:  database system was interrupted; last known up at 2024-11-04 14:52:48 EET
+2024-11-04 23:25:25.911 EET [4304] LOG:  database system was not properly shut down; automatic recovery in progress
+2024-11-04 23:25:25.914 EET [4304] LOG:  redo starts at 0/1B2C788
+2024-11-04 23:25:25.914 EET [4304] LOG:  invalid record length at 0/1B2C8C8: expected at least 24, got 0
+2024-11-04 23:25:25.914 EET [4304] LOG:  redo done at 0/1B2C890 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2024-11-04 23:25:25.917 EET [19632] LOG:  checkpoint starting: end-of-recovery immediate wait
+2024-11-04 23:25:25.925 EET [19632] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.009 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/1B2C8C8, redo lsn=0/1B2C8C8
+2024-11-04 23:25:25.954 EET [20784] LOG:  database system is ready to accept connections
+2024-11-04 23:30:25.919 EET [19632] LOG:  checkpoint starting: time
+2024-11-04 23:30:26.396 EET [19632] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.438 s, sync=0.004 s, total=0.477 s; sync files=2, longest=0.003 s, average=0.002 s; distance=13 kB, estimate=13 kB; lsn=0/1B2FFD8, redo lsn=0/1B2FF80
+2024-11-04 23:33:33.691 EET [12072] ERROR:  null value in column "reporterid" of relation "reporter" violates not-null constraint
+2024-11-04 23:33:33.691 EET [12072] DETAIL:  Failing row contains (null, Sample 1 , null, Sample 1 , reporter).
+2024-11-04 23:33:33.691 EET [12072] STATEMENT:  INSERT INTO Reporter (name, organization) VALUES ($1, $2) RETURNING reporterId
+2024-11-04 23:35:25.389 EET [19632] LOG:  checkpoint starting: time
+2024-11-04 23:35:25.860 EET [19632] LOG:  checkpoint complete: wrote 5 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.440 s, sync=0.014 s, total=0.471 s; sync files=4, longest=0.011 s, average=0.004 s; distance=0 kB, estimate=12 kB; lsn=0/1B30288, redo lsn=0/1B30230
+2024-11-04 23:36:12.670 EET [18076] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-05 00:15:31.422 EET [20988] ERROR:  null value in column "reporterid" of relation "reporter" violates not-null constraint
+2024-11-05 00:15:31.422 EET [20988] DETAIL:  Failing row contains (null, Sample 1 , null, Sample 1 , reporter).
+2024-11-05 00:15:31.422 EET [20988] STATEMENT:  INSERT INTO Reporter (name, organization) VALUES ($1, $2)
+2024-11-05 01:33:07.347 EET [20388] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-05 02:00:53.281 EET [22392] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-05 02:06:37.912 EET [7408] ERROR:  bind message supplies 2 parameters, but prepared statement "" requires 3
+2024-11-05 02:06:37.912 EET [7408] STATEMENT:  UPDATE Reporter SET name = $1, organization = $2 WHERE reporterId = $3
+2024-11-05 02:07:47.873 EET [11372] ERROR:  syntax error at or near "ctType" at character 30
+2024-11-05 02:07:47.873 EET [11372] STATEMENT:  INSERT INTO Artifact (artifa ctType, developer, deployer, reportId) VALUES ($1, $2, $3, $4, $5) RETURNING artifactId
+2024-11-05 02:08:11.368 EET [22964] ERROR:  INSERT has more expressions than target columns at character 92
+2024-11-05 02:08:11.368 EET [22964] STATEMENT:  INSERT INTO Artifact (artifactType, developer, deployer, reportId) VALUES ($1, $2, $3, $4, $5) RETURNING artifactId
+2024-11-05 02:10:26.122 EET [19632] LOG:  checkpoint starting: time
+2024-11-05 02:10:30.289 EET [19632] LOG:  checkpoint complete: wrote 39 buffers (0.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=4.092 s, sync=0.044 s, total=4.167 s; sync files=29, longest=0.012 s, average=0.002 s; distance=11 kB, estimate=12 kB; lsn=0/1B33260, redo lsn=0/1B331D0
+2024-11-05 02:20:26.313 EET [19632] LOG:  checkpoint starting: time
+2024-11-05 02:20:29.501 EET [19632] LOG:  checkpoint complete: wrote 29 buffers (0.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=3.119 s, sync=0.039 s, total=3.188 s; sync files=29, longest=0.009 s, average=0.002 s; distance=5 kB, estimate=11 kB; lsn=0/1B34768, redo lsn=0/1B346D8
+2024-11-05 03:05:26.554 EET [19632] LOG:  checkpoint starting: time
+2024-11-05 03:05:29.019 EET [19632] LOG:  checkpoint complete: wrote 23 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.398 s, sync=0.030 s, total=2.466 s; sync files=23, longest=0.010 s, average=0.002 s; distance=5 kB, estimate=11 kB; lsn=0/1B35D20, redo lsn=0/1B35CC8
+2024-11-05 03:10:26.024 EET [19632] LOG:  checkpoint starting: time
+2024-11-05 03:10:28.436 EET [19632] LOG:  checkpoint complete: wrote 23 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.369 s, sync=0.028 s, total=2.413 s; sync files=23, longest=0.010 s, average=0.002 s; distance=6 kB, estimate=10 kB; lsn=0/1B375F8, redo lsn=0/1B375A0
+2024-11-05 03:18:32.853 EET [3824] ERROR:  column a.artifactname does not exist at character 85
+2024-11-05 03:18:32.853 EET [3824] HINT:  Perhaps you meant to reference the column "a.artifacttype".
+2024-11-05 03:18:32.853 EET [3824] STATEMENT:  
+	        SELECT 
+	            vr.reportId AS id, 
+	            vr.title, 
+	            a.artifactName, 
+	            vr.date_added, 
+	            e.effectName, 
+	            vp.phase, 
+	            array_agg(DISTINCT an.attributeName) AS attributes,
+	            vr.approval_status
+	        FROM Vul_report vr
+	        JOIN Artifact a ON vr.reportId = a.reportId
+	        JOIN Vul_phase vp ON vr.reportId = vp.reportId
+	        JOIN Effect e ON vp.phId = e.phId
+	        LEFT JOIN Attribute at ON vp.phId = at.phId
+	        LEFT JOIN All_attributes aa ON at.attributeTypeId = aa.attributeTypeId
+	        LEFT JOIN Attribute_names an ON aa.attributeId = an.attributeId
+	        WHERE vr.approval_status = 'approved'
+	    
+	        GROUP BY 
+	            vr.reportId, 
+	            vr.title, 
+	            a.artifactName, 
+	            vr.date_added, 
+	            e.effectName, 
+	            vp.phase,
+	            vr.approval_status
+	    
+2024-11-07 11:49:55.185 EET [22520] ERROR:  syntax error at or near "COLUMN" at character 27
+2024-11-07 11:49:55.185 EET [22520] STATEMENT:  ALTER TABLE Vul_reportADD COLUMN last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+2024-11-07 11:50:17.062 EET [22520] ERROR:  syntax error at or near "ON" at character 84
+2024-11-07 11:50:17.062 EET [22520] STATEMENT:  ALTER TABLE Vul_report ADD COLUMN last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+2024-11-07 11:58:36.042 EET [19632] LOG:  checkpoint starting: time
+2024-11-07 11:58:38.140 EET [19632] LOG:  checkpoint complete: wrote 20 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.065 s, sync=0.023 s, total=2.099 s; sync files=19, longest=0.011 s, average=0.002 s; distance=47 kB, estimate=47 kB; lsn=0/1B435B8, redo lsn=0/1B43560
+2024-11-07 12:14:17.600 EET [22520] ERROR:  syntax error at end of input at character 123
+2024-11-07 12:14:17.600 EET [22520] STATEMENT:  CREATE OR REPLACE FUNCTION update_last_updated_column() RETURNS TRIGGER AS $$ BEGIN NEW.last_updated = CURRENT_TIMESTAMP;
+	$$ LANGUAGE plpgsql;
+2024-11-07 12:14:42.143 EET [22520] ERROR:  syntax error at end of input at character 123
+2024-11-07 12:14:42.143 EET [22520] STATEMENT:  CREATE OR REPLACE FUNCTION update_last_updated_column() RETURNS TRIGGER AS $$ BEGIN NEW.last_updated = CURRENT_TIMESTAMP; $$ LANGUAGE plpgsql;
+2024-11-07 12:18:36.180 EET [19632] LOG:  checkpoint starting: time
+2024-11-07 12:18:37.211 EET [19632] LOG:  checkpoint complete: wrote 10 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.997 s, sync=0.017 s, total=1.032 s; sync files=9, longest=0.010 s, average=0.002 s; distance=41 kB, estimate=47 kB; lsn=0/1B4D9D8, redo lsn=0/1B4D980
+2024-11-07 12:57:21.083 EET [22396] ERROR:  column "last_updated" of relation "vul_report" already exists
+2024-11-07 12:57:21.083 EET [22396] STATEMENT:  ALTER TABLE Vul_report
+	ADD COLUMN last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+2024-11-07 12:58:36.269 EET [19632] LOG:  checkpoint starting: time
+2024-11-07 12:58:37.290 EET [19632] LOG:  checkpoint complete: wrote 10 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.994 s, sync=0.009 s, total=1.022 s; sync files=8, longest=0.002 s, average=0.002 s; distance=0 kB, estimate=42 kB; lsn=0/1B4DB70, redo lsn=0/1B4DB18
+2024-11-07 13:13:36.314 EET [19632] LOG:  checkpoint starting: time
+2024-11-07 13:13:37.869 EET [19632] LOG:  checkpoint complete: wrote 15 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.518 s, sync=0.020 s, total=1.555 s; sync files=12, longest=0.009 s, average=0.002 s; distance=51 kB, estimate=51 kB; lsn=0/1B5A9B8, redo lsn=0/1B5A960
+2024-11-07 13:41:24.803 EET [25912] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-07 13:41:24.803 EET [31000] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-07 13:41:24.803 EET [22396] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-07 13:43:36.889 EET [19632] LOG:  checkpoint starting: time
+2024-11-07 13:43:37.120 EET [19632] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.207 s, sync=0.007 s, total=0.232 s; sync files=3, longest=0.005 s, average=0.003 s; distance=1 kB, estimate=46 kB; lsn=0/1B5AFE8, redo lsn=0/1B5AF90
+2024-11-07 13:43:39.591 EET [28024] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-07 14:08:36.164 EET [19632] LOG:  checkpoint starting: time
+2024-11-07 14:08:36.297 EET [19632] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.108 s, sync=0.005 s, total=0.133 s; sync files=2, longest=0.004 s, average=0.003 s; distance=0 kB, estimate=41 kB; lsn=0/1B5B338, redo lsn=0/1B5B2E0
+2024-11-08 00:18:53.370 EET [20784] LOG:  server process (PID 22520) was terminated by exception 0xC000013A
+2024-11-08 00:18:53.370 EET [20784] DETAIL:  Failed process was running: UPDATE Attribute SET attr_description = 'Sample attribute for 4' WHERE attributetypeid = 2;
+2024-11-08 00:18:53.370 EET [20784] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-11-08 00:18:53.371 EET [20784] LOG:  terminating any other active server processes
+2024-11-08 00:18:53.386 EET [20784] LOG:  all server processes terminated; reinitializing
+^C2024-11-13 20:16:04.530 EET [28688] LOG:  starting PostgreSQL 17.0 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit
+2024-11-13 20:16:04.540 EET [28688] LOG:  listening on IPv6 address "::1", port 5432
+2024-11-13 20:16:04.540 EET [28688] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-11-13 20:16:04.699 EET [12120] LOG:  database system was interrupted; last known up at 2024-11-07 14:08:36 EET
+2024-11-13 20:16:05.824 EET [12120] LOG:  database system was not properly shut down; automatic recovery in progress
+2024-11-13 20:16:05.831 EET [12120] LOG:  redo starts at 0/1B5B2E0
+2024-11-13 20:16:05.831 EET [12120] LOG:  invalid record length at 0/1B5B3E8: expected at least 24, got 0
+2024-11-13 20:16:05.832 EET [12120] LOG:  redo done at 0/1B5B3B0 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2024-11-13 20:16:05.839 EET [29808] LOG:  checkpoint starting: end-of-recovery immediate wait
+2024-11-13 20:16:05.855 EET [29808] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.003 s, total=0.018 s; sync files=2, longest=0.002 s, average=0.002 s; distance=0 kB, estimate=0 kB; lsn=0/1B5B3E8, redo lsn=0/1B5B3E8
+2024-11-13 20:16:05.913 EET [28688] LOG:  database system is ready to accept connections
+2024-11-16 02:40:32.426 EET [28688] LOG:  server process (PID 29304) was terminated by exception 0xC000013A
+2024-11-16 02:40:32.426 EET [28688] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-11-16 02:40:32.427 EET [28688] LOG:  terminating any other active server processes
+2024-11-16 02:40:32.441 EET [28688] LOG:  received fast shutdown request
+2024-11-16 12:40:05.128 EET [5392] LOG:  starting PostgreSQL 17.0 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit
+2024-11-16 12:40:05.138 EET [5392] LOG:  listening on IPv6 address "::1", port 5432
+2024-11-16 12:40:05.139 EET [5392] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-11-16 12:40:05.279 EET [6496] LOG:  database system was interrupted; last known up at 2024-11-13 20:16:05 EET
+2024-11-16 12:40:06.372 EET [6496] LOG:  database system was not properly shut down; automatic recovery in progress
+2024-11-16 12:40:06.380 EET [6496] LOG:  redo starts at 0/1B5B460
+2024-11-16 12:40:06.381 EET [6496] LOG:  invalid record length at 0/1B5B498: expected at least 24, got 0
+2024-11-16 12:40:06.381 EET [6496] LOG:  redo done at 0/1B5B460 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2024-11-16 12:40:06.389 EET [4420] LOG:  checkpoint starting: end-of-recovery immediate wait
+2024-11-16 12:40:06.408 EET [4420] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.005 s, sync=0.004 s, total=0.021 s; sync files=2, longest=0.002 s, average=0.002 s; distance=0 kB, estimate=0 kB; lsn=0/1B5B498, redo lsn=0/1B5B498
+2024-11-16 12:40:06.457 EET [5392] LOG:  database system is ready to accept connections
+2024-11-16 21:07:39.847 EET [4420] LOG:  checkpoint starting: time
+2024-11-16 21:07:39.981 EET [4420] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.117 s, sync=0.006 s, total=0.134 s; sync files=2, longest=0.004 s, average=0.003 s; distance=1 kB, estimate=1 kB; lsn=0/1B5BBE0, redo lsn=0/1B5BB88
+2024-11-18 14:27:12.503 EET [4420] LOG:  checkpoint starting: time
+2024-11-18 14:27:13.179 EET [4420] LOG:  checkpoint complete: wrote 7 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.649 s, sync=0.008 s, total=0.678 s; sync files=7, longest=0.002 s, average=0.002 s; distance=3 kB, estimate=3 kB; lsn=0/1B5CA10, redo lsn=0/1B5C9B8
+2024-11-19 02:02:40.720 EET [16200] ERROR:  relation "reporter" does not exist at character 15
+2024-11-19 02:02:40.720 EET [16200] STATEMENT:  SELECT * FROM Reporter;
+2024-11-19 02:02:45.891 EET [16200] ERROR:  relation "reporter" does not exist at character 15
+2024-11-19 02:02:45.891 EET [16200] STATEMENT:  SELECT * FROM reporter;
+2024-11-19 02:02:53.351 EET [16200] ERROR:  relation "reporter" does not exist at character 15
+2024-11-19 02:02:53.351 EET [16200] STATEMENT:  SELECT * FROM Reporter;
+2024-11-19 02:34:36.638 EET [27748] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-19 13:31:23.366 EET [17696] ERROR:  column "auth0userid" does not exist at character 78
+2024-11-19 13:31:23.366 EET [17696] STATEMENT:  SELECT reporterId AS id, name, email, organization, role FROM Reporter WHERE auth0UserId = $1
+2024-11-19 13:32:25.842 EET [21548] ERROR:  column "sub" does not exist at character 78
+2024-11-19 13:32:25.842 EET [21548] STATEMENT:  SELECT reporterId AS id, name, email, organization, role FROM Reporter WHERE sub = $1
+2024-11-19 13:32:49.030 EET [5772] ERROR:  column "id" does not exist at character 78
+2024-11-19 13:32:49.030 EET [5772] STATEMENT:  SELECT reporterId AS id, name, email, organization, role FROM Reporter WHERE id = $1
+2024-11-19 13:41:48.125 EET [27824] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-19 14:10:12.169 EET [5392] LOG:  server process (PID 23904) was terminated by exception 0xC000013A
+2024-11-19 14:10:12.169 EET [5392] DETAIL:  Failed process was running: SELECT * FROM Reporter;
+2024-11-19 14:10:12.169 EET [5392] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-11-19 14:10:12.170 EET [5392] LOG:  terminating any other active server processes
+2024-11-19 14:10:17.219 EET [5392] LOG:  all server processes terminated; reinitializing
+2024-11-19 14:10:17.318 EET [5392] LOG:  startup process (PID 25036) was terminated by exception 0xC0000142
+2024-11-19 14:10:17.318 EET [5392] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-11-19 14:10:17.319 EET [5392] LOG:  aborting startup due to startup process failure
+2024-11-19 14:10:17.321 EET [5392] LOG:  database system is shut down
+2024-11-22 11:47:48.858 EET [31292] LOG:  starting PostgreSQL 17.0 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit
+2024-11-22 11:47:48.868 EET [31292] LOG:  listening on IPv6 address "::1", port 5432
+2024-11-22 11:47:48.869 EET [31292] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-11-22 11:47:48.996 EET [28628] LOG:  database system was interrupted; last known up at 2024-11-18 14:27:13 EET
+2024-11-22 11:47:50.073 EET [28628] LOG:  database system was not properly shut down; automatic recovery in progress
+2024-11-22 11:47:50.080 EET [28628] LOG:  redo starts at 0/1B5C9B8
+2024-11-22 11:47:50.081 EET [28628] LOG:  invalid record length at 0/1B5CAC0: expected at least 24, got 0
+2024-11-22 11:47:50.081 EET [28628] LOG:  redo done at 0/1B5CA88 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2024-11-22 11:47:50.090 EET [7552] LOG:  checkpoint starting: end-of-recovery immediate wait
+2024-11-22 11:47:50.108 EET [7552] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.005 s, sync=0.003 s, total=0.022 s; sync files=2, longest=0.002 s, average=0.002 s; distance=0 kB, estimate=0 kB; lsn=0/1B5CAC0, redo lsn=0/1B5CAC0
+2024-11-22 11:47:50.159 EET [31292] LOG:  database system is ready to accept connections
+2024-11-22 12:26:57.809 EET [24532] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-22 12:26:57.809 EET [13552] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-22 13:12:38.049 EET [24544] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-22 13:12:38.049 EET [27292] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-26 03:03:47.403 EET [7552] LOG:  checkpoint starting: time
+2024-11-26 03:03:49.654 EET [7552] LOG:  checkpoint complete: wrote 21 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.194 s, sync=0.032 s, total=2.252 s; sync files=21, longest=0.010 s, average=0.002 s; distance=9 kB, estimate=9 kB; lsn=0/1B5F180, redo lsn=0/1B5F128
+2024-11-26 03:52:22.353 EET [31292] LOG:  could not reserve shared memory region (addr=000001FEEE470000) for child 0000000000001360: error code 487
+2024-11-26 23:01:42.830 EET [2188] ERROR:  foreign key constraint "admin_review_adminid_fkey" cannot be implemented
+2024-11-26 23:01:42.830 EET [2188] DETAIL:  Key columns "adminid" and "reporterid" are of incompatible types: integer and character varying.
+2024-11-26 23:01:42.830 EET [2188] STATEMENT:  CREATE TABLE Admin_review (
+	review_comments VARCHAR(255), 
+	review_id SERIAL PRIMARY KEY, 
+	reportId INTEGER,
+	adminId INTEGER,
+	review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (reportId) REFERENCES Vul_report(reportId),
+	FOREIGN KEY (adminId) REFERENCES Reporter(reporterId)
+	);
+2024-11-26 23:05:29.388 EET [2188] ERROR:  column "adminid" specified more than once
+2024-11-26 23:05:29.388 EET [2188] STATEMENT:  CREATE TABLE Admin_review (
+	review_comments VARCHAR(255), 
+	review_id SERIAL PRIMARY KEY, 
+	reportId INTEGER,
+	adminId INTEGER,
+	adminId VARCHAR(255),
+	review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (adminId) REFERENCES Reporter(reporterId)
+	);
+2024-11-26 23:06:16.568 EET [7552] LOG:  checkpoint starting: time
+2024-11-26 23:06:20.965 EET [7552] LOG:  checkpoint complete: wrote 41 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=4.333 s, sync=0.032 s, total=4.398 s; sync files=37, longest=0.003 s, average=0.001 s; distance=166 kB, estimate=166 kB; lsn=0/1B88BA0, redo lsn=0/1B88B10
+2024-11-26 23:11:16.969 EET [7552] LOG:  checkpoint starting: time
+2024-11-26 23:11:22.155 EET [7552] LOG:  checkpoint complete: wrote 48 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=5.114 s, sync=0.033 s, total=5.187 s; sync files=40, longest=0.003 s, average=0.001 s; distance=193 kB, estimate=193 kB; lsn=0/1BB9100, redo lsn=0/1BB90A8
+2024-11-26 23:31:16.196 EET [7552] LOG:  checkpoint starting: time
+2024-11-26 23:31:16.568 EET [7552] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.338 s, sync=0.017 s, total=0.372 s; sync files=4, longest=0.012 s, average=0.005 s; distance=1 kB, estimate=174 kB; lsn=0/1BB9740, redo lsn=0/1BB96E8
+2024-11-26 23:54:39.581 EET [31292] LOG:  could not reserve shared memory region (addr=000001FEEE470000) for child 0000000000001218: error code 487
+2024-11-27 00:32:36.747 EET [2168] ERROR:  invalid input syntax for type integer: "review"
+2024-11-27 00:32:36.747 EET [2168] CONTEXT:  unnamed portal parameter $1 = '...'
+2024-11-27 00:32:36.747 EET [2168] STATEMENT:  
+	            SELECT 
+	                v.reportId AS id, 
+	                v.date_added,
+	                v.title, 
+	                v.report_description,
+	                v.last_updated,
+	                a.artifactType,
+	                a.developer, 
+	                a.deployer, 
+	                a.artifactId, 
+	                r.reporterId,
+	                r.name AS reporterName,
+	                r.email AS reporterEmail,
+	                r.organization AS reporterOrganization,
+	                p.phase,
+	                p.phase_description AS phaseDescription,
+	                array_agg(DISTINCT an.attributeName) AS attributes,
+	                attr.attr_description AS attr_Description,
+	                eff.effectName AS effect,
+	                eff.eff_description AS eff_Description,
+	                array_agg(DISTINCT att.attachments) AS attachments,
+	                array_agg(DISTINCT att.filename) AS attachmentFilenames,
+	                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
+	            FROM 
+	                Vul_report v
+	            JOIN 
+	                Artifact a ON v.reportId = a.reportId
+	            JOIN 
+	                Reporter r ON v.reporterId = r.reporterId
+	            JOIN 
+	                Vul_phase p ON v.reportId = p.reportId
+	            LEFT JOIN 
+	                All_attributes aa ON p.phId = aa.attributeTypeId
+	            LEFT JOIN 
+	                Attribute_names an ON aa.attributeId = an.attributeId
+	            LEFT JOIN 
+	                Attribute attr ON p.phId = attr.phId
+	            LEFT JOIN 
+	                Effect eff ON p.phId = eff.phId
+	            LEFT JOIN 
+	                Attachments att ON a.artifactId = att.artifactId
+	            WHERE 
+	                v.reportId = $1
+	            GROUP BY 
+	                -- v.reportId, a.artifactType, a.developer, a.deployer, a.artifactId, r.reporterId, r.name, r.email, r.organization, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	                v.reportId, a.artifactId, r.reporterId, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	        
+2024-11-27 00:41:16.690 EET [7552] LOG:  checkpoint starting: time
+2024-11-27 00:41:17.054 EET [7552] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.321 s, sync=0.018 s, total=0.365 s; sync files=4, longest=0.012 s, average=0.005 s; distance=2 kB, estimate=157 kB; lsn=0/1BBA100, redo lsn=0/1BBA0A8
+2024-11-28 16:53:19.846 EET [7552] LOG:  checkpoint starting: time
+2024-11-28 16:53:20.321 EET [7552] LOG:  checkpoint complete: wrote 5 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.432 s, sync=0.015 s, total=0.477 s; sync files=5, longest=0.011 s, average=0.003 s; distance=5 kB, estimate=141 kB; lsn=0/1BBB5B0, redo lsn=0/1BBB558
+2024-11-28 23:04:08.352 EET [31292] LOG:  server process (PID 2188) was terminated by exception 0xC000013A
+2024-11-28 23:04:08.352 EET [31292] DETAIL:  Failed process was running: SELECT * FROM Admin_review;
+2024-11-28 23:04:08.352 EET [31292] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-11-28 23:04:08.353 EET [31292] LOG:  terminating any other active server processes
+2024-11-28 23:04:08.370 EET [31292] LOG:  all server processes terminated; reinitializing
+^C2024-11-28 23:39:11.401 EET [19840] LOG:  starting PostgreSQL 17.0 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit
+2024-11-28 23:39:11.411 EET [19840] LOG:  listening on IPv6 address "::1", port 5432
+2024-11-28 23:39:11.412 EET [19840] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-11-28 23:39:11.565 EET [2884] LOG:  database system was interrupted; last known up at 2024-11-28 16:53:20 EET
+2024-11-28 23:39:12.747 EET [2884] LOG:  database system was not properly shut down; automatic recovery in progress
+2024-11-28 23:39:12.754 EET [2884] LOG:  redo starts at 0/1BBB558
+2024-11-28 23:39:12.754 EET [2884] LOG:  invalid record length at 0/1BBB660: expected at least 24, got 0
+2024-11-28 23:39:12.754 EET [2884] LOG:  redo done at 0/1BBB628 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2024-11-28 23:39:12.762 EET [13252] LOG:  checkpoint starting: end-of-recovery immediate wait
+2024-11-28 23:39:12.780 EET [13252] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.005 s, sync=0.003 s, total=0.021 s; sync files=2, longest=0.002 s, average=0.002 s; distance=0 kB, estimate=0 kB; lsn=0/1BBB660, redo lsn=0/1BBB660
+2024-11-28 23:39:12.832 EET [19840] LOG:  database system is ready to accept connections
+2024-11-29 00:13:06.285 EET [22288] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-29 02:25:09.775 EET [14180] ERROR:  column v.review_comments does not exist at character 199
+2024-11-29 02:25:09.775 EET [14180] STATEMENT:  
+	            SELECT 
+	                v.reportId AS id, 
+	                v.date_added,
+	                v.title, 
+	                v.report_description,
+	                v.last_updated,
+	                v.review_comments,
+	                a.artifactType,
+	                a.developer, 
+	                a.deployer, 
+	                a.artifactId, 
+	                r.reporterId,
+	                r.name AS reporterName,
+	                r.email AS reporterEmail,
+	                r.organization AS reporterOrganization,
+	                r.role AS reporterRole, 
+	                p.phase,
+	                p.phase_description AS phaseDescription,
+	                array_agg(DISTINCT an.attributeName) AS attributes,
+	                attr.attr_description AS attr_Description,
+	                eff.effectName AS effect,
+	                eff.eff_description AS eff_Description,
+	                array_agg(DISTINCT att.attachments) AS attachments,
+	                array_agg(DISTINCT att.filename) AS attachmentFilenames,
+	                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
+	            FROM 
+	                Vul_report v
+	            JOIN 
+	                Artifact a ON v.reportId = a.reportId
+	            JOIN 
+	                Reporter r ON v.reporterId = r.reporterId
+	            JOIN 
+	                Vul_phase p ON v.reportId = p.reportId
+	            LEFT JOIN 
+	                All_attributes aa ON p.phId = aa.attributeTypeId
+	            LEFT JOIN 
+	                Attribute_names an ON aa.attributeId = an.attributeId
+	            LEFT JOIN 
+	                Attribute attr ON p.phId = attr.phId
+	            LEFT JOIN 
+	                Effect eff ON p.phId = eff.phId
+	            LEFT JOIN 
+	                Attachments att ON a.artifactId = att.artifactId
+	            WHERE 
+	                v.reportId = $1
+	            GROUP BY 
+	                -- v.reportId, a.artifactType, a.developer, a.deployer, a.artifactId, r.reporterId, r.name, r.email, r.organization, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	                v.reportId, a.artifactId, r.reporterId, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	        
+2024-11-29 02:27:08.648 EET [12272] ERROR:  syntax error at or near "?" at character 1
+2024-11-29 02:27:08.648 EET [12272] STATEMENT:  ?c aivtdb
+	select * from admin_review;
+2024-11-29 02:29:42.705 EET [12008] ERROR:  column "ad.review_comments" must appear in the GROUP BY clause or be used in an aggregate function at character 199
+2024-11-29 02:29:42.705 EET [12008] STATEMENT:  
+	            SELECT 
+	                v.reportId AS id, 
+	                v.date_added,
+	                v.title, 
+	                v.report_description,
+	                v.last_updated,
+	                ad.review_comments,
+	                a.artifactType,
+	                a.developer, 
+	                a.deployer, 
+	                a.artifactId, 
+	                r.reporterId,
+	                r.name AS reporterName,
+	                r.email AS reporterEmail,
+	                r.organization AS reporterOrganization,
+	                r.role AS reporterRole, 
+	                p.phase,
+	                p.phase_description AS phaseDescription,
+	                array_agg(DISTINCT an.attributeName) AS attributes,
+	                attr.attr_description AS attr_Description,
+	                eff.effectName AS effect,
+	                eff.eff_description AS eff_Description,
+	                array_agg(DISTINCT att.attachments) AS attachments,
+	                array_agg(DISTINCT att.filename) AS attachmentFilenames,
+	                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
+	            FROM 
+	                Vul_report v
+	            JOIN 
+	                Artifact a ON v.reportId = a.reportId
+	            JOIN 
+	                Reporter r ON v.reporterId = r.reporterId
+	            JOIN 
+	                Vul_phase p ON v.reportId = p.reportId
+	            JOIN
+	                Admin_review ad ON v.reportId = ad.reportId
+	            LEFT JOIN 
+	                All_attributes aa ON p.phId = aa.attributeTypeId
+	            LEFT JOIN 
+	                Attribute_names an ON aa.attributeId = an.attributeId
+	            LEFT JOIN 
+	                Attribute attr ON p.phId = attr.phId
+	            LEFT JOIN 
+	                Effect eff ON p.phId = eff.phId
+	            LEFT JOIN 
+	                Attachments att ON a.artifactId = att.artifactId
+	            WHERE 
+	                v.reportId = $1
+	            GROUP BY 
+	                -- v.reportId, a.artifactType, a.developer, a.deployer, a.artifactId, r.reporterId, r.name, r.email, r.organization, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	                v.reportId, a.artifactId, r.reporterId, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	        
+2024-11-29 02:30:56.418 EET [16496] ERROR:  column ad.reviewid does not exist at character 2182
+2024-11-29 02:30:56.418 EET [16496] HINT:  Perhaps you meant to reference the column "ad.review_id".
+2024-11-29 02:30:56.418 EET [16496] STATEMENT:  
+	            SELECT 
+	                v.reportId AS id, 
+	                v.date_added,
+	                v.title, 
+	                v.report_description,
+	                v.last_updated,
+	                ad.review_comments,
+	                a.artifactType,
+	                a.developer, 
+	                a.deployer, 
+	                a.artifactId, 
+	                r.reporterId,
+	                r.name AS reporterName,
+	                r.email AS reporterEmail,
+	                r.organization AS reporterOrganization,
+	                r.role AS reporterRole, 
+	                p.phase,
+	                p.phase_description AS phaseDescription,
+	                array_agg(DISTINCT an.attributeName) AS attributes,
+	                attr.attr_description AS attr_Description,
+	                eff.effectName AS effect,
+	                eff.eff_description AS eff_Description,
+	                array_agg(DISTINCT att.attachments) AS attachments,
+	                array_agg(DISTINCT att.filename) AS attachmentFilenames,
+	                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
+	            FROM 
+	                Vul_report v
+	            JOIN 
+	                Artifact a ON v.reportId = a.reportId
+	            JOIN 
+	                Reporter r ON v.reporterId = r.reporterId
+	            JOIN 
+	                Vul_phase p ON v.reportId = p.reportId
+	            JOIN
+	                Admin_review ad ON v.reportId = ad.reportId
+	            LEFT JOIN 
+	                All_attributes aa ON p.phId = aa.attributeTypeId
+	            LEFT JOIN 
+	                Attribute_names an ON aa.attributeId = an.attributeId
+	            LEFT JOIN 
+	                Attribute attr ON p.phId = attr.phId
+	            LEFT JOIN 
+	                Effect eff ON p.phId = eff.phId
+	            LEFT JOIN 
+	                Attachments att ON a.artifactId = att.artifactId
+	            WHERE 
+	                v.reportId = $1
+	            GROUP BY 
+	                -- v.reportId, a.artifactType, a.developer, a.deployer, a.artifactId, r.reporterId, r.name, r.email, r.organization, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	                v.reportId, a.artifactId, r.reporterId, ad.reviewId, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	        
+2024-11-29 02:45:27.927 EET [12272] ERROR:  syntax error at or near "history" at character 1
+2024-11-29 02:45:27.927 EET [12272] STATEMENT:  history
+	SELECT                 v.reportId AS id,                 v.date_added,                v.title,                 v.report_description,                v.last_updated,                ad.review_comments,                a.artifactType,                a.developer,                 a.deployer,                 a.artifactId,                 r.reporterId,                r.name AS reporterName,                r.email AS reporterEmail,                r.organization AS reporterOrganization,                r.role AS reporterRole,                 p.phase,                p.phase_description AS phaseDescription,                array_agg(DISTINCT an.attributeName) AS attributes,                attr.attr_description AS attr_Description,                eff.effectName AS effect,                eff.eff_description AS eff_Description,                array_agg(DISTINCT att.attachments) AS attachments,                array_agg(DISTINCT att.filename) AS attachmentFilenames,                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes            FROM                 Vul_report v            JOIN                 Artifact a ON v.reportId = a.reportId            JOIN                 Reporter r ON v.reporterId = r.reporterId            JOIN                 Vul_phase p ON v.reportId = p.reportId            LEFT JOIN                Admin_review ad ON v.reportId = ad.reportId            LEFT JOIN                 All_attributes aa ON p.phId = aa.attributeTypeId            LEFT JOIN                 Attribute_names an ON aa.attributeId = an.attributeId            LEFT JOIN                 Attribute attr ON p.phId = attr.phId            LEFT JOIN                 Effect eff ON p.phId = eff.phId            LEFT JOIN                 Attachments att ON a.artifactId = att.artifactId            WHERE                 v.            GROUP BY 
+	SELECT                 v.reportId AS id,                 v.date_added,                v.title,                 v.report_description,                v.last_updated,                ad.review_comments,                a.artifactType,                a.developer,                 a.deployer,                 a.artifactId,                 r.reporterId,                r.name AS reporterName,                r.email AS reporterEmail,                r.organization AS reporterOrganization,                r.role AS reporterRole,                 p.phase,                p.phase_description AS phaseDescription,                array_agg(DISTINCT an.attributeName) AS attributes,                attr.attr_description AS attr_Description,                eff.effectName AS effect,                eff.eff_description AS eff_Description,                array_agg(DISTINCT att.attachments) AS attachments,                array_agg(DISTINCT att.filename) AS attachmentFilenames,                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes            FROM                 Vul_report v            JOIN                 Artifact a ON v.reportId = a.reportId            JOIN                 Reporter r ON v.reporterId = r.reporterId            JOIN                 Vul_phase p ON v.reportId = p.reportId            LEFT JOIN                Admin_review ad ON v.reportId = ad.reportId            LEFT JOIN                 All_attributes aa ON p.phId = aa.attributeTypeId            LEFT JOIN                 Attribute_names an ON aa.attributeId = an.attributeId            LEFT JOIN                 Attribute attr ON p.phId = attr.phId            LEFT JOIN                 Effect eff ON p.phId = eff.phId            LEFT JOIN                 Attachments att ON a.artifactId = att.artifactId            WHERE                     GROUP BY 
+	SELECT                 v.reportId AS id,                 v.date_added,                v.title,                 v.report_description,                v.last_updated,                ad.review_comments,                a.artifactType,                a.developer,                 a.deployer,                 a.artifactId,                 r.reporterId,                r.name AS reporterName,                r.email AS reporterEmail,                r.organization AS reporterOrganization,                r.role AS reporterRole,                 p.phase,                p.phase_description AS phaseDescription,                array_agg(DISTINCT an.attributeName) AS attributes,                attr.attr_description AS attr_Description,                eff.effectName AS effect,                eff.eff_description AS eff_Description,                array_agg(DISTINCT att.attachments) AS attachments,                array_agg(DISTINCT att.filename) AS attachmentFilenames,                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes            FROM                 Vul_report v            JOIN                 Artifact a ON v.reportId = a.reportId            JOIN                 Reporter r ON v.reporterId = r.reporterId            JOIN                 Vul_phase p ON v.reportId = p.reportId            LEFT JOIN                Admin_review ad ON v.reportId = ad.reportId            LEFT JOIN                 All_attributes aa ON p.phId = aa.attributeTypeId            LEFT JOIN                 Attribute_names an ON aa.attributeId = an.attributeId            LEFT JOIN                 Attribute attr ON p.phId = attr.phId            LEFT JOIN                 Effect eff ON p.phId = eff.phId            LEFT JOIN                 Attachments att ON a.artifactId = att.artifactId                                GROUP BY 
+	SELECT                 v.reportId AS id,                 v.date_added,                v.title,                 v.report_description,                v.last_updated,                ad.review_comments,                a.artifactType,                a.developer,                 a.deployer,                 a.artifactId,                 r.reporterId,                r.name AS reporterName,                r.email AS reporterEmail,                r.organization AS reporterOrganization,                r.role AS reporterRole,                 p.phase,                p.phase_description AS phaseDescription,                array_agg(DISTINCT an.attributeName) AS attributes,                attr.attr_description AS attr_Description,                eff.effectName AS effect,                eff.eff_description AS eff_Description,                array_agg(DISTINCT att.attachments) AS attachments,                array_agg(DISTINCT att.filename) AS attachmentFilenames,                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes            FROM                 Vul_report v            JOIN                 Artifact a ON v.reportId = a.reportId            JOIN                 Reporter r ON v.reporterId = r.reporterId            JOIN                 Vul_phase p ON v.reportId = p.reportId            LEFT JOIN                Admin_review ad ON v.reportId = ad.reportId            LEFT JOIN                 All_attributes aa ON p.phId = aa.attributeTypeId            LEFT JOIN                 Attribute_names an ON aa.attributeId = an.attributeId            LEFT JOIN                 Attribute attr ON p.phId = attr.phId            LEFT JOIN                 Effect eff ON p.phId = eff.phId            LEFT JOIN                 Attachments att ON a.artifactId = att.artifactId                                GROUP BY v.reportId, a.artifactId, r.reporterId, ad.review_id, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description;
+2024-11-29 02:54:13.140 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 02:54:14.168 EET [13252] LOG:  checkpoint complete: wrote 10 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.975 s, sync=0.018 s, total=1.029 s; sync files=9, longest=0.011 s, average=0.002 s; distance=3 kB, estimate=3 kB; lsn=0/1BBC320, redo lsn=0/1BBC2C8
+2024-11-29 02:59:13.192 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 02:59:14.171 EET [13252] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.862 s, sync=0.057 s, total=0.980 s; sync files=7, longest=0.051 s, average=0.009 s; distance=3 kB, estimate=3 kB; lsn=0/1BBD310, redo lsn=0/1BBD2B8
+2024-11-29 03:04:13.236 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 03:04:13.631 EET [13252] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.197 s, sync=0.039 s, total=0.396 s; sync files=2, longest=0.038 s, average=0.020 s; distance=3 kB, estimate=3 kB; lsn=0/1BBE2B0, redo lsn=0/1BBE258
+2024-11-29 03:09:13.633 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 03:09:14.205 EET [13252] LOG:  checkpoint complete: wrote 5 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.510 s, sync=0.026 s, total=0.573 s; sync files=5, longest=0.016 s, average=0.006 s; distance=4 kB, estimate=4 kB; lsn=0/1BBF5D8, redo lsn=0/1BBF580
+2024-11-29 03:09:47.003 EET [3028] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-29 03:14:13.205 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 03:14:13.712 EET [13252] LOG:  checkpoint complete: wrote 5 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.453 s, sync=0.014 s, total=0.507 s; sync files=5, longest=0.010 s, average=0.003 s; distance=6 kB, estimate=6 kB; lsn=0/1BC0EB8, redo lsn=0/1BC0E60
+2024-11-29 03:19:13.716 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 03:19:14.329 EET [13252] LOG:  checkpoint complete: wrote 5 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.532 s, sync=0.052 s, total=0.614 s; sync files=5, longest=0.021 s, average=0.011 s; distance=6 kB, estimate=6 kB; lsn=0/1BC2968, redo lsn=0/1BC2910
+2024-11-29 03:22:12.230 EET [24004] ERROR:  column "review_comments" of relation "vul_report" does not exist at character 23
+2024-11-29 03:22:12.230 EET [24004] STATEMENT:  UPDATE Vul_report SET review_comments = $1 WHERE reportId = $2
+2024-11-29 03:24:13.327 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 03:24:14.002 EET [13252] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.593 s, sync=0.050 s, total=0.675 s; sync files=6, longest=0.036 s, average=0.009 s; distance=8 kB, estimate=8 kB; lsn=0/1BC4B20, redo lsn=0/1BC4A90
+2024-11-29 03:29:13.010 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 03:29:15.054 EET [13252] LOG:  checkpoint complete: wrote 18 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.893 s, sync=0.025 s, total=2.044 s; sync files=15, longest=0.011 s, average=0.002 s; distance=77 kB, estimate=77 kB; lsn=0/1BD8218, redo lsn=0/1BD8188
+2024-11-29 03:34:13.048 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 03:34:14.252 EET [13252] LOG:  checkpoint complete: wrote 11 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.137 s, sync=0.027 s, total=1.204 s; sync files=10, longest=0.012 s, average=0.003 s; distance=22 kB, estimate=72 kB; lsn=0/1BDDCB0, redo lsn=0/1BDDC58
+2024-11-29 03:49:13.267 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 03:49:14.078 EET [13252] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.766 s, sync=0.018 s, total=0.811 s; sync files=8, longest=0.011 s, average=0.003 s; distance=9 kB, estimate=65 kB; lsn=0/1BE0240, redo lsn=0/1BE01E8
+2024-11-29 03:50:15.949 EET [1380] ERROR:  column "review_comments" of relation "vul_report" does not exist at character 23
+2024-11-29 03:50:15.949 EET [1380] STATEMENT:  UPDATE Vul_report SET review_comments = $1 WHERE reportId = $2
+2024-11-29 03:54:13.100 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 03:54:13.895 EET [13252] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.660 s, sync=0.016 s, total=0.796 s; sync files=6, longest=0.011 s, average=0.003 s; distance=10 kB, estimate=60 kB; lsn=0/1BE2C50, redo lsn=0/1BE2BF8
+2024-11-29 04:04:13.917 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 04:04:14.694 EET [13252] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.678 s, sync=0.019 s, total=0.777 s; sync files=6, longest=0.010 s, average=0.004 s; distance=4 kB, estimate=54 kB; lsn=0/1BE3F40, redo lsn=0/1BE3EE8
+2024-11-29 04:19:13.726 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 04:19:14.305 EET [13252] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.537 s, sync=0.018 s, total=0.580 s; sync files=6, longest=0.012 s, average=0.003 s; distance=6 kB, estimate=50 kB; lsn=0/1BE5910, redo lsn=0/1BE58B8
+2024-11-29 04:29:06.763 EET [23704] ERROR:  syntax error at or near "LEFT" at character 1565
+2024-11-29 04:29:06.763 EET [23704] STATEMENT:  
+	            SELECT 
+	                v.reportId AS id, 
+	                v.date_added,
+	                v.title, 
+	                v.report_description,
+	                v.last_updated,
+	                v.approval_status,
+	                array_agg(DISTINCT ad.review_comments) AS review_comments, 
+	                a.artifactType,
+	                a.developer, 
+	                a.deployer, 
+	                a.artifactId, 
+	                r.reporterId,
+	                r.name AS reporterName,
+	                r.email AS reporterEmail,
+	                r.organization AS reporterOrganization,
+	                r.role AS reporterRole, 
+	                p.phase,
+	                p.phase_description AS phaseDescription,
+	                array_agg(DISTINCT an.attributeName) AS attributes,
+	                attr.attr_description AS attr_Description,
+	                eff.effectName AS effect,
+	                eff.eff_description AS eff_Description,
+	                array_agg(DISTINCT att.attachments) AS attachments,
+	                array_agg(DISTINCT att.filename) AS attachmentFilenames,
+	                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
+	            FROM 
+	                Vul_report v
+	            JOIN 
+	                Artifact a ON v.reportId = a.reportId
+	            JOIN 
+	                Reporter r ON v.reporterId = r.reporterId
+	            JOIN 
+	                Vul_phase p ON v.reportId = p.reportId
+	            LEFT JOIN
+	                Admin_review ad ON v.reportId = ad.reportId
+	            ORDER BY 
+	                ad.review_date DESC
+	            LEFT JOIN 
+	                All_attributes aa ON p.phId = aa.attributeTypeId
+	            LEFT JOIN 
+	                Attribute_names an ON aa.attributeId = an.attributeId
+	            LEFT JOIN 
+	                Attribute attr ON p.phId = attr.phId
+	            LEFT JOIN 
+	                Effect eff ON p.phId = eff.phId
+	            LEFT JOIN 
+	                Attachments att ON a.artifactId = att.artifactId
+	            WHERE 
+	                v.reportId = $1
+	            GROUP BY 
+	                -- v.reportId, a.artifactType, a.developer, a.deployer, a.artifactId, r.reporterId, r.name, r.email, r.organization, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	                v.reportId, a.artifactId, r.reporterId, ad.review_id, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	        
+2024-11-29 04:29:13.323 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 04:29:14.003 EET [13252] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.593 s, sync=0.023 s, total=0.680 s; sync files=6, longest=0.011 s, average=0.004 s; distance=7 kB, estimate=45 kB; lsn=0/1BE7758, redo lsn=0/1BE7700
+2024-11-29 04:30:43.861 EET [17512] ERROR:  syntax error at or near "WHERE" at character 2013
+2024-11-29 04:30:43.861 EET [17512] STATEMENT:  
+	            SELECT 
+	                v.reportId AS id, 
+	                v.date_added,
+	                v.title, 
+	                v.report_description,
+	                v.last_updated,
+	                v.approval_status,
+	                array_agg(DISTINCT ad.review_comments) AS review_comments, 
+	                ad.review_date,
+	                a.artifactType,
+	                a.developer, 
+	                a.deployer, 
+	                a.artifactId, 
+	                r.reporterId,
+	                r.name AS reporterName,
+	                r.email AS reporterEmail,
+	                r.organization AS reporterOrganization,
+	                r.role AS reporterRole, 
+	                p.phase,
+	                p.phase_description AS phaseDescription,
+	                array_agg(DISTINCT an.attributeName) AS attributes,
+	                attr.attr_description AS attr_Description,
+	                eff.effectName AS effect,
+	                eff.eff_description AS eff_Description,
+	                array_agg(DISTINCT att.attachments) AS attachments,
+	                array_agg(DISTINCT att.filename) AS attachmentFilenames,
+	                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
+	            FROM 
+	                Vul_report v
+	            JOIN 
+	                Artifact a ON v.reportId = a.reportId
+	            JOIN 
+	                Reporter r ON v.reporterId = r.reporterId
+	            JOIN 
+	                Vul_phase p ON v.reportId = p.reportId
+	            LEFT JOIN
+	                Admin_review ad ON v.reportId = ad.reportId
+	            LEFT JOIN 
+	                All_attributes aa ON p.phId = aa.attributeTypeId
+	            LEFT JOIN 
+	                Attribute_names an ON aa.attributeId = an.attributeId
+	            LEFT JOIN 
+	                Attribute attr ON p.phId = attr.phId
+	            LEFT JOIN 
+	                Effect eff ON p.phId = eff.phId
+	            LEFT JOIN 
+	                Attachments att ON a.artifactId = att.artifactId
+	            ORDER BY 
+	                ad.review_date DESC
+	            WHERE 
+	                v.reportId = $1
+	            GROUP BY 
+	                -- v.reportId, a.artifactType, a.developer, a.deployer, a.artifactId, r.reporterId, r.name, r.email, r.organization, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	                v.reportId, a.artifactId, r.reporterId, ad.review_id, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	        
+2024-11-29 04:31:34.325 EET [16476] ERROR:  syntax error at or near "WHERE" at character 2033
+2024-11-29 04:31:34.325 EET [16476] STATEMENT:  
+	            SELECT 
+	                v.reportId AS id, 
+	                v.date_added,
+	                v.title, 
+	                v.report_description,
+	                v.last_updated,
+	                v.approval_status,
+	                array_agg(DISTINCT ad.review_comments) AS review_comments, 
+	                ad.review_date,
+	                a.artifactType,
+	                a.developer, 
+	                a.deployer, 
+	                a.artifactId, 
+	                r.reporterId,
+	                r.name AS reporterName,
+	                r.email AS reporterEmail,
+	                r.organization AS reporterOrganization,
+	                r.role AS reporterRole, 
+	                p.phase,
+	                p.phase_description AS phaseDescription,
+	                array_agg(DISTINCT an.attributeName) AS attributes,
+	                attr.attr_description AS attr_Description,
+	                eff.effectName AS effect,
+	                eff.eff_description AS eff_Description,
+	                array_agg(DISTINCT att.attachments) AS attachments,
+	                array_agg(DISTINCT att.filename) AS attachmentFilenames,
+	                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
+	            FROM 
+	                Vul_report v
+	            JOIN 
+	                Artifact a ON v.reportId = a.reportId
+	            JOIN 
+	                Reporter r ON v.reporterId = r.reporterId
+	            JOIN 
+	                Vul_phase p ON v.reportId = p.reportId
+	            LEFT JOIN
+	                Admin_review ad ON v.reportId = ad.reportId
+	            LEFT JOIN 
+	                All_attributes aa ON p.phId = aa.attributeTypeId
+	            LEFT JOIN 
+	                Attribute_names an ON aa.attributeId = an.attributeId
+	            LEFT JOIN 
+	                Attribute attr ON p.phId = attr.phId
+	            LEFT JOIN 
+	                Effect eff ON p.phId = eff.phId
+	            LEFT JOIN 
+	                Attachments att ON a.artifactId = att.artifactId
+	            ORDER BY 
+	                ad.review_date DESC
+	            LIMIT 1
+	            WHERE 
+	                v.reportId = $1
+	            GROUP BY 
+	                -- v.reportId, a.artifactType, a.developer, a.deployer, a.artifactId, r.reporterId, r.name, r.email, r.organization, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	                v.reportId, a.artifactId, r.reporterId, ad.review_id, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
+	        
+2024-11-29 04:33:20.105 EET [24192] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2024-11-29 04:54:13.163 EET [13252] LOG:  checkpoint starting: time
+2024-11-29 04:54:13.770 EET [13252] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.554 s, sync=0.019 s, total=0.608 s; sync files=6, longest=0.010 s, average=0.004 s; distance=9 kB, estimate=42 kB; lsn=0/1BE9BE0, redo lsn=0/1BE9B88

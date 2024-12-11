@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 
 import Container from "@mui/material/Container";
 import Icon from "@mui/material/Icon";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
+import DownloadIcon from "@mui/icons-material/Download";
 
 import MKBox from "components/MKBox";
 import MKTypography from "components/MKTypography";
+import MKInput from "components/MKInput";
 import MKButton from "components/MKButton";
-import DownloadIcon from "@mui/icons-material/Download";
 
 import NavbarDark from "layouts/sections/navigation/navbars/components/NavbarDark";
 import DefaultFooter from "examples/Footers/DefaultFooter";
@@ -20,11 +21,17 @@ import FilledInfoCard from "examples/Cards/InfoCards/FilledInfoCard";
 
 import footerRoutes from "footer.routes";
 
-function Vulnerability() {
-  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+function ReviewData() {
+  const { user, loginWithRedirect, logout, isAuthenticated } = useAuth0();
+  const [review_comments, setReview_comments] = useState("");
+  // const [approval_status, setApproval_status] = useState("");
+  const [comments, setComments] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [vulnerability, setVulnerability] = useState([]);
+  const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const MAX_LINES = 2;
   const MAX_CHARACTERS_PER_LINE = 50;
@@ -46,26 +53,123 @@ function Vulnerability() {
       .catch((error) => console.error("Error deleting report:", error));
   };
 
+  const handleApprove = (reportId) => {
+    const approval_status = "approved";
+
+    const data = { approval_status, review_comments, sub: user.sub };
+
+    axios
+      .put(`http://localhost:5000/api/vulnerability-db/${reportId}/review`, data, {
+        params: { sub: user.sub },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        console.log(response.data.message);
+        alert("Report approved successfully!");
+        setReview_comments("");
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error("Error approving report: ", error);
+        alert("Failed to approve the report.");
+      });
+  };
+
+  const handleReject = (reportId) => {
+    const approval_status = "rejected";
+
+    const data = { approval_status, review_comments, sub: user.sub };
+
+    axios
+      .put(`http://localhost:5000/api/vulnerability-db/${reportId}/review`, data, {
+        params: { sub: user.sub },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        console.log(response.data.message);
+        alert("Report rejected successfully!");
+        setReview_comments("");
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error("Error approving report: ", error);
+        alert("Failed to reject the report.");
+      });
+  };
+
   const toggleExpandText = () => {
     setIsExpanded((prev) => !prev);
   };
 
   useEffect(() => {
-    const url = `http://localhost:5000/api/vulnerability-db/${id}`;
+    const fetchUserRole = async () => {
+      try {
+        // Replace with the endpoint that fetches the user's role
+        const response = await axios.get(`http://localhost:5000/api/auth/current-user`, {
+          params: { sub: user.sub },
+          // headers: {
+          //   Authorization: `Bearer ${user.sub}`, // Replace with the actual token if needed
+          // },
+        });
+        console.log("User role response:", response.data);
+        const { role } = response.data;
 
-    axios
-      .get(url)
-      .then((response) => {
-        // console.log("Response: ", response.status);
-        return response.data;
-      })
-      .then((data) => {
-        console.log("JSON response:", data);
-        setVulnerability(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching vulnerability:", error);
-      });
+        setUserRole(role);
+
+        if (role !== "admin") {
+          alert("You are not authorized to access this page.");
+          navigate(`/vulnerability-db/${id}`);
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        navigate(`/vulnerability-db/${id}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isAuthenticated && user) {
+      fetchUserRole();
+    } else {
+      loginWithRedirect();
+    }
+  }, [id, isAuthenticated, user, navigate, loginWithRedirect]);
+
+  useEffect(() => {
+    if (userRole === "admin") {
+      const url = `http://localhost:5000/api/vulnerability-db/${id}`;
+
+      axios
+        .get(url)
+        .then((response) => response.data)
+        .then((data) => {
+          console.log("JSON response:", data);
+          setVulnerability(data);
+          setReview_comments(data.review_comments || "");
+        })
+        .catch((error) => {
+          console.error("Error fetching vulnerability:", error);
+        });
+    }
+  }, [id, userRole]);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/vulnerability-db/${id}/comments`
+        );
+        setComments(response.data); // Store comments in state
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+
+    fetchComments();
   }, [id]);
 
   const getTruncatedDescription = (description) => {
@@ -97,6 +201,14 @@ function Vulnerability() {
       })
       .catch((error) => console.error("Error downloading the file:", error));
   };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!isAuthenticated || userRole !== "admin") {
+    return <p>You are not authorized to view this page.</p>;
+  }
 
   return (
     <>
@@ -347,13 +459,65 @@ function Vulnerability() {
             </MKBox>
           </Grid>
         </Grid>
+        <Grid sx={{ mt: 2 }}>
+          <MKTypography variant="h6">Previous Comments:</MKTypography>
+          {comments.length > 0 ? (
+            <MKBox>
+              {comments.map((comment, index) => (
+                <MKBox key={index} sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 4 }}>
+                  <MKTypography variant="body1">{comment.review_comments}</MKTypography>
+                  <MKTypography variant="caption" color="textSecondary">
+                    By Admin {comment.adminId} on {new Date(comment.review_date).toLocaleString()}
+                  </MKTypography>
+                </MKBox>
+              ))}
+            </MKBox>
+          ) : (
+            <MKTypography variant="body2" color="textSecondary">
+              No comments yet.
+            </MKTypography>
+          )}
+        </Grid>
+        <Grid sx={{ mt: 2 }}>
+          <MKInput
+            fullWidth
+            label="Review comments"
+            id="review_comments"
+            multiline
+            rows={5}
+            value={review_comments}
+            onChange={(e) => setReview_comments(e.target.value)}
+          />
+        </Grid>
         <Grid
           container
           spacing={2}
           justifyContent="flex-end"
           alignItems="center"
-          sx={{ textAlign: "center" }}
+          sx={{ textAlign: "center", mt: 3 }}
         >
+          <Grid item>
+            <MKButton
+              onClick={() => handleApprove(id)}
+              sx={{
+                padding: 2,
+                textAlign: "center",
+              }}
+            >
+              Approve
+            </MKButton>
+          </Grid>
+          <Grid item>
+            <MKButton
+              onClick={() => handleReject(id)}
+              sx={{
+                padding: 2,
+                textAlign: "center",
+              }}
+            >
+              Reject
+            </MKButton>
+          </Grid>
           <Grid item>
             <MKButton
               component={Link}
@@ -363,7 +527,7 @@ function Vulnerability() {
                 textAlign: "center",
               }}
             >
-              Edit Details
+              Edit
             </MKButton>
           </Grid>
           <Grid item>
@@ -374,7 +538,7 @@ function Vulnerability() {
                 textAlign: "center",
               }}
             >
-              Delete Entry
+              Delete
             </MKButton>
           </Grid>
         </Grid>
@@ -386,4 +550,4 @@ function Vulnerability() {
   );
 }
 
-export default Vulnerability;
+export default ReviewData;

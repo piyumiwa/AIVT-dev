@@ -31,7 +31,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import AboutUs from "layouts/pages/landing-pages/about-us";
 import ContactUs from "layouts/pages/landing-pages/contact-us";
 import Author from "layouts/pages/landing-pages/author";
-import SignIn from "layouts/pages/authentication/sign-in";
+// import SignUp from "pages/LandingPages/SignUp";
 import ReportData from "layouts/pages/landing-pages/report-data";
 import VulnerabilityDb from "layouts/pages/landing-pages/vulnerability-db";
 import Vulnerability from "pages/LandingPages/Vulnerability";
@@ -85,16 +85,16 @@ const routes = [
           },
         ],
       },
-      {
-        name: "account",
-        collapse: [
-          {
-            name: "sign in",
-            route: "/authentication/sign-in",
-            component: <SignIn />,
-          },
-        ],
-      },
+      // {
+      //   name: "account",
+      //   collapse: [
+      //     {
+      //       name: "sign in",
+      //       route: "/authentication/sign-up",
+      //       component: <SignUp />,
+      //     },
+      //   ],
+      // },
       {
         name: "report",
         collapse: [
