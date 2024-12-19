@@ -1,5 +1,7 @@
 # AIVT-test
 
+## Installing PostgreSQL in local PC
+
 Here's the guide to launch the pgAdmin DB in your PC. 
 
 1. Install `postgreSQL` in local PC using [this tutorial.](https://www.geeksforgeeks.org/postgresql-installing-postgresql-without-admin-rights-on-windows/)
@@ -36,3 +38,31 @@ CREATE TABLE Reporter (
 ```
 
 The `email` and the `reporterId` has been extracted from the `auth0` database now. 
+
+## Installing PostgreSQL in ubuntu server
+
+1. Install PostgreSQL. ([PostgreSQL's official website](https://www.postgresql.org/download/))
+2. Upon completion of the installation, use below command to start the `postgresql` server.
+    ```cli
+    pg_ctl -D C:\Users\pweebadu23\Documents\postgresql\postgresql-17.0-1\pgsql\data -l logfile start
+    ```
+2. Open a terminal or command prompt and connect to PostgreSQL using the `psql` command. Replace `username` with your PostgreSQL username. Bydefault it's `postgres`.
+   ```sh
+   psql -U postgres
+   ```
+3. Execute the following SQL commands to create a new database.
+    ```sql
+    CREATE DATABASE aivtdb
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'English_United States.1252'
+    LC_CTYPE = 'English_United States.1252'
+    LOCALE_PROVIDER = 'libc'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;
+
+    -- Connect to the newly created database
+    \c aivtdb
+    ```
