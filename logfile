@@ -172,3 +172,12 @@
 	        
 2024-12-10 13:48:19.757 EET [30476] LOG:  checkpoint starting: time
 2024-12-10 13:48:20.326 EET [30476] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.549 s, sync=0.005 s, total=0.570 s; sync files=6, longest=0.002 s, average=0.001 s; distance=10 kB, estimate=10 kB; lsn=0/1BF62B0, redo lsn=0/1BF6258
+2024-12-12 13:38:03.516 EET [24072] LOG:  server process (PID 29840) was terminated by exception 0xC000013A
+2024-12-12 13:38:03.516 EET [24072] DETAIL:  Failed process was running: SELECT             vr.reportId AS id,             vr.title,             a.artifactType,             vr.date_added,            e.effectName,             vp.phase,             array_agg(DISTINCT an.attributeName) AS attributes,            vr.approval_status        FROM Vul_report vr        JOIN Artifact a ON vr.reportId = a.reportId        JOIN Vul_phase vp ON vr.reportId = vp.reportId        JOIN Effect e ON vp.phId = e.phId        LEFT JOIN Attribute at ON vp.phId = at.phId        LEFT JOIN All_attributes aa ON at.attributeTypeId = aa.attributeTypeId        LEFT JOIN Attribute_names an ON aa.attributeId = an.attributeId        WHERE vr.approval_status = 'pending' GROUP BY             vr.reportId,             vr.title,             a.artifactType,             vr.date_added,             e.effectName,             vp.phase,            vr.approval_status;
+2024-12-12 13:38:03.516 EET [24072] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-12-12 13:38:03.517 EET [24072] LOG:  terminating any other active server processes
+2024-12-12 13:38:03.541 EET [24072] LOG:  all server processes terminated; reinitializing
+2024-12-12 13:38:03.595 EET [24072] LOG:  startup process (PID 33480) was terminated by exception 0xC0000142
+2024-12-12 13:38:03.595 EET [24072] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2024-12-12 13:38:03.595 EET [24072] LOG:  aborting startup due to startup process failure
+2024-12-12 13:38:03.597 EET [24072] LOG:  database system is shut down
