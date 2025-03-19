@@ -1,6 +1,6 @@
 # AIVT-test
 
-## Installing PostgreSQL in local PC
+## Installing PostgreSQL in local Windows PC
 
 Here's the guide to launch the pgAdmin DB in your PC. 
 
