@@ -108,7 +108,7 @@ npm -v
 1. **Clone the AIVT Repository:**
 
    ```bash
-   git clone https://github.com/PiyumiUoR/AIVT.git
+   git clone https://github.com/PiyumiUoR/AIVT-dev.git
    cd AIVT/backend/
    ```
 
@@ -309,9 +309,22 @@ npm -v
    host    replication     all             ::1/128                 scram-sha-256
    ```
 
-5. **Set Up the Backend to Use the Database:**
+5. **Create the secret token value**
 
-   Edit the `.env` file with a secret token value. The steps are shown in [Create the secret token](#create-the-secret-token).
+   1. Type `node` in the terminal. 
+   2. Generate the token using 
+
+   ```cli
+   require('crypto').randomBytes(64).toString('hex')
+   ```
+
+   3. Create a new file called `.env` in the **backend** directory, if it's not already there, and create a new environment `JWT_SECRET`. 
+
+   4. Assign the generated key by copy and paste to the `JWY_SECRET`. At the end, the `.env` file looks like below. 
+
+   ```txt
+   JWT_SECRET=the_generated_key
+   ```
 
 #### Step 7: Monitor and Manage Services
 
