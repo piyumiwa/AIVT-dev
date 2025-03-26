@@ -320,7 +320,7 @@ npm -v
 
    3. Create a new file called `.env` in the **backend** directory, if it's not already there, and create a new environment `JWT_SECRET`. 
 
-   4. Assign the generated key by copy and paste to the `JWY_SECRET`. At the end, the `.env` file looks like below. 
+   4. Assign the generated key by copy and paste to the `JWT_SECRET`. At the end, the `.env` file looks like below. 
 
    ```txt
    JWT_SECRET=the_generated_key
