@@ -123,7 +123,7 @@ npm -v
    Install PM2 globally:
 
    ```bash
-   sudo npm install -g pm2
+   sudo npm install -g pm2 nodemon
    ```
 
    Start the backend server using PM2:
@@ -233,7 +233,7 @@ npm -v
    Allow Nginx Full and any other necessary ports (e.g., for your backend):
 
    ```bash
-   sudo ufw allow openSSH
+   sudo ufw allow OpenSSH
    sudo ufw allow 'Nginx Full'
    sudo ufw allow 5000/tcp
    ```

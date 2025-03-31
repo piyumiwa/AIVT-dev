@@ -1,5 +1,4 @@
 require('dotenv').config();
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -8,7 +7,7 @@ const authRoutes = require('./routes/auth');
 // const { auth } = require('express-oauth2-jwt-bearer');
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
 app.use(cors({
   origin: 'http://localhost:3000',
