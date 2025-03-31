@@ -233,6 +233,7 @@ npm -v
    Allow Nginx Full and any other necessary ports (e.g., for your backend):
 
    ```bash
+   sudo ufw allow openSSH
    sudo ufw allow 'Nginx Full'
    sudo ufw allow 5000/tcp
    ```
