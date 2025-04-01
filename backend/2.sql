@@ -117,3 +117,32 @@ CREATE TABLE Admin_review (
     FOREIGN KEY (reportId) REFERENCES Vul_report(reportId),
     FOREIGN KEY (adminId) REFERENCES Reporter(reporterId) 
 );
+
+CREATE TABLE Nvd_data (
+    nvd_id SERIAL PRIMARY KEY,
+    cve_id TEXT UNIQUE NOT NULL,  -- CVE ID from NVD
+    title VARCHAR(510),           -- CVE Title
+    cve_description TEXT,         -- Full Description
+    date_published TIMESTAMP,
+    date_updated TIMESTAMP,
+    cve_link VARCHAR(255),
+    phId INTEGER,                 -- Phase of the vulnerability
+    FOREIGN KEY (phId) REFERENCES Vul_phase(phId)
+);
+
+CREATE TABLE Nvd_Effect (
+    nvd_id INTEGER,
+    effectTypeId INTEGER,
+    FOREIGN KEY (nvd_id) REFERENCES Nvd_data(nvd_id),
+    FOREIGN KEY (effectTypeId) REFERENCES Effect(effectTypeId),
+    PRIMARY KEY (nvd_id, effectTypeId)
+);
+
+CREATE TABLE Nvd_Attribute (
+    nvd_id INTEGER,
+    attributeTypeId INTEGER,
+    FOREIGN KEY (nvd_id) REFERENCES Nvd_data(nvd_id),
+    FOREIGN KEY (attributeTypeId) REFERENCES Attribute(attributeTypeId),
+    PRIMARY KEY (nvd_id, attributeTypeId)
+);
+
