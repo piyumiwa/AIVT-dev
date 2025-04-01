@@ -239,7 +239,7 @@ function ReportData() {
                   </MKTypography> */}
                   <Grid item xs={12} md={6}>
                     <TextField
-                      disabled
+                      // disabled
                       variant="standard"
                       label="Name"
                       fullWidth
@@ -250,7 +250,7 @@ function ReportData() {
                   </Grid>
                   <Grid item xs={12} md={6}>
                     <TextField
-                      disabled
+                      // disabled
                       variant="standard"
                       label="Organization"
                       value={organization}
