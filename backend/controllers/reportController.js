@@ -129,19 +129,30 @@ exports.createReport = async (req, res) => {
             [reporterId]
         );
         
-         if (reporterQuery.rows.length === 0) {
-            // Insert new reporter if not found
-            reporterQuery = await client.query(
-                'INSERT INTO Reporter (reporterId, name, organization, email) VALUES ($1, $2, $3, $4) RETURNING reporterId',
-                [reporterId, name, organization, email]
-            );
-        } else {
-            // Update existing reporter details
-            await client.query(
-                'UPDATE Reporter SET name = $1, organization = $2 WHERE reporterId = $3',
-                [name, organization, reporterId]
-            );
+        //  if (reporterQuery.rows.length === 0) {
+        //     // Insert new reporter if not found
+        //     reporterQuery = await client.query(
+        //         'INSERT INTO Reporter (reporterId, name, organization, email) VALUES ($1, $2, $3, $4) RETURNING reporterId',
+        //         [reporterId, name, organization, email]
+        //     );
+        // } else {
+        //     // Update existing reporter details
+        //     await client.query(
+        //         'UPDATE Reporter SET name = $1, organization = $2 WHERE reporterId = $3',
+        //         [name, organization, reporterId]
+        //     );
+        // }
+
+        if (reporterQuery.rows.length === 0) {
+            return res.status(404).json({ error: 'Reporter not found' });
         }
+
+        // Update Reporter
+        await client.query (
+            // 'INSERT INTO Reporter (name, organization) VALUES ($1, $2) RETURNING reporterId',
+            'UPDATE Reporter SET name = $1, organization = $2 WHERE reporterId = $3', 
+            [name, organization, reporterId]
+        );
 
         // Insert into Vul_report
         const reportResult = await client.query(
