@@ -224,18 +224,19 @@ npm -v
 
 4. **Open Necessary Ports:**
 
-   Enable the firewall `ufw`.
-
-   ```bash
-   sudo ufw enable
-   ```
-
    Allow Nginx Full and any other necessary ports (e.g., for your backend):
 
    ```bash
    sudo ufw allow 'Nginx Full'
    sudo ufw allow 5000/tcp
+   sudo ufw allow 22/tcp
    ```
+
+   Enable the firewall `ufw`.
+
+   ```bash
+   sudo ufw enable
+   ```   
 
 #### Step 6: Install and Configure PostgreSQL
 
