@@ -153,17 +153,16 @@ function ReportData() {
       .then((response) => {
         console.log("Report created successfully:", response.data);
         setReportCreated(true);
+        if (reportCreated) {
+          handleClose();
+          navigate("/vulnerability-db");
+        }
         handleClose();
-        // navigate("/vulnerability-db");
+        navigate("/vulnerability-db");
       })
       .catch((error) => {
         console.error("Error creating report:", error);
       });
-
-    if (reportCreated) {
-      handleClose();
-      navigate("/vulnerability-db");
-    }
   };
 
   const handleAttributeChange = (event) => {

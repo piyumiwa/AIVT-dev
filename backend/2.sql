@@ -107,6 +107,16 @@ CREATE TABLE Effect (
     FOREIGN KEY (phId) REFERENCES Vul_phase(phId)
 );
 
+-- Create table Attachments
+CREATE TABLE Attachments (
+    infoId SERIAL PRIMARY KEY,
+    artifactId INTEGER,
+    attachments BYTEA,
+	filename TEXT,
+	mimeType TEXT,
+    FOREIGN KEY (artifactId) REFERENCES Artifact(artifactId)
+);
+
 -- Create table Admin_review
 CREATE TABLE Admin_review (
     review_id SERIAL PRIMARY KEY,
