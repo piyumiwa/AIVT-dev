@@ -331,8 +331,12 @@ npm -v
    Set the correct permissions:
 
    ```bash
-   sudo chown -R ubuntu:www-data /home/ubuntu/AIVT/frontend/build
-   sudo chmod -R 755 /home/ubuntu/AIVT/frontend/build
+   sudo 
+   sudo chown -R ubuntu:www-data /home/ubuntu/AIVT-dev/frontend/build
+   sudo chmod -R 755 /home/ubuntu/AIVT-dev/frontend/build
+   sudo chmod -R 755 /home/ubuntu/AIVT-dev/frontend
+   sudo chmod +x /home/ubuntu
+   sudo chmod +x /home/ubuntu/AIVT-dev
    ```
 
    If any errors occur with permission, try adding user `www-data` to user group with below command.
