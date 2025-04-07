@@ -331,7 +331,6 @@ npm -v
    Set the correct permissions:
 
    ```bash
-   sudo 
    sudo chown -R ubuntu:www-data /home/ubuntu/AIVT-dev/frontend/build
    sudo chmod -R 755 /home/ubuntu/AIVT-dev/frontend/build
    sudo chmod -R 755 /home/ubuntu/AIVT-dev/frontend

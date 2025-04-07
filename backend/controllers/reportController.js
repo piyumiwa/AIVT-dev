@@ -558,20 +558,18 @@ exports.searchReports = async (req, res) => {
     }
   
     try {
+      console.log("Received query:", query);
       const result = await pool.query(`
         SELECT 
           v.reportId AS id, 
           v.title, 
           v.date_added,
-          a.artifactName,
           r.organization,
           p.phase,
           eff.effectName AS effect,
           array_agg(DISTINCT an.attributeName) AS attributes
         FROM 
           Vul_report v
-        JOIN 
-          Artifact a ON v.reportId = a.reportId
         JOIN 
           Reporter r ON v.reporterId = r.reporterId
         JOIN 
@@ -585,8 +583,7 @@ exports.searchReports = async (req, res) => {
         LEFT JOIN 
           Attribute_names an ON aa.attributeId = an.attributeId
         WHERE 
-          v.title ILIKE $1 
-          OR a.artifactName ILIKE $1 
+          v.title ILIKE $1
           OR r.organization ILIKE $1 
           OR p.phase::TEXT ILIKE $1
           OR eff.effectName::TEXT ILIKE $1
@@ -594,7 +591,6 @@ exports.searchReports = async (req, res) => {
           v.reportId, 
           v.title, 
           v.date_added,
-          a.artifactName,
           r.organization,
           p.phase,
           eff.effectName
