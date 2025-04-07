@@ -123,7 +123,7 @@ function UpdateData() {
       }
 
       try {
-        const response = await axios.get(`http://localhost:5000/api/vulnerability-db/${id}`);
+        const response = await axios.get(`https://86.50.228.33/api/vulnerability-db/${id}`);
         const vulnerability = response.data;
 
         if (vulnerability.reporterEmail === user.email) {
@@ -187,7 +187,7 @@ function UpdateData() {
     console.log("Form data: ", formData);
 
     axios
-      .put(`http://localhost:5000/api/vulnerability-db/${id}/edit`, formData, {
+      .put(`https://86.50.228.33/api/vulnerability-db/${id}/edit`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

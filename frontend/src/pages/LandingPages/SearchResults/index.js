@@ -2,6 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 // import * as React from "react";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
@@ -27,7 +28,7 @@ import bgImage from "assets/images/bg-db.jpg";
 
 const paginationModel = { page: 0, pageSize: 5 };
 
-function VulnerabilityDb() {
+function SearchResults() {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const [vulnerabilities, setVulnerabilities] = useState([]);
   const [phase, setPhase] = useState("");
@@ -35,12 +36,14 @@ function VulnerabilityDb() {
   const [effect, setEffect] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get("query");
+  
   useEffect(() => {
-    // const url = "/api/vulnerability-db";
-    // const url = "/api/test";
-    // const url = `https://86.50.228.33/api/vulnerability-db`;
-    const url = `https://86.50.228.33/api/vulnerability-db?approval_status=approved&phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
+    if (!searchQuery) return;
+
+    const url = `https://86.50.228.33/api/vulnerability-db/search?query=${encodeURIComponent(searchQuery)}&phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
 
     axios
       .get(url)
@@ -69,7 +72,7 @@ function VulnerabilityDb() {
       .catch((error) => {
         console.error("Error fetching vulnerabilities:", error);
       });
-  }, [phase, attribute, effect, startDate, endDate]);
+  }, [searchQuery, phase, attribute, effect, startDate, endDate]);
 
   const clearFilters = () => {
     setPhase("");
@@ -190,16 +193,10 @@ function VulnerabilityDb() {
                 },
               })}
             >
-              Vulnerability Database
+              Vulnerability Search Results
             </MKTypography>
             <MKTypography variant="body1" color="white" opacity={0.8} mt={1} mb={3}>
-              Welcome to the AIVT Vulnerability Database—your ultimate destination for navigating
-              the complex landscape of AI vulnerabilities. This comprehensive repository is
-              meticulously curated to empower developers, researchers, and security professionals
-              with the knowledge they need to identify, assess, and mitigate risks in AI and ML
-              systems. Whether you&apos;re looking to safeguard your technology or contribute to the
-              collective understanding of AI security, our database is your key resource for staying
-              ahead of emerging threats and ensuring the future of AI remains secure and reliable.
+              Results for your seach is shwown below. 
             </MKTypography>
           </Grid>
         </Container>
@@ -301,4 +298,4 @@ function VulnerabilityDb() {
   );
 }
 
-export default VulnerabilityDb;
+export default SearchResults;

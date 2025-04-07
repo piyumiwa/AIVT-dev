@@ -1,43 +1,58 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-// prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
 
 // react-router components
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
 import Container from "@mui/material/Container";
-// import Icon from "@mui/material/Icon";
-// import Popper from "@mui/material/Popper";
-// import Grow from "@mui/material/Grow";
-// import Grid from "@mui/material/Grid";
-// import Divider from "@mui/material/Divider";
-// import MuiLink from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
 
 // Material Kit 2 React components
 import MKBox from "components/MKBox";
 import MKTypography from "components/MKTypography";
 import MKButton from "components/MKButton";
-// import InputIcon from "layouts/sections/input-areas/inputs/components/InputIcon";
-
-// Material Kit 2 React example components
-// import DefaultNavbarDropdown from "examples/Navbars/DefaultNavbar/DefaultNavbarDropdown";
-// import DefaultNavbarMobile from "examples/Navbars/DefaultNavbar/DefaultNavbarMobile";
-
-// Material Kit 2 React base styles
-// import breakpoints from "assets/theme/base/breakpoints";
 
 function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) {
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const handleAuthClick = async () => {
     if (isAuthenticated) {
       logout({ returnTo: window.location.origin });
     } else {
       await loginWithRedirect();
+    }
+  };
+
+  const handleSearchChange = async (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    if (value.length > 0) {
+      try {
+        const response = await axios.get(`https://86.50.228.33/api/vulnerability-db/search`, {
+          params: { query: value },
+        });
+        console.log("Search API Response:", response.data);
+        setSearchResults(response.data);
+      } catch (error) {
+        console.error("Error fetching search results:", error?.response?.data || error.message);
+        setSearchResults([]);
+      }
+    } else {
+      setSearchResults([]);
     }
   };
 
@@ -48,7 +63,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
         const email = user.email;
 
         try {
-          const response = await axios.post("http://localhost:5000/api/auth/newaccount", {
+          const response = await axios.post("https://86.50.228.33/api/auth/newaccount", {
             reporterId,
             email,
           });
@@ -100,13 +115,97 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
               {brand}
             </MKTypography>
           </MKBox>
-          {/* <MKBox sx={{ width: "80%" }}>
-            <InputIcon />
-          </MKBox> */}
+
+          {/* Search Input */}
+          <MKBox
+            sx={{
+              position: "relative",
+              flexGrow: 1,
+              maxWidth: 400,
+              mx: 2,
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+            }}
+          >
+            <TextField
+              fullWidth
+              variant="outlined"
+              size="small"
+              placeholder="Search vulnerabilities..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSearchChange({ target: { value: searchQuery } });
+                  navigate(`/api/search-results`)
+                }
+              }}
+              sx={{
+                input: { color: "white" },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "white",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "white",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "white",
+                  },
+                },
+                "& .MuiInputAdornment-root": {
+                  color: "white",
+                },
+                "& .MuiInputBase-input::placeholder": {
+                  color: "white",
+                  opacity: 1,
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: "white", marginRight: 1 }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            {searchResults.length > 0 && (
+              <Paper
+                elevation={3}
+                sx={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  width: "100%",
+                  mt: 1,
+                  zIndex: 10,
+                  borderRadius: 2,
+                  p: 1,
+                  bgcolor: "white",
+                  maxHeight: 200,
+                  overflowY: "auto",
+                }}
+              >
+                <List>
+                  {searchResults.map((result) => (
+                    <ListItem
+                      key={result.id}
+                      ListItemButton
+                      onClick={() => navigate(`/api/vulnerability-db/${result.id}`)}
+                    >
+                      <ListItemText primary={result.title} secondary={result.date_added} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+            )}
+          </MKBox>
+
+          {/* Authentication Button */}
           <MKBox ml={{ xs: "auto", lg: 0 }}>
             <MKButton
               component={Link}
-              // to={action.route}
               variant={
                 action.color === "white" || action.color === "default" ? "contained" : "gradient"
               }
@@ -116,66 +215,9 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
             >
               {isAuthenticated ? "Logout" : "Sign in"}
             </MKButton>
-            {/* {isAuthenticated && user && (
-              <MKTypography variant="caption" color="dark" ml={2}>
-                Hello, {user.name}
-              </MKTypography>
-            )} */}
-            {/* (action.type === "internal" ? (
-                <MKButton
-                  component={Link}
-                  to={action.route}
-                  variant={
-                    action.color === "white" || action.color === "default"
-                      ? "contained"
-                      : "gradient"
-                  }
-                  color={action.color ? action.color : "info"}
-                  size="small"
-                >
-                  {action.label}
-                </MKButton>
-              ) : (
-                <MKButton
-                  component="a"
-                  href={action.route}
-                  target="_blank"
-                  rel="noreferrer"
-                  variant={
-                    action.color === "white" || action.color === "default"
-                      ? "contained"
-                      : "gradient"
-                  }
-                  color={action.color ? action.color : "info"}
-                  size="small"
-                >
-                  {action.label}
-                </MKButton>
-              )) */}
           </MKBox>
-          {/* <MKBox
-            display={{ xs: "inline-block", lg: "none" }}
-            lineHeight={0}
-            py={1.5}
-            pl={1.5}
-            color={transparent ? "white" : "inherit"}
-            sx={{ cursor: "pointer" }}
-            onClick={openMobileNavbar}
-          >
-            <Icon fontSize="default">{mobileNavbar ? "close" : "menu"}</Icon>
-          </MKBox>*/}
         </MKBox>
-        {/* <MKBox
-          bgColor={transparent ? "white" : "transparent"}
-          shadow={transparent ? "lg" : "none"}
-          borderRadius="xl"
-          px={transparent ? 2 : 0}
-        >
-          {mobileView && <DefaultNavbarMobile routes={routes} open={mobileNavbar} />}
-        </MKBox> */}
       </MKBox>
-      {/* {dropdownMenu}
-      {nestedDropdownMenu} */}
     </Container>
   );
 }

@@ -14,6 +14,7 @@ import UpdateData from "pages/LandingPages/UpdateData";
 import ReviewDb from "pages/LandingPages/ReviewDb";
 import ReviewData from "pages/LandingPages/ReviewData";
 import RejectedDb from "pages/LandingPages/RejectedDb";
+import SearchResults from "pages/LandingPages/SearchResults";
 
 export default function App() {
   const { pathname } = useLocation();
@@ -48,6 +49,9 @@ export default function App() {
           path="/vulnerability-db/:id/review"
           element={<ProtectedRouteReporter element={ReviewData} />}
         />
+        <Route 
+          path = "/search-results"/>
+          element={<SearchResults />}
         {/* <Route path="*" element={<Navigate to="/" />} /> */}
       </Routes>
     </ThemeProvider>
