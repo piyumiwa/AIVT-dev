@@ -39,11 +39,13 @@ function SearchResults() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get("query");
-  
+
   useEffect(() => {
     if (!searchQuery) return;
 
-    const url = `https://86.50.228.33/api/vulnerability-db/search?query=${encodeURIComponent(searchQuery)}&phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
+    const url = `https://86.50.228.33/api/vulnerability-db/search?query=${encodeURIComponent(
+      searchQuery
+    )}&phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
 
     axios
       .get(url)
@@ -58,9 +60,8 @@ function SearchResults() {
             id: vul.id,
             date_added: vul.date_added,
             title: vul.title,
-            artifact: vul.artifacttype,
             phase: vul.phase,
-            effects: vul.effectname,
+            effect: vul.effect,
             attributes: vul.attributes,
           }));
           setVulnerabilities(formattedRows);
@@ -109,19 +110,6 @@ function SearchResults() {
       ),
     },
     {
-      field: "artifact",
-      headerName: "Artifact",
-      width: 130,
-      renderCell: (params) => (
-        <a
-          href={`/vulnerability-db/${params.row.id}`}
-          style={{ textDecoration: "none", color: "inherit" }}
-        >
-          {params.value}
-        </a>
-      ),
-    },
-    {
       field: "phase",
       headerName: "Phase",
       width: 130,
@@ -135,8 +123,21 @@ function SearchResults() {
       ),
     },
     {
-      field: "effects",
-      headerName: "Effects",
+      field: "effect",
+      headerName: "Effect",
+      width: 130,
+      renderCell: (params) => (
+        <a
+          href={`/vulnerability-db/${params.row.id}`}
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          {params.value}
+        </a>
+      ),
+    },
+    {
+      field: "attributes",
+      headerName: "Attributes",
       width: 130,
       renderCell: (params) => (
         <a
@@ -196,7 +197,32 @@ function SearchResults() {
               Vulnerability Search Results
             </MKTypography>
             <MKTypography variant="body1" color="white" opacity={0.8} mt={1} mb={3}>
-              Results for your seach is shwown below. 
+              Results for your seach is shwon below. See all the vulnerabilities
+              <MKTypography
+                component="a"
+                href="/vulnerability-db"
+                // target="_blank"
+                rel="noreferrer"
+                variant="body2"
+                color="white"
+                fontWeight="regular"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+
+                  "& .material-icons-round": {
+                    fontSize: "1.125rem",
+                    transform: `translateX(3px)`,
+                    transition: "transform 0.2s cubic-bezier(0.34, 1.61, 0.7, 1.3)",
+                  },
+
+                  "&:hover .material-icons-round, &:focus .material-icons-round": {
+                    transform: `translateX(6px)`,
+                  },
+                }}
+              >
+                here.
+              </MKTypography>
             </MKTypography>
           </Grid>
         </Container>

@@ -583,10 +583,13 @@ exports.searchReports = async (req, res) => {
         LEFT JOIN 
           Attribute_names an ON aa.attributeId = an.attributeId
         WHERE 
-          v.title ILIKE $1
-          OR r.organization ILIKE $1 
-          OR p.phase::TEXT ILIKE $1
-          OR eff.effectName::TEXT ILIKE $1
+          v.approval_status = 'approved'
+          AND (
+            v.title ILIKE $1
+            OR r.organization ILIKE $1 
+            OR p.phase::TEXT ILIKE $1
+            OR eff.effectName::TEXT ILIKE $1
+          )
         GROUP BY 
           v.reportId, 
           v.title, 
