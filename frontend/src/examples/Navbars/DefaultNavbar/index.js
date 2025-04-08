@@ -56,6 +56,14 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
     }
   };
 
+  const handleSearchSubmit = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      setSearchResults([]);
+      navigate(`/search-results?query=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated && user) {
       const submitEmailIfNew = async () => {
@@ -133,13 +141,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
               placeholder="Search vulnerabilities..."
               value={searchQuery}
               onChange={handleSearchChange}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleSearchChange({ target: { value: searchQuery } });
-                  navigate(`/api/search-results`)
-                }
-              }}
+              onKeyDown={handleSearchSubmit}
               sx={{
                 input: { color: "white" },
                 "& .MuiOutlinedInput-root": {
@@ -168,6 +170,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
                   </InputAdornment>
                 ),
               }}
+              onBlur={() => setTimeout(() => setSearchResults([]), 150)}
             />
 
             {searchResults.length > 0 && (
@@ -192,7 +195,10 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
                     <ListItem
                       key={result.id}
                       ListItemButton
-                      onClick={() => navigate(`/api/vulnerability-db/${result.id}`)}
+                      onClick={() => {
+                        setSearchResults([]);
+                        navigate(`/vulnerability-db/${result.id}`);
+                      }}
                     >
                       <ListItemText primary={result.title} secondary={result.date_added} />
                     </ListItem>

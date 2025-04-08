@@ -49,9 +49,7 @@ export default function App() {
           path="/vulnerability-db/:id/review"
           element={<ProtectedRouteReporter element={ReviewData} />}
         />
-        <Route 
-          path = "/search-results"/>
-          element={<SearchResults />}
+        <Route path="/search-results" element={<SearchResults />} />
         {/* <Route path="*" element={<Navigate to="/" />} /> */}
       </Routes>
     </ThemeProvider>
