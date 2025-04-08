@@ -2,7 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 // import * as React from "react";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
@@ -31,7 +31,7 @@ const paginationModel = { page: 0, pageSize: 5 };
 function ReviewDb() {
   const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
   const [vulnerabilities, setVulnerabilities] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
   const [phase, setPhase] = useState("");
   const [attribute, setAttribute] = useState("");
@@ -39,13 +39,13 @@ function ReviewDb() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const navigate = useNavigate();
-  const { id } = useParams();
+  // const { id } = useParams();
 
   useEffect(() => {
     const fetchUserRole = async () => {
       try {
         // Replace with the endpoint that fetches the user's role
-        const response = await axios.get(`http://localhost:5000/api/auth/current-user`, {
+        const response = await axios.get(`https://86.50.228.33/api/auth/current-user`, {
           params: { sub: user.sub },
           // headers: {
           //   Authorization: `Bearer ${user.sub}`, // Replace with the actual token if needed
@@ -57,15 +57,17 @@ function ReviewDb() {
         setUserRole(role);
 
         if (role !== "admin") {
+          console.log("User role response:", response);
           alert("You are not authorized to access this page.");
           navigate(`/vulnerability-db`);
         }
       } catch (error) {
         console.error("Error fetching user role:", error);
         navigate(`/vulnerability-db`);
-      } finally {
-        setLoading(false);
       }
+      // finally {
+      //   setLoading(false);
+      // }
     };
 
     if (isAuthenticated && user) {
@@ -73,14 +75,14 @@ function ReviewDb() {
     } else {
       loginWithRedirect();
     }
-  }, [id, isAuthenticated, user, navigate, loginWithRedirect]);
+  }, [isAuthenticated, user, navigate, loginWithRedirect]);
 
   useEffect(() => {
     // const url = "/api/vulnerability-db";
     // const url = "/api/test";
-    // const url = `http://localhost:5000/api/vulnerability-db`;
+    // const url = `https://86.50.228.33/api/vulnerability-db`;
     if (userRole === "admin") {
-      const url = `http://localhost:5000/api/vulnerability-db/pending?phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
+      const url = `https://86.50.228.33/api/vulnerability-db/pending?phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
 
       axios
         .get(url)
@@ -187,9 +189,9 @@ function ReviewDb() {
     },
   ];
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  // if (loading) {
+  //   return <p>Loading...</p>;
+  // }
 
   return (
     <>

@@ -224,19 +224,20 @@ npm -v
 
 4. **Open Necessary Ports:**
 
-   Enable the firewall `ufw`.
-
-   ```bash
-   sudo ufw enable
-   ```
-
    Allow Nginx Full and any other necessary ports (e.g., for your backend):
 
    ```bash
    sudo ufw allow OpenSSH
    sudo ufw allow 'Nginx Full'
    sudo ufw allow 5000/tcp
+   sudo ufw allow 22/tcp
    ```
+
+   Enable the firewall `ufw`.
+
+   ```bash
+   sudo ufw enable
+   ```   
 
 #### Step 6: Install and Configure PostgreSQL
 
@@ -344,8 +345,11 @@ npm -v
    Set the correct permissions:
 
    ```bash
-   sudo chown -R ubuntu:www-data /home/ubuntu/AIVT/frontend/build
-   sudo chmod -R 755 /home/ubuntu/AIVT/frontend/build
+   sudo chown -R ubuntu:www-data /home/ubuntu/AIVT-dev/frontend/build
+   sudo chmod -R 755 /home/ubuntu/AIVT-dev/frontend/build
+   sudo chmod -R 755 /home/ubuntu/AIVT-dev/frontend
+   sudo chmod +x /home/ubuntu
+   sudo chmod +x /home/ubuntu/AIVT-dev
    ```
 
    If any errors occur with permission, try adding user `www-data` to user group with below command.

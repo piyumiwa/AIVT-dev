@@ -46,7 +46,7 @@ function ReviewData() {
 
   const handleDelete = (reportId) => {
     axios
-      .delete(`http://localhost:5000/api/vulnerability-db/${reportId}/delete`)
+      .delete(`https://86.50.228.33/api/vulnerability-db/${reportId}/delete`)
       .then((response) => {
         console.log("Deleted successfully:", response.data);
       })
@@ -59,7 +59,7 @@ function ReviewData() {
     const data = { approval_status, review_comments, sub: user.sub };
 
     axios
-      .put(`http://localhost:5000/api/vulnerability-db/${reportId}/review`, data, {
+      .put(`https://86.50.228.33/api/vulnerability-db/${reportId}/review`, data, {
         params: { sub: user.sub },
         headers: {
           "Content-Type": "application/json",
@@ -69,7 +69,8 @@ function ReviewData() {
         console.log(response.data.message);
         alert("Report approved successfully!");
         setReview_comments("");
-        window.location.reload();
+        // window.location.reload();
+        navigate(`/vulnerability-db/pending`);
       })
       .catch((error) => {
         console.error("Error approving report: ", error);
@@ -83,7 +84,7 @@ function ReviewData() {
     const data = { approval_status, review_comments, sub: user.sub };
 
     axios
-      .put(`http://localhost:5000/api/vulnerability-db/${reportId}/review`, data, {
+      .put(`https://86.50.228.33/api/vulnerability-db/${reportId}/review`, data, {
         params: { sub: user.sub },
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +94,8 @@ function ReviewData() {
         console.log(response.data.message);
         alert("Report rejected successfully!");
         setReview_comments("");
-        window.location.reload();
+        // window.location.reload();
+        navigate(`/vulnerability-db/rejected`);
       })
       .catch((error) => {
         console.error("Error approving report: ", error);
@@ -109,7 +111,7 @@ function ReviewData() {
     const fetchUserRole = async () => {
       try {
         // Replace with the endpoint that fetches the user's role
-        const response = await axios.get(`http://localhost:5000/api/auth/current-user`, {
+        const response = await axios.get(`https://86.50.228.33/api/auth/current-user`, {
           params: { sub: user.sub },
           // headers: {
           //   Authorization: `Bearer ${user.sub}`, // Replace with the actual token if needed
@@ -122,11 +124,11 @@ function ReviewData() {
 
         if (role !== "admin") {
           alert("You are not authorized to access this page.");
-          navigate(`/vulnerability-db/${id}`);
+          navigate(`/vulnerability-db`);
         }
       } catch (error) {
         console.error("Error fetching user role:", error);
-        navigate(`/vulnerability-db/${id}`);
+        navigate(`/vulnerability-db`);
       } finally {
         setLoading(false);
       }
@@ -141,7 +143,7 @@ function ReviewData() {
 
   useEffect(() => {
     if (userRole === "admin") {
-      const url = `http://localhost:5000/api/vulnerability-db/${id}`;
+      const url = `https://86.50.228.33/api/vulnerability-db/${id}`;
 
       axios
         .get(url)
@@ -161,7 +163,7 @@ function ReviewData() {
     const fetchComments = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/vulnerability-db/${id}/comments`
+          `https://86.50.228.33/api/vulnerability-db/${id}/comments`
         );
         setComments(response.data); // Store comments in state
       } catch (error) {
@@ -183,7 +185,7 @@ function ReviewData() {
   };
 
   const downloadAttachment = (reportId, filename) => {
-    fetch(`http://localhost:5000/api/vulnerability-db/attachments/${reportId}/${filename}`)
+    fetch(`https://86.50.228.33/api/vulnerability-db/attachments/${reportId}/${filename}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");

@@ -39,8 +39,8 @@ function RejectedDb() {
   useEffect(() => {
     // const url = "/api/vulnerability-db";
     // const url = "/api/test";
-    // const url = `http://localhost:5000/api/vulnerability-db`;
-    const url = `http://localhost:5000/api/vulnerability-db/rejected/?approval_status=rejected&phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
+    // const url = `https://86.50.228.33/api/vulnerability-db`;
+    const url = `https://86.50.228.33/api/vulnerability-db/rejected/?approval_status=rejected&phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
 
     axios
       .get(url)

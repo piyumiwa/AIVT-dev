@@ -144,7 +144,7 @@ function ReportData() {
     console.log("Form data: ", formData);
 
     axios
-      .post(`http://localhost:5000/api/report-data`, formData, {
+      .post(`https://86.50.228.33/api/report-data`, formData, {
         termsAgreed: checked,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -153,17 +153,16 @@ function ReportData() {
       .then((response) => {
         console.log("Report created successfully:", response.data);
         setReportCreated(true);
+        if (reportCreated) {
+          handleClose();
+          navigate("/vulnerability-db");
+        }
         handleClose();
-        // navigate("/vulnerability-db");
+        navigate("/vulnerability-db");
       })
       .catch((error) => {
         console.error("Error creating report:", error);
       });
-
-    if (reportCreated) {
-      handleClose();
-      navigate("/vulnerability-db");
-    }
   };
 
   const handleAttributeChange = (event) => {
@@ -193,7 +192,7 @@ function ReportData() {
     if (!user.sub) return;
 
     axios
-      .get(`http://localhost:5000/api/auth/current-user`, {
+      .get(`https://86.50.228.33/api/auth/current-user`, {
         params: { sub: user.sub },
       })
       .then((response) => {
@@ -239,7 +238,7 @@ function ReportData() {
                   </MKTypography> */}
                   <Grid item xs={12} md={6}>
                     <TextField
-                      disabled
+                      // disabled
                       variant="standard"
                       label="Name"
                       fullWidth
@@ -250,7 +249,7 @@ function ReportData() {
                   </Grid>
                   <Grid item xs={12} md={6}>
                     <TextField
-                      disabled
+                      // disabled
                       variant="standard"
                       label="Organization"
                       value={organization}
