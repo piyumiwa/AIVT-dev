@@ -18,7 +18,7 @@ exports.getAllReports = async (req, res) => {
             vp.phase, 
             array_agg(DISTINCT an.attributeName) AS attributes,
             vr.approval_status
-        FROM Vul_report vr
+        FROM Vulnerability; vr
         JOIN Artifact a ON vr.reportId = a.reportId
         JOIN Vul_phase vp ON vr.reportId = vp.reportId
         JOIN Effect e ON vp.phId = e.phId
@@ -154,9 +154,9 @@ exports.createReport = async (req, res) => {
             [name, organization, reporterId]
         );
 
-        // Insert into Vul_report
+        // Insert into Vulnerability;
         const reportResult = await client.query(
-            'INSERT INTO Vul_report (title, report_description, reporterId) VALUES ($1, $2, $3) RETURNING reportId',
+            'INSERT INTO Vulnerability; (title, report_description, reporterId) VALUES ($1, $2, $3) RETURNING reportId',
             [title, report_description, reporterId]
         );
         const reportId = reportResult.rows[0].reportid;
@@ -278,7 +278,7 @@ exports.fetchReportById = async (id) => {
                 array_agg(DISTINCT att.filename) AS attachmentFilenames,
                 array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
             FROM 
-                Vul_report v
+                Vulnerability; v
             JOIN 
                 Artifact a ON v.reportId = a.reportId
             JOIN 
@@ -387,7 +387,7 @@ exports.updateReport = async (req, res) => {
     try {
         await client.query('BEGIN');
 
-        // Update the Vul_report table
+        // Update the Vulnerability; table
         let vulReportUpdates = [];
         let vulReportValues = [];
         let queryIndex = 1;
@@ -403,7 +403,7 @@ exports.updateReport = async (req, res) => {
 
         if (vulReportUpdates.length > 0) {
             const updateVulReportQuery = `
-                UPDATE Vul_report 
+                UPDATE Vulnerability; 
                 SET ${vulReportUpdates.join(', ')}
                 WHERE reportId = $${queryIndex}
                 RETURNING *`;
@@ -531,8 +531,8 @@ exports.deleteReport = async (req, res) => {
         await client.query('DELETE FROM Vul_phase WHERE reportId = $1', [id]);
         await client.query('DELETE FROM Artifact WHERE reportId = $1', [id]);
 
-        // Finally, delete from Vul_report
-        const result = await client.query('DELETE FROM Vul_report WHERE reportId = $1 RETURNING *', [id]);
+        // Finally, delete from Vulnerability;
+        const result = await client.query('DELETE FROM Vulnerability; WHERE reportId = $1 RETURNING *', [id]);
 
         if (result.rows.length === 0) {
             await client.query('ROLLBACK');
@@ -569,7 +569,7 @@ exports.searchReports = async (req, res) => {
           eff.effectName AS effect,
           array_agg(DISTINCT an.attributeName) AS attributes
         FROM 
-          Vul_report v
+          Vulnerability; v
         JOIN 
           Reporter r ON v.reporterId = r.reporterId
         JOIN 
@@ -620,7 +620,7 @@ exports.getPendingReports = async (req, res) => {
             vp.phase, 
             array_agg(DISTINCT an.attributeName) AS attributes,
             vr.approval_status
-        FROM Vul_report vr
+        FROM Vulnerability; vr
         JOIN Artifact a ON vr.reportId = a.reportId
         JOIN Vul_phase vp ON vr.reportId = vp.reportId
         JOIN Effect e ON vp.phId = e.phId
@@ -686,12 +686,12 @@ exports.reviewReport = async (req, res) => {
     const { id } = req.params;
     
     try {
-        const reportResult = await pool.query("SELECT * FROM Vul_report WHERE reportId = $1", [id]);
+        const reportResult = await pool.query("SELECT * FROM Vulnerability; WHERE reportId = $1", [id]);
         if (reportResult.rows.length === 0) {
         return res.status(404).json({ error: "Report not found" });
         }
 
-        await pool.query("UPDATE Vul_report SET approval_status = $1 WHERE reportId = $2", [
+        await pool.query("UPDATE Vulnerability; SET approval_status = $1 WHERE reportId = $2", [
         approval_status,
         id,
         ]);
@@ -728,7 +728,7 @@ exports.rejectedReports = async (req, res) => {
             vp.phase, 
             array_agg(DISTINCT an.attributeName) AS attributes,
             vr.approval_status
-        FROM Vul_report vr
+        FROM Vulnerability; vr
         JOIN Artifact a ON vr.reportId = a.reportId
         JOIN Vul_phase vp ON vr.reportId = vp.reportId
         JOIN Effect e ON vp.phId = e.phId

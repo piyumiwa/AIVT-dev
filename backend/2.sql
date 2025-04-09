@@ -31,14 +31,18 @@ CREATE TABLE Reporter (
 );
 
 -- Create table Vul_report
-CREATE TABLE Vul_report (
-    reportId SERIAL PRIMARY KEY,
-	date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE Vulnerability (
+    vulnId SERIAL PRIMARY KEY,
+    source VARCHAR(50) CHECK (source IN ('AIVT', 'NVD')),  -- distinguish origin
+    external_id VARCHAR(255),   -- e.g., CVE ID for NVD, null for AIVT
     title VARCHAR(255),
-    report_description VARCHAR(510),
-    reporterId VARCHAR(255), 
-	approval_status VARCHAR(50) DEFAULT 'pending',
+    report_description TEXT,
+    date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    reporterId VARCHAR(255),  -- nullable for NVD
+    approval_status VARCHAR(50) DEFAULT 'approved',  -- auto-approved for NVD
+    cve_link VARCHAR(255),    -- optional field for NVD URLs
+    UNIQUE(source, external_id),
     FOREIGN KEY (reporterId) REFERENCES Reporter(reporterId)
 );
 
@@ -52,7 +56,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER set_last_updated
-BEFORE UPDATE ON Vul_report
+BEFORE UPDATE ON Vulnerability
 FOR EACH ROW
 EXECUTE FUNCTION update_last_updated_column();
 
