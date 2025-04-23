@@ -1,32 +1,62 @@
 require('dotenv').config();
-const axios = require('axios');
-const { OpenAI } = require('openai');
 
-// Initialize OpenAI
-client = OpenAI(
-  base_url="https://models.inference.ai.azure.com",
-  api_key=os.getenv("GITHUB_TOKEN"),
-)
-// const openai = new OpenAI({ apiKey: process.env.GITHUB_TOKEN });
+const axios = require('axios');
+const pool = require('../config/database'); 
 
 const BASE_YEAR = 2024;
-const MAX_CVE_PER_YEAR = 20000; // adjust as needed
-const AI_KEYWORDS = [
-  'machine learning',
-  'artificial intelligence',
-  'deep learning',
-  'neural network',
-  'model',
-  'ai system',
-  'language model',
-  'ML',
-  'LLM',
-  'training data',
+const MAX_CVE_PER_YEAR = 20000;
+
+const PHASES = ['Development', 'Training', 'Deployment and Use'];
+const ATTRIBUTES = ['Accuracy', 'Fairness', 'Privacy', 'Reliability', 'Resiliency', 'Robustness', 'Safety'];
+const EFFECTS = [
+  '0: Correct functioning',
+  '1: Reduced functioning',
+  '2: No actions',
+  '3: Chaotic',
+  '4: Directed actions',
+  '5: Random actions OoB',
+  '6: Directed actions OoB'
 ];
 
 function isAIRelevant(description) {
-  const text = description.toLowerCase();
-  return AI_KEYWORDS.some(keyword => text.includes(keyword.toLowerCase()));
+  const aiTerms = [
+    'machine learning',
+    'artificial intelligence',
+    'deep learning',
+    'neural network',
+    'neural net',
+    'language model',
+    'large language model',
+    'llm',
+    'ml model',
+    'model inference',
+    'training data',
+    'pretrained model',
+    'model weights',
+    'embedding model',
+    'transformer model',
+    'fine-tuning',
+    'prompt injection',
+    'model serving',
+    'model deployment',
+    'inference engine',
+    'ai system',
+    'ai pipeline',
+    'ai framework',
+    'onnx model',
+    'tensorflow',
+    'pytorch',
+    'huggingface',
+    'mlops',
+    'model registry',
+    'autoML',
+    'gradient leakage',
+    'membership inference',
+    'model stealing'
+  ];
+
+  const pattern = new RegExp(`\\b(${aiTerms.join('|')})\\b`, 'i');
+  return pattern.test(description);
 }
 
 function generateCVEId(year, number) {
@@ -45,53 +75,176 @@ async function fetchCVEEntry(cveId) {
   }
 }
 
-async function categorizeVulnerability(description) {
+async function classifyVulnerability(description) {
   const prompt = `
-You are an AI that classifies AI-related vulnerabilities into three categories:
-- Development
-- Training
-- Deployment and Use
+You are an AI security analyst. Based on the following CVE description, classify:
+1. Phase: One of ['Development', 'Training', 'Deployment and Use']
+2. Attributes affected (can be multiple): Choose from [Accuracy, Fairness, Privacy, Reliability, Resiliency, Robustness, Safety]
+3. Effect: One of [0: Correct functioning, '1: Reduced functioning', '2: No actions', '3: Chaotic', '4: Directed actions', '5: Random actions OoB', '6: Directed actions OoB']
 
-Classify the following vulnerability description accordingly. Respond only with one of the three categories.
+Respond in this exact JSON format:
+{
+  "phase": "value",
+  "attributes": ["value1", "value2"],
+  "effect": "value"
+}
 
-Description: "${description}"
+Response should be always the full term given in the list above, not a part of the words. 
+
+CVE Description: "${description}"
 `;
 
   try {
-    const chatResponse = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
+    const response = await axios.post('http://localhost:11434/api/generate', {
+      model: 'mistral',
+      prompt: prompt,
+      stream: false
     });
 
-    return chatResponse.choices[0].message.content.trim();
-  } catch (error) {
-    console.error('OpenAI API error:', error.message);
-    return 'Unknown';
+    const parsed = JSON.parse(response.data.response);
+    return {
+      phase: parsed.phase,
+      attributes: parsed.attributes,
+      effect: parsed.effect
+    };
+  } catch (err) {
+    console.error('Classification error:', err?.response?.data || err.message || err);
+    return {
+      phase: 'Unknown',
+      attributes: [],
+      effect: 'Unknown'
+    };
   }
 }
 
-async function main() {
-  for (let year = BASE_YEAR; year <= new Date().getFullYear(); year++) {
-    console.log(`\nScanning CVEs for year ${year}...`);
-    for (let number = 1; number <= MAX_CVE_PER_YEAR; number++) {
-      const cveId = generateCVEId(year, number);
-      const entry = await fetchCVEEntry(cveId);
-
-      if (!entry?.containers?.cna?.descriptions?.length) continue;
-
-      const description = entry.containers.cna.descriptions[0].value;
-      if (!isAIRelevant(description)) continue;
-
-      const category = await categorizeVulnerability(description);
-
-      console.log(`\n🛡️ CVE: ${cveId}`);
-      console.log(`📝 Description: ${description}`);
-      console.log(`🏷️ Category: ${category}`);
+async function storeCVE({ external_id, title, description, phase, attributes, effect }) {
+  const client = await pool.connect();
+  const source = 'NVD';
+  const cve_link = `https://cve.mitre.org/cgi-bin/cvename.cgi?name=${external_id}`;
+  try {
+    await client.query('BEGIN');
+    // Insert into Vulnerability
+    const vulnInsertRes = await client.query(`
+      INSERT INTO Vulnerability (source, external_id, title, report_description, cve_link)
+      VALUES ($1, $2, $3, $4, $5)
+      ON CONFLICT (source, external_id) DO NOTHING
+      RETURNING vulnid
+    `, [source, external_id, title, description, cve_link]);
+    const vulnid = vulnInsertRes.rows[0]?.vulnid;
+    if (!vulnid) {
+      await client.query('ROLLBACK');
+      // console.log(`Skipping duplicate CVE: ${external_id}`);
+      return;
     }
+    // Insert into Vul_phase
+    // await client.query(`
+    //   INSERT INTO Vul_phase (phase, phase_description, vulnid)
+    //   VALUES ($1, $2, $3)
+    // `, [phase, `Auto-classified phase: ${phase}`, vulnid]);  
+    
+    const phaseRes = await client.query(`
+      INSERT INTO Vul_phase (phase, phase_description, vulnid)
+      VALUES ($1, $2, $3)
+      RETURNING phId
+    `, [phase, `Auto-classified phase: ${phase}`, vulnid]);
+    
+    const phId = phaseRes.rows[0].phid;    
+    
+    // Insert into Vul_attributes
+    // for (const attr of attributes) {
+    //   await client.query(`
+    //     INSERT INTO Vul_attribute (attribute, vulnid)
+    //     VALUES ($1, $2)
+    //   `, [attr, vulnid]);
+    // }
+
+    // Step 1: Insert into Attribute table
+  const attrInsertRes = await client.query(`
+    INSERT INTO Attribute (attr_description, phId)
+    VALUES ($1, $2)
+    RETURNING attributeTypeId
+  `, ['Auto-classified attributes', phId]);
+
+  const attributeTypeId = attrInsertRes.rows[0].attributetypeid;
+
+  // Step 2: Insert into All_attributes table
+  for (const attrName of attributes) {
+    // Fetch attributeId from Attribute_names
+    const attrIdRes = await client.query(`
+      SELECT attributeId FROM Attribute_names WHERE attributeName = $1
+    `, [attrName]);
+
+    const attributeId = attrIdRes.rows[0]?.attributeid;
+    if (!attributeId) {
+      console.warn(`⚠️ Skipping unknown attribute: ${attrName}`);
+      continue;
+  }
+
+  // Insert into All_attributes
+  await client.query(`
+    INSERT INTO All_attributes (attributeTypeId, attributeId)
+    VALUES ($1, $2)
+  `, [attributeTypeId, attributeId]);
+  }
+
+    // Insert into Vul_effect
+    await client.query(`
+      INSERT INTO Effect (effectName, phId)
+      VALUES ($1, $2)
+    `, [effect, phId]);
+
+    await client.query('COMMIT');
+    console.log(`CVE ${external_id} stored in DB`);
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error(`Error inserting CVE ${external_id}:`, err.message);
+  } finally {
+    client.release();
   }
 }
+async function main() {
+  try {
+    for (let year = BASE_YEAR; year <= new Date().getFullYear(); year++) {
+      console.log(`\nScanning CVEs for year ${year}...`);
+      for (let number = 1; number <= MAX_CVE_PER_YEAR; number++) {
+        const cveId = generateCVEId(year, number);
+        console.log(`Fetching ${cveId}`);
+        const entry = await fetchCVEEntry(cveId);
 
+        if (!entry) {
+          // console.log(`${cveId} not found or failed to fetch`);
+          continue;
+        }
+        if (!entry?.containers?.cna?.descriptions?.length) {
+          // console.log(`${cveId} skipped: no description`);
+          continue;
+        }
+        
+        const description = entry.containers.cna.descriptions[0].value;
+        if (!isAIRelevant(description)) {
+          // console.log(`${cveId} skipped: not AI-relevant`);
+          continue;
+        }        
+        console.log(`Classifying ${cveId}`);
+
+        const { phase, attributes, effect } = await classifyVulnerability(description);
+
+        await storeCVE({
+          external_id: cveId,
+          title: cveId,
+          description,
+          phase,
+          attributes,
+          effect
+        });
+
+        // console.log(`CVE: ${cveId}`);
+        // console.log(`Description: ${description}`);
+        console.log(`Phase: ${phase}\n Attributes: ${attributes}\n Effect: ${effect}`);
+      }
+    }
+  } catch (err) {
+    console.error("Unhandled error in main():", err);
+  }
+}
 main();
-
-

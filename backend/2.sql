@@ -30,9 +30,9 @@ CREATE TABLE Reporter (
 	role VARCHAR(50) DEFAULT 'reporter'
 );
 
--- Create table Vul_report
+-- Create table Vulnerability
 CREATE TABLE Vulnerability (
-    vulnId SERIAL PRIMARY KEY,
+    vulnid SERIAL PRIMARY KEY,
     source VARCHAR(50) CHECK (source IN ('AIVT', 'NVD')),  -- distinguish origin
     external_id VARCHAR(255),   -- e.g., CVE ID for NVD, null for AIVT
     title VARCHAR(255),
@@ -66,8 +66,8 @@ CREATE TABLE Artifact (
     artifactType VARCHAR(255),
     developer VARCHAR(255),
     deployer VARCHAR(255),
-    reportId INTEGER,
-    FOREIGN KEY (reportId) REFERENCES Vul_report(reportId)
+    vulnid INTEGER,
+    FOREIGN KEY (vulnid) REFERENCES Vulnerability(vulnid)
 );
 
 -- Create table Vul_phase
@@ -75,8 +75,8 @@ CREATE TABLE Vul_phase (
     phId SERIAL PRIMARY KEY,
     phase phase_enum,
     phase_description VARCHAR(510),
-    reportId INTEGER,
-    FOREIGN KEY (reportId) REFERENCES Vul_report(reportId)
+    vulnid INTEGER,
+    FOREIGN KEY (vulnid) REFERENCES Vulnerability(vulnid)
 );
 
 -- Create table Attribute_type
@@ -124,11 +124,11 @@ CREATE TABLE Attachments (
 -- Create table Admin_review
 CREATE TABLE Admin_review (
     review_id SERIAL PRIMARY KEY,
-    reportId INTEGER,
+    vulnid INTEGER,
     adminId VARCHAR(255),
     review_comments VARCHAR(510),
     review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (reportId) REFERENCES Vul_report(reportId),
+    FOREIGN KEY (vulnid) REFERENCES Vulnerability(vulnid),
     FOREIGN KEY (adminId) REFERENCES Reporter(reporterId) 
 );
 
