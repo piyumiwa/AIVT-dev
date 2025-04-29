@@ -310,6 +310,18 @@ function ReportData() {
                         <MenuItem value={"web"}>Web Application</MenuItem>
                         <MenuItem value={"api"}>API</MenuItem>
                         <MenuItem value={"mobile"}>Mobile Application</MenuItem>
+                        <MenuItem value={"ai_model"}>AI Model (Standalone)</MenuItem>
+                        <MenuItem value={"dataset"}>Dataset</MenuItem>
+                        <MenuItem value={"inference_service"}>Inference Service</MenuItem>
+                        <MenuItem value={"edge_device"}>Edge Device</MenuItem>
+                        <MenuItem value={"chatbot"}>Chatbot</MenuItem>
+                        <MenuItem value={"llm_plugin"}>LLM Plugin / Extension</MenuItem>
+                        <MenuItem value={"ml_pipeline"}>ML Pipeline</MenuItem>
+                        <MenuItem value={"automl_system"}>AutoML System</MenuItem>
+                        <MenuItem value={"recommendation_system"}>Recommendation System</MenuItem>
+                        <MenuItem value={"autonomous_vehicle_software"}>Autonomous Vehicle Software</MenuItem>
+                        <MenuItem value={"smart_contract"}>Smart Contract (AI-integrated)</MenuItem>
+                        <MenuItem value={"virtual_assistant"}>Virtual Assistant</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>

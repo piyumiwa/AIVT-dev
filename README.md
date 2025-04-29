@@ -420,3 +420,11 @@ This option works for testing purposes but will show a browser warning because t
    - Access the frontend via your IP as `http://your_ip/.
    - Ensure the backend is running properly.
    - Verify that Nginx is correctly proxying requests to the backend.                  
+
+## Deploying Mistral in local server
+
+### Install ollama
+
+```
+curl https://ollama.ai/install.sh | sh
+```

@@ -18,10 +18,10 @@ exports.getAllReports = async (req, res) => {
             vp.phase, 
             array_agg(DISTINCT an.attributeName) AS attributes,
             vr.approval_status
-        FROM Vulnerability; vr
-        JOIN Artifact a ON vr.vulnid = a.vulnid
-        JOIN Vul_phase vp ON vr.vulnid = vp.vulnid
-        JOIN Effect e ON vp.phId = e.phId
+        FROM Vulnerability vr
+        LEFT JOIN Artifact a ON vr.vulnid = a.vulnid   
+        LEFT JOIN Vul_phase vp ON vr.vulnid = vp.vulnid
+        LEFT JOIN Effect e ON vp.phId = e.phId
         LEFT JOIN Attribute at ON vp.phId = at.phId
         LEFT JOIN All_attributes aa ON at.attributeTypeId = aa.attributeTypeId
         LEFT JOIN Attribute_names an ON aa.attributeId = an.attributeId
@@ -154,9 +154,9 @@ exports.createReport = async (req, res) => {
             [name, organization, reporterId]
         );
 
-        // Insert into Vulnerability;
+        // Insert into Vulnerability
         const reportResult = await client.query(
-            'INSERT INTO Vulnerability; (title, report_description, reporterId) VALUES ($1, $2, $3) RETURNING vulnid',
+            'INSERT INTO Vulnerability (title, report_description, reporterId) VALUES ($1, $2, $3) RETURNING vulnid',
             [title, report_description, reporterId]
         );
         const vulnid = reportResult.rows[0].vulnid;
@@ -257,6 +257,7 @@ exports.fetchReportById = async (id) => {
                 v.title, 
                 v.report_description,
                 v.last_updated,
+                v.source,
                 v.approval_status,
                 array_agg(DISTINCT ad.review_comments) AS review_comments, 
                 a.artifactType,
@@ -278,21 +279,21 @@ exports.fetchReportById = async (id) => {
                 array_agg(DISTINCT att.filename) AS attachmentFilenames,
                 array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
             FROM 
-                Vulnerability; v
-            JOIN 
+                Vulnerability v
+            LEFT JOIN 
                 Artifact a ON v.vulnid = a.vulnid
-            JOIN 
+            LEFT JOIN 
                 Reporter r ON v.reporterId = r.reporterId
-            JOIN 
+            LEFT JOIN 
                 Vul_phase p ON v.vulnid = p.vulnid
             LEFT JOIN
                 Admin_review ad ON v.vulnid = ad.vulnid
             LEFT JOIN 
-                All_attributes aa ON p.phId = aa.attributeTypeId
+                Attribute attr ON p.phId = attr.phId
+            LEFT JOIN 
+                All_attributes aa ON attr.attributeTypeId = aa.attributeTypeId
             LEFT JOIN 
                 Attribute_names an ON aa.attributeId = an.attributeId
-            LEFT JOIN 
-                Attribute attr ON p.phId = attr.phId
             LEFT JOIN 
                 Effect eff ON p.phId = eff.phId
             LEFT JOIN 
@@ -300,9 +301,10 @@ exports.fetchReportById = async (id) => {
             WHERE 
                 v.vulnid = $1
             GROUP BY 
-                -- v.vulnid, a.artifactType, a.developer, a.deployer, a.artifactId, r.reporterId, r.name, r.email, r.organization, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
-                v.vulnid, a.artifactId, r.reporterId, ad.review_id, p.phase, p.phase_description, attr.attr_description, eff.effectName, eff.eff_description
-        `, [id]);
+                v.vulnid, a.artifactId, r.reporterId, ad.review_id, 
+                p.phase, p.phase_description, attr.attr_description, 
+                eff.effectName, eff.eff_description
+            `, [id]);
 
         if (result.rows.length === 0) {
             return null;
@@ -314,6 +316,7 @@ exports.fetchReportById = async (id) => {
             date_added: result.rows[0].date_added,
             report_description: result.rows[0].report_description,
             last_updated: result.rows[0].last_updated,
+            source: result.rows[0].source,
             approval_status: result.rows[0].approval_status,
             review_comments: result.rows[0].review_comments,
             artifactName: result.rows[0].artifactname,
@@ -387,7 +390,7 @@ exports.updateReport = async (req, res) => {
     try {
         await client.query('BEGIN');
 
-        // Update the Vulnerability; table
+        // Update the Vulnerability table
         let vulReportUpdates = [];
         let vulReportValues = [];
         let queryIndex = 1;
@@ -403,7 +406,7 @@ exports.updateReport = async (req, res) => {
 
         if (vulReportUpdates.length > 0) {
             const updateVulReportQuery = `
-                UPDATE Vulnerability; 
+                UPDATE Vulnerability 
                 SET ${vulReportUpdates.join(', ')}
                 WHERE vulnid = $${queryIndex}
                 RETURNING *`;
@@ -531,8 +534,8 @@ exports.deleteReport = async (req, res) => {
         await client.query('DELETE FROM Vul_phase WHERE vulnid = $1', [id]);
         await client.query('DELETE FROM Artifact WHERE vulnid = $1', [id]);
 
-        // Finally, delete from Vulnerability;
-        const result = await client.query('DELETE FROM Vulnerability; WHERE vulnid = $1 RETURNING *', [id]);
+        // Finally, delete from Vulnerability
+        const result = await client.query('DELETE FROM Vulnerability WHERE vulnid = $1 RETURNING *', [id]);
 
         if (result.rows.length === 0) {
             await client.query('ROLLBACK');
@@ -569,7 +572,7 @@ exports.searchReports = async (req, res) => {
           eff.effectName AS effect,
           array_agg(DISTINCT an.attributeName) AS attributes
         FROM 
-          Vulnerability; v
+          Vulnerability v
         JOIN 
           Reporter r ON v.reporterId = r.reporterId
         JOIN 
@@ -620,7 +623,7 @@ exports.getPendingReports = async (req, res) => {
             vp.phase, 
             array_agg(DISTINCT an.attributeName) AS attributes,
             vr.approval_status
-        FROM Vulnerability; vr
+        FROM Vulnerability vr
         JOIN Artifact a ON vr.vulnid = a.vulnid
         JOIN Vul_phase vp ON vr.vulnid = vp.vulnid
         JOIN Effect e ON vp.phId = e.phId
@@ -686,12 +689,12 @@ exports.reviewReport = async (req, res) => {
     const { id } = req.params;
     
     try {
-        const reportResult = await pool.query("SELECT * FROM Vulnerability; WHERE vulnid = $1", [id]);
+        const reportResult = await pool.query("SELECT * FROM Vulnerability WHERE vulnid = $1", [id]);
         if (reportResult.rows.length === 0) {
         return res.status(404).json({ error: "Report not found" });
         }
 
-        await pool.query("UPDATE Vulnerability; SET approval_status = $1 WHERE vulnid = $2", [
+        await pool.query("UPDATE Vulnerability SET approval_status = $1 WHERE vulnid = $2", [
         approval_status,
         id,
         ]);
@@ -728,7 +731,7 @@ exports.rejectedReports = async (req, res) => {
             vp.phase, 
             array_agg(DISTINCT an.attributeName) AS attributes,
             vr.approval_status
-        FROM Vulnerability; vr
+        FROM Vulnerability vr
         JOIN Artifact a ON vr.vulnid = a.vulnid
         JOIN Vul_phase vp ON vr.vulnid = vp.vulnid
         JOIN Effect e ON vp.phId = e.phId

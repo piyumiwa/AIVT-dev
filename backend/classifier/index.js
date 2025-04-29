@@ -6,17 +6,17 @@ const pool = require('../config/database');
 const BASE_YEAR = 2024;
 const MAX_CVE_PER_YEAR = 20000;
 
-const PHASES = ['Development', 'Training', 'Deployment and Use'];
-const ATTRIBUTES = ['Accuracy', 'Fairness', 'Privacy', 'Reliability', 'Resiliency', 'Robustness', 'Safety'];
-const EFFECTS = [
-  '0: Correct functioning',
-  '1: Reduced functioning',
-  '2: No actions',
-  '3: Chaotic',
-  '4: Directed actions',
-  '5: Random actions OoB',
-  '6: Directed actions OoB'
-];
+// const PHASES = ['Development', 'Training', 'Deployment and Use'];
+// const ATTRIBUTES = ['Accuracy', 'Fairness', 'Privacy', 'Reliability', 'Resiliency', 'Robustness', 'Safety'];
+// const EFFECTS = [
+//   '0: Correct functioning',
+//   '1: Reduced functioning',
+//   '2: No actions',
+//   '3: Chaotic',
+//   '4: Directed actions',
+//   '5: Random actions OoB',
+//   '6: Directed actions OoB'
+// ];
 
 function isAIRelevant(description) {
   const aiTerms = [
@@ -81,12 +81,14 @@ You are an AI security analyst. Based on the following CVE description, classify
 1. Phase: One of ['Development', 'Training', 'Deployment and Use']
 2. Attributes affected (can be multiple): Choose from [Accuracy, Fairness, Privacy, Reliability, Resiliency, Robustness, Safety]
 3. Effect: One of [0: Correct functioning, '1: Reduced functioning', '2: No actions', '3: Chaotic', '4: Directed actions', '5: Random actions OoB', '6: Directed actions OoB']
+4. Artifact: Choose exactly one from ['Web Application', 'API', 'Mobile Application', 'AI Model (Standalone)', 'Dataset', 'Inference Service', 'Edge Device', 'Chatbot', 'LLM Plugin / Extension', 'ML Pipeline', 'AutoML System', 'Recommendation System', 'Autonomous Vehicle Software', 'Smart Contract (AI-integrated)', 'Virtual Assistant']
 
 Respond in this exact JSON format:
 {
   "phase": "value",
   "attributes": ["value1", "value2"],
-  "effect": "value"
+  "effect": "value",
+  "artifact": "value"
 }
 
 Response should be always the full term given in the list above, not a part of the words. 
@@ -105,19 +107,21 @@ CVE Description: "${description}"
     return {
       phase: parsed.phase,
       attributes: parsed.attributes,
-      effect: parsed.effect
+      effect: parsed.effect,
+      artifact: parsed.artifact
     };
   } catch (err) {
     console.error('Classification error:', err?.response?.data || err.message || err);
     return {
       phase: 'Unknown',
       attributes: [],
-      effect: 'Unknown'
+      effect: 'Unknown',
+      artifact: 'Unknown'
     };
   }
 }
 
-async function storeCVE({ external_id, title, description, phase, attributes, effect }) {
+async function storeCVE({ external_id, title, description, phase, attributes, effect, artifact }) {
   const client = await pool.connect();
   const source = 'NVD';
   const cve_link = `https://cve.mitre.org/cgi-bin/cvename.cgi?name=${external_id}`;
@@ -137,11 +141,6 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
       return;
     }
     // Insert into Vul_phase
-    // await client.query(`
-    //   INSERT INTO Vul_phase (phase, phase_description, vulnid)
-    //   VALUES ($1, $2, $3)
-    // `, [phase, `Auto-classified phase: ${phase}`, vulnid]);  
-    
     const phaseRes = await client.query(`
       INSERT INTO Vul_phase (phase, phase_description, vulnid)
       VALUES ($1, $2, $3)
@@ -150,14 +149,6 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
     
     const phId = phaseRes.rows[0].phid;    
     
-    // Insert into Vul_attributes
-    // for (const attr of attributes) {
-    //   await client.query(`
-    //     INSERT INTO Vul_attribute (attribute, vulnid)
-    //     VALUES ($1, $2)
-    //   `, [attr, vulnid]);
-    // }
-
     // Step 1: Insert into Attribute table
   const attrInsertRes = await client.query(`
     INSERT INTO Attribute (attr_description, phId)
@@ -193,6 +184,12 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
       VALUES ($1, $2)
     `, [effect, phId]);
 
+    // Insert into Artifact
+    await client.query(`
+      INSERT INTO Artifact (artifactType, vulnid)
+      VALUES ($1, $2)
+    `, [artifact, vulnid]);
+
     await client.query('COMMIT');
     console.log(`CVE ${external_id} stored in DB`);
   } catch (err) {
@@ -227,7 +224,7 @@ async function main() {
         }        
         console.log(`Classifying ${cveId}`);
 
-        const { phase, attributes, effect } = await classifyVulnerability(description);
+        const { phase, attributes, effect, artifact } = await classifyVulnerability(description);
 
         await storeCVE({
           external_id: cveId,
@@ -235,12 +232,13 @@ async function main() {
           description,
           phase,
           attributes,
-          effect
+          effect,
+          artifact
         });
 
         // console.log(`CVE: ${cveId}`);
         // console.log(`Description: ${description}`);
-        console.log(`Phase: ${phase}\n Attributes: ${attributes}\n Effect: ${effect}`);
+        console.log(`Phase: ${phase}\n Attributes: ${attributes}\n Effect: ${effect}\n Artifact: ${artifact}`);
       }
     }
   } catch (err) {
