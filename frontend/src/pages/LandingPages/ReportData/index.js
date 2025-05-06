@@ -319,7 +319,9 @@ function ReportData() {
                         <MenuItem value={"ml_pipeline"}>ML Pipeline</MenuItem>
                         <MenuItem value={"automl_system"}>AutoML System</MenuItem>
                         <MenuItem value={"recommendation_system"}>Recommendation System</MenuItem>
-                        <MenuItem value={"autonomous_vehicle_software"}>Autonomous Vehicle Software</MenuItem>
+                        <MenuItem value={"autonomous_vehicle_software"}>
+                          Autonomous Vehicle Software
+                        </MenuItem>
                         <MenuItem value={"smart_contract"}>Smart Contract (AI-integrated)</MenuItem>
                         <MenuItem value={"virtual_assistant"}>Virtual Assistant</MenuItem>
                       </Select>

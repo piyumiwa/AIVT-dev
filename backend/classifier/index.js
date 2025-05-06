@@ -4,7 +4,7 @@ const axios = require('axios');
 const pool = require('../config/database'); 
 
 const BASE_YEAR = 2024;
-const MAX_CVE_PER_YEAR = 20000;
+const MAX_CVE_PER_YEAR = 10000;
 
 // const PHASES = ['Development', 'Training', 'Deployment and Use'];
 // const ATTRIBUTES = ['Accuracy', 'Fairness', 'Privacy', 'Reliability', 'Resiliency', 'Robustness', 'Safety'];
@@ -60,7 +60,7 @@ function isAIRelevant(description) {
 }
 
 function generateCVEId(year, number) {
-  return `CVE-${year}-${number.toString().padStart(4, '0')}`;
+  return `CVE-${year}-${number.toString().padStart(5, '0')}`;
 }
 
 async function fetchCVEEntry(cveId) {

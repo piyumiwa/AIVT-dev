@@ -2,21 +2,6 @@ require('dotenv').config();
 const axios = require('axios');
 const pool = require('../../config/database'); 
 
-const BASE_YEAR = 2024;
-const MAX_CVE_PER_YEAR = 10000;
-
-// const PHASES = ['Development', 'Training', 'Deployment and Use'];
-// const ATTRIBUTES = ['Accuracy', 'Fairness', 'Privacy', 'Reliability', 'Resiliency', 'Robustness', 'Safety'];
-// const EFFECTS = [
-//   '0: Correct functioning',
-//   '1: Reduced functioning',
-//   '2: No actions',
-//   '3: Chaotic',
-//   '4: Directed actions',
-//   '5: Random actions OoB',
-//   '6: Directed actions OoB'
-// ];
-
 function isAIRelevant(description) {
   const aiTerms = [
     'machine learning',
@@ -58,19 +43,14 @@ function isAIRelevant(description) {
   return pattern.test(description);
 }
 
-function generateCVEId(year, number) {
-  return `CVE-${year}-${number.toString().padStart(4, '0')}`;
-}
-
-async function fetchCVEEntry(cveId) {
-  const url = `https://cveawg.mitre.org/api/cve/${cveId}`;
+async function fetchCVEs(pubStartDate, pubEndDate) {
+  const url = `https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=${pubStartDate}&pubEndDate=${pubEndDate}`;
   try {
     const res = await axios.get(url);
-    return res.data;
+    return res.data.vulnerabilities || [];
   } catch (error) {
-    if (error.response && error.response.status === 404) return null; // CVE doesn't exist
-    console.error(`Error fetching ${cveId}:`, error.message);
-    return null;
+    console.error(`Error fetching CVEs:`, error.message);
+    return [];
   }
 }
 
@@ -149,11 +129,11 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
       RETURNING vulnid
     `, [source, external_id, title, description, cve_link]);
     const vulnid = vulnInsertRes.rows[0]?.vulnid;
-    if (!vulnid) {
-      await client.query('ROLLBACK');
-      // console.log(`Skipping duplicate CVE: ${external_id}`);
-      return;
-    }
+    // if (!vulnid) {
+    //   await client.query('ROLLBACK');
+    //   // console.log(`Skipping duplicate CVE: ${external_id}`);
+    //   return;
+    // }
     // Insert into Vul_phase
     const phaseRes = await client.query(`
       INSERT INTO Vul_phase (phase, phase_description, vulnid)
@@ -215,54 +195,46 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
 }
 
 async function main() {
-  try {
-    for (let year = BASE_YEAR; year <= new Date().getFullYear(); year++) {
-      console.log(`\nScanning CVEs for year ${year}...`);
-      for (let number = 1; number <= MAX_CVE_PER_YEAR; number++) {
-        const cveId = generateCVEId(year, number);
-      
-        const alreadyExists = await cveExists(cveId);
-        if (alreadyExists) {
-          console.log(`Skipping existing CVE: ${cveId}`);
-          continue;
-        }
-      
-        console.log(`Fetching ${cveId}`);
-        const entry = await fetchCVEEntry(cveId);
+  const pubStartDate = "2025-04-01T00:00:00.000Z";
+  const pubEndDate = "2025-04-10T23:59:59.000Z";
 
-        if (!entry) {
-          // console.log(`${cveId} not found or failed to fetch`);
-          continue;
-        }
-        if (!entry?.containers?.cna?.descriptions?.length) {
-          // console.log(`${cveId} skipped: no description`);
-          continue;
-        }
-        
-        const description = entry.containers.cna.descriptions[0].value;
-        if (!isAIRelevant(description)) {
-          // console.log(`${cveId} skipped: not AI-relevant`);
-          continue;
-        }        
-        console.log(`Classifying ${cveId}`);
+  const cveList = await fetchCVEs(pubStartDate, pubEndDate);
+  console.log(`Fetched ${cveList.length} CVEs`);
 
-        const { phase, attributes, effect, artifact } = await classifyVulnerability(description);
+  for (const item of cveList) {
+    const cve = item.cve;
+    const cveId = cve.id;
 
-        await storeCVE({
-          external_id: cveId,
-          title: cveId,
-          description,
-          phase,
-          attributes,
-          effect,
-          artifact
-        });
-        // console.log(`Description: ${description}`);
-        console.log(`Phase: ${phase}\n Attributes: ${attributes}\n Effect: ${effect}\n Artifact: ${artifact}`);
-      }
+    const alreadyExists = await cveExists(cveId);
+    if (alreadyExists) {
+      console.log(`Skipping existing CVE: ${cveId}`);
+      continue;
     }
-  } catch (err) {
-    console.error("Unhandled error in main():", err);
+
+    const description = (cve.descriptions || []).find(d => d.lang === 'en')?.value;
+    if (!description) continue;
+
+    if (!isAIRelevant(description)) {
+      console.log(`Not AI-relevant: ${cveId}`);
+      continue;
+    }
+
+    console.log(`Classifying ${cveId}`);
+    const { phase, attributes, effect, artifact } = await classifyVulnerability(description);
+
+    await storeCVE({
+      external_id: cveId,
+      title: cveId,
+      description,
+      phase,
+      attributes,
+      effect,
+      artifact
+    });
+
+    console.log(`Stored ${cveId} ✅`);
   }
 }
+
+
 main();
