@@ -160,3 +160,13 @@ CREATE TABLE Nvd_Attribute (
     PRIMARY KEY (nvd_id, attributeTypeId)
 );
 
+INSERT INTO Attribute_names (attributeName) VALUES
+  ('Accuracy'),
+  ('Fairness'),
+  ('Privacy'),
+  ('Reliability'),
+  ('Resiliency'),
+  ('Robustness'),
+  ('Safety')
+ON CONFLICT DO NOTHING;
+

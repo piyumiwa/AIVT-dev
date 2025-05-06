@@ -2,6 +2,21 @@ require('dotenv').config();
 const axios = require('axios');
 const pool = require('../../config/database'); 
 
+const VALID_PHASES = ['Development', 'Training', 'Deployment and Use'];
+const VALID_ATTRIBUTES = [
+  'Accuracy', 'Fairness', 'Privacy', 'Reliability', 'Resiliency', 'Robustness', 'Safety'
+];
+const VALID_EFFECTS = [
+  "0: Correct functioning", "1: Reduced functioning", "2: No actions", "3: Chaotic",
+  "4: Directed actions", "5: Random actions OoB", "6: Directed actions OoB"
+];
+const VALID_ARTIFACTS = [
+  "Web Application", "API", "Mobile Application", "AI Model (Standalone)", "Dataset",
+  "Inference Service", "Edge Device", "Chatbot", "LLM Plugin / Extension", "ML Pipeline",
+  "AutoML System", "Recommendation System", "Autonomous Vehicle Software",
+  "Smart Contract (AI-integrated)", "Virtual Assistant"
+];
+
 function isAIRelevant(description) {
   const aiTerms = [
     'machine learning',
@@ -70,26 +85,39 @@ async function cveExists(cveId) {
   }
 }
 
-async function classifyVulnerability(description) {
-  const prompt = `
-You are an AI security analyst. Based on the following CVE description, classify:
-1. Phase: One of ['Development', 'Training', 'Deployment and Use']
-2. Attributes affected (can be multiple): Choose from [Accuracy, Fairness, Privacy, Reliability, Resiliency, Robustness, Safety]
-3. Effect: One of [0: Correct functioning, "1: Reduced functioning", "2: No actions", "3: Chaotic", "4: Directed actions", "5: Random actions OoB", "6: Directed actions OoB"]
-4. Artifact: Choose exactly one from ['Web Application', 'API', 'Mobile Application', 'AI Model (Standalone)', 'Dataset', 'Inference Service', 'Edge Device', 'Chatbot', 'LLM Plugin / Extension', 'ML Pipeline', 'AutoML System', 'Recommendation System', 'Autonomous Vehicle Software', 'Smart Contract (AI-integrated)', 'Virtual Assistant']
-
-Respond in this exact JSON format:
-{
-  "phase": "value",
-  "attributes": ["value1", "value2"],
-  "effect": "value",
-  "artifact": "value"
+function validateClassification(parsed) {
+  return {
+    phase: VALID_PHASES.includes(parsed.phase) ? parsed.phase : 'Deployment and Use',
+    attributes: Array.isArray(parsed.attributes)
+      ? parsed.attributes.filter(attr => VALID_ATTRIBUTES.includes(attr))
+      : [],
+    effect: VALID_EFFECTS.includes(parsed.effect) ? parsed.effect : "1: Reduced functioning",
+    artifact: VALID_ARTIFACTS.includes(parsed.artifact)
+      ? parsed.artifact
+      : "AI Model (Standalone)"
+  };
 }
 
-Response values should be always the full exact term given in the list above inside quotes. 
+async function classifyVulnerability(description) {
+  const prompt = `
+    You are an AI security analyst. Based on the following CVE description, classify:
+    1. Phase: One of ['Development', 'Training', 'Deployment and Use']
+    2. Attributes affected (can be multiple): Choose from [Accuracy, Fairness, Privacy, Reliability, Resiliency, Robustness, Safety]
+    3. Effect: One of ["0: Correct functioning", "1: Reduced functioning", "2: No actions", "3: Chaotic", "4: Directed actions", "5: Random actions OoB", "6: Directed actions OoB"]
+    4. Artifact: Choose exactly one from ["Web Application", "API", "Mobile Application", "AI Model (Standalone)", "Dataset", "Inference Service", "Edge Device", "Chatbot", "LLM Plugin / Extension", "ML Pipeline", "AutoML System", "Recommendation System", "Autonomous Vehicle Software", "Smart Contract (AI-integrated)", "Virtual Assistant"]
 
-CVE Description: "${description}"
-`;
+    Respond in this exact JSON format:
+    {
+      "phase": "value",
+      "attributes": ["value1", "value2"],
+      "effect": "value",
+      "artifact": "value"
+    }
+
+    Response values should be always the full exact term given in the list above inside quotes. 
+
+    CVE Description: "${description}"
+    `;
 
   try {
     const response = await axios.post('http://localhost:11434/api/generate', {
@@ -98,12 +126,9 @@ CVE Description: "${description}"
       stream: false
     });
     const parsed = JSON.parse(response.data.response);
-    return {
-      phase: parsed.phase,
-      attributes: parsed.attributes,
-      effect: parsed.effect,
-      artifact: parsed.artifact
-    };
+    const validated = validateClassification(parsed);
+
+    return validated;
   } catch (err) {
     console.error('Classification error:', err?.response?.data || err.message || err);
     return {
@@ -195,8 +220,8 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
 }
 
 async function main() {
-  const pubStartDate = "2025-04-01T00:00:00.000Z";
-  const pubEndDate = "2025-04-10T23:59:59.000Z";
+  const pubStartDate = "2025-05-01T00:00:00.000Z";
+  const pubEndDate = "2025-05-01T23:59:59.000Z";
 
   const cveList = await fetchCVEs(pubStartDate, pubEndDate);
   console.log(`Fetched ${cveList.length} CVEs`);
