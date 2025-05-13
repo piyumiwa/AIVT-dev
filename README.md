@@ -419,7 +419,37 @@ This option works for testing purposes but will show a browser warning because t
 
    - Access the frontend via your IP as `http://your_ip/.
    - Ensure the backend is running properly.
-   - Verify that Nginx is correctly proxying requests to the backend.                  
+   - Verify that Nginx is correctly proxying requests to the backend.  
+
+#### Using Certbot's certificate
+
+Install Certbot and receive a certificate.
+```
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d aivt.ouspg.org
+```
+
+Change the NGINX configuration to direct to the new key. 
+
+Remove:
+
+```
+ssl_certificate /etc/ssl/certs/selfsigned.crt;
+ssl_certificate_key /etc/ssl/private/selfsigned.key;
+```
+
+Add:
+
+```
+ssl_certificate /etc/letsencrypt/live/aivt.ouspg.org/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/aivt.ouspg.org/privkey.pem;
+```
+
+Enable the configuration:
+
+```
+sudo ln -s /etc/nginx/sites-available/react-frontend /etc/nginx/sites-enabled/react-frontend
+```
 
 ## Deploying Mistral in local server
 
