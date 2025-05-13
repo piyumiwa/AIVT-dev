@@ -11,7 +11,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://aivt.ouspg.org',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));

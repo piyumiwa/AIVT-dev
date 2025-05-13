@@ -451,6 +451,15 @@ Enable the configuration:
 sudo ln -s /etc/nginx/sites-available/react-frontend /etc/nginx/sites-enabled/react-frontend
 ```
 
+Update the CORS settings into below.
+
+```
+app.use(cors({
+  origin: 'https://aivt.ouspg.org',
+  ...
+}));
+```
+
 ## Deploying Mistral in local server
 
 ### Install ollama
