@@ -110,6 +110,19 @@ function SearchResults() {
       ),
     },
     {
+      field: "artifact",
+      headerName: "Artifact",
+      width: 130,
+      renderCell: (params) => (
+        <a
+          href={`/vulnerability-db/${params.row.id}`}
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          {params.value}
+        </a>
+      ),
+    },
+    {
       field: "phase",
       headerName: "Phase",
       width: 130,
@@ -123,9 +136,9 @@ function SearchResults() {
       ),
     },
     {
-      field: "effect",
-      headerName: "Effect",
-      width: 130,
+      field: "effects",
+      headerName: "Effects",
+      width: 135,
       renderCell: (params) => (
         <a
           href={`/vulnerability-db/${params.row.id}`}

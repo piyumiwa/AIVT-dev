@@ -92,16 +92,40 @@ function ReviewDb() {
         })
         .then((data) => {
           console.log("JSON response:", data);
+
           if (Array.isArray(data)) {
-            const formattedRows = data.map((vul) => ({
-              id: vul.id,
-              date_added: vul.date_added,
-              title: vul.title,
-              artifact: vul.artifacttype,
-              phase: vul.phase,
-              effects: vul.effectname,
-              attributes: vul.attributes,
-            }));
+            // const formattedRows = data.map((vul) => ({
+            //   id: vul.id,
+            //   date_added: vul.date_added,
+            //   title: vul.title,
+            //   artifact: vul.artifacttype,
+            //   phase: vul.phase,
+            //   effects: vul.effectname,
+            //   attributes: vul.attributes,
+            // }));
+            const formattedRows = data.map((vul) => {
+              let formattedAttributes = vul.attributes;
+
+              if (typeof formattedAttributes === "string") {
+                formattedAttributes = formattedAttributes
+                  .replace(/[{}"]/g, "") // remove {}, and any quotes
+                  .split(",")
+                  .map((attr) => attr.trim()) // remove extra spaces
+                  .join(", ");
+              } else if (Array.isArray(formattedAttributes)) {
+                formattedAttributes = formattedAttributes.join(", ");
+              }
+
+              return {
+                id: vul.id,
+                date_added: vul.date_added,
+                title: vul.title,
+                artifact: vul.artifacttype,
+                phase: vul.phase,
+                effects: vul.effectname,
+                attributes: formattedAttributes,
+              };
+            });
             setVulnerabilities(formattedRows);
           } else {
             console.error("Fetched data is not an array:", data);
@@ -141,7 +165,7 @@ function ReviewDb() {
       width: 160,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}/review`}
+          href={`/vulnerability-db/${params.row.id}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -154,7 +178,7 @@ function ReviewDb() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}/review`}
+          href={`/vulnerability-db/${params.row.id}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -167,7 +191,7 @@ function ReviewDb() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}/review`}
+          href={`/vulnerability-db/${params.row.id}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -177,10 +201,23 @@ function ReviewDb() {
     {
       field: "effects",
       headerName: "Effects",
+      width: 135,
+      renderCell: (params) => (
+        <a
+          href={`/vulnerability-db/${params.row.id}`}
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          {params.value}
+        </a>
+      ),
+    },
+    {
+      field: "attributes",
+      headerName: "Attributes",
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}/review`}
+          href={`/vulnerability-db/${params.row.id}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}

@@ -99,6 +99,7 @@ exports.createReport = async (req, res) => {
         effectName, 
         eff_description
     } = req.body;
+    console.log("Received attributeName from body:", req.body.attributeName);
 
     const attachments = req.files;
 
@@ -115,6 +116,7 @@ exports.createReport = async (req, res) => {
     } else {
         return res.status(400).json({ error: 'attributeName should be a string or an array' });
     }
+    console.log('Parsed attributeName:', attributeTypeArray);
 
     const client = await pool.connect();
     try {
@@ -183,29 +185,54 @@ exports.createReport = async (req, res) => {
         const attributeTypeId = attributeTypeResult.rows[0].attributetypeid;
 
         // Insert into Attribute_names and All_attributes
-        for (let i = 0; i < attributeTypeArray.length; i++) {
-            const attributeName = attributeTypeArray[i];
+        // for (let i = 0; i < attributeTypeArray.length; i++) {
+        //     const attributeName = attributeTypeArray[i];
 
-            // Retrieve the attributeId from Attribute_names
+        //     // Retrieve the attributeId from Attribute_names
+        //     const attributeNameResult = await client.query(
+        //         'SELECT attributeId FROM Attribute_names WHERE attributeName = $1',
+        //         [attributeName]
+        //     );
+
+        //     let attributeId;
+            
+        //     if (attributeNameResult.rows.length === 0) {
+        //         // If the attributeName does not exist, insert it into Attribute_names
+        //         const newAttributeNameResult = await client.query(
+        //             'INSERT INTO Attribute_names (attributeName) VALUES ($1) RETURNING attributeId',
+        //             [attributeName]
+        //         );
+        //         attributeId = newAttributeNameResult.rows[0].attributeid;
+        //     } else {
+        //         attributeId = attributeNameResult.rows[0].attributeid;
+        //     }
+
+        //     // Insert into All_attributes
+        //     await client.query(
+        //         'INSERT INTO All_attributes (attributeTypeId, attributeId) VALUES ($1, $2)',
+        //         [attributeTypeId, attributeId]
+        //     );
+        // }
+
+        for (let i = 0; i < attributeTypeArray.length; i++) {
+            const attrName = attributeTypeArray[i];
+
             const attributeNameResult = await client.query(
                 'SELECT attributeId FROM Attribute_names WHERE attributeName = $1',
-                [attributeName]
+                [attrName]
             );
 
             let attributeId;
-            
+
             if (attributeNameResult.rows.length === 0) {
-                // If the attributeName does not exist, insert it into Attribute_names
                 const newAttributeNameResult = await client.query(
                     'INSERT INTO Attribute_names (attributeName) VALUES ($1) RETURNING attributeId',
-                    [attributeName]
+                    [attrName]
                 );
                 attributeId = newAttributeNameResult.rows[0].attributeid;
             } else {
                 attributeId = attributeNameResult.rows[0].attributeid;
             }
-
-            // Insert into All_attributes
             await client.query(
                 'INSERT INTO All_attributes (attributeTypeId, attributeId) VALUES ($1, $2)',
                 [attributeTypeId, attributeId]
@@ -310,6 +337,12 @@ exports.fetchReportById = async (id) => {
             return null;
         }
 
+        const rawAttributes = result.rows[0].attributes;
+
+        const formattedAttributes = Array.isArray(rawAttributes)
+            ? rawAttributes.join(', ')
+            : rawAttributes.replace(/[{}"]/g, '').split(',').map(attr => attr.trim()).join(', ');
+
         return {
             id: result.rows[0].id,
             title: result.rows[0].title,
@@ -330,7 +363,13 @@ exports.fetchReportById = async (id) => {
             reporterRole: result.rows[0].reporterrole,
             phase: result.rows[0].phase,
             phaseDescription: result.rows[0].phasedescription,
-            attributeName: result.rows[0].attributes, 
+            // attributeName: Array.isArray(result.rows[0].attributes)
+            //     ? result.rows[0].attributes
+            //     : result.rows[0].attributes
+            //         .replace(/[{}]/g, '') // remove curly braces
+            //         .split(',')           // split into array
+            //         .map(attr => attr.trim()),
+            attributeName: formattedAttributes,
             attr_Description: result.rows[0].attr_description,
             effectName: result.rows[0].effect, 
             eff_Description: result.rows[0].eff_description,
@@ -338,8 +377,7 @@ exports.fetchReportById = async (id) => {
                 filename: filename,
                 mimeType: result.rows[0].attachmentmimetypes[index]
             }))
-        };
-        console.log(review_comments);
+        };        console.log(review_comments);
     } catch (err) {
         console.error(err.message);
         throw new Error('Database query failed');

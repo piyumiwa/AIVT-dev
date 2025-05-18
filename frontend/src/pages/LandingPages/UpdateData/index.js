@@ -173,7 +173,8 @@ function UpdateData() {
     formData.append("deployer", deployer);
     formData.append("phase", phase);
     formData.append("phase_description", phase_description);
-    formData.append("attributeName", attributeName);
+    // formData.append("attributeName", attributeName);
+    attributeName.forEach((attr) => formData.append("attributeName", attr));
     formData.append("attr_description", attr_description);
     formData.append("effectName", effectName);
     formData.append("eff_description", eff_description);

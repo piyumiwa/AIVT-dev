@@ -15,7 +15,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
-app.use(bodyParser.json());
+
+// app.use(bodyParser.json());
+
 // app.use((req, res, next) => {
 //   console.log('Authorization Header:', req.headers.authorization);
 //   // console.log('Decoded User:', req.user);  

@@ -40,7 +40,7 @@ CREATE TABLE Vulnerability (
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     reporterId VARCHAR(255),  -- nullable for NVD
-    approval_status VARCHAR(50) DEFAULT 'approved',  -- auto-approved for NVD
+    approval_status VARCHAR(50) DEFAULT 'pending',  -- auto-approved for NVD
     cve_link VARCHAR(255),    -- optional field for NVD URLs
     UNIQUE(source, external_id),
     FOREIGN KEY (reporterId) REFERENCES Reporter(reporterId)

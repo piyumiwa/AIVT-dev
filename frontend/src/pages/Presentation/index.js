@@ -33,7 +33,7 @@ function Presentation() {
     <>
       <DefaultNavbar transparent light />
       <MKBox
-        minHeight="100vh"
+        minHeight="120vh"
         width="100%"
         sx={{
           backgroundImage: `url(${bgImage})`,
