@@ -164,7 +164,7 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
       INSERT INTO Vul_phase (phase, phase_description, vulnid)
       VALUES ($1, $2, $3)
       RETURNING phId
-    `, [phase, `Auto-classified phase: ${phase}`, vulnid]);
+    `, [phase, `Auto classified and verified by a human.`, vulnid]);
     
     const phId = phaseRes.rows[0].phid;    
     
@@ -173,7 +173,7 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
     INSERT INTO Attribute (attr_description, phId)
     VALUES ($1, $2)
     RETURNING attributeTypeId
-  `, ['Auto-classified attributes', phId]);
+  `, ['Auto classified and verified by a human.', phId]);
 
   const attributeTypeId = attrInsertRes.rows[0].attributetypeid;
 
@@ -220,8 +220,21 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
 }
 
 async function main() {
-  const pubStartDate = "2025-05-01T00:00:00.000Z";
-  const pubEndDate = "2025-05-01T23:59:59.000Z";
+  const now = new Date();
+
+  // Set to the beginning of today (UTC)
+  const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  
+  // Set to the beginning of yesterday (UTC)
+  const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
+
+  // pubStartDate: beginning of yesterday
+  const pubStartDate = yesterdayStart.toISOString();
+
+  // pubEndDate: end of yesterday (one millisecond before today starts)
+  const pubEndDate = new Date(todayStart.getTime() - 1).toISOString();
+
+  console.log(`Fetching CVEs from ${pubStartDate} to ${pubEndDate}`);
 
   const cveList = await fetchCVEs(pubStartDate, pubEndDate);
   console.log(`Fetched ${cveList.length} CVEs`);

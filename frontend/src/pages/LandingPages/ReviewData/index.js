@@ -36,6 +36,81 @@ function ReviewData() {
   const MAX_LINES = 2;
   const MAX_CHARACTERS_PER_LINE = 50;
 
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        // Replace with the endpoint that fetches the user's role
+        const response = await axios.get(`/api/auth/current-user`, {
+          params: { sub: user.sub },
+          // headers: {
+          //   Authorization: `Bearer ${user.sub}`, // Replace with the actual token if needed
+          // },
+        });
+        // console.log("User role response:", response.data);
+        const { role } = response.data;
+
+        setUserRole(role);
+
+        if (role !== "admin") {
+          alert("You are not authorized to access this page.");
+          navigate(`/vulnerability-db`);
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        navigate(`/vulnerability-db`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isAuthenticated && user) {
+      fetchUserRole();
+    } else {
+      loginWithRedirect();
+    }
+  }, [isAuthenticated, user, navigate, loginWithRedirect]);
+
+  useEffect(() => {
+    if (userRole === "admin") {
+      const url = `/api/vulnerability-db/${id}`;
+
+      axios
+        .get(url)
+        .then((response) => response.data)
+        .then((data) => {
+          // console.log("JSON response:", data);
+          setVulnerability(data);
+          setReview_comments(data.review_comments || "");
+        })
+        .catch((error) => {
+          console.error("Error fetching vulnerability:", error);
+        });
+    }
+  }, [id, userRole]);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`/api/vulnerability-db/${id}/comments`);
+        setComments(response.data); // Store comments in state
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+
+    fetchComments();
+  }, [id]);
+
+  const getTruncatedDescription = (description) => {
+    if (description) {
+      const maxCharacters = MAX_LINES * MAX_CHARACTERS_PER_LINE;
+      if (description.length > maxCharacters) {
+        return description.slice(0, maxCharacters) + "...";
+      }
+    }
+    return description;
+  };
+
   const handleAuthClick = () => {
     if (isAuthenticated) {
       logout({ returnTo: window.location.origin });
@@ -44,22 +119,23 @@ function ReviewData() {
     }
   };
 
-  const handleDelete = (reportId) => {
+  const handleDelete = (vulnid) => {
     axios
-      .delete(`https://86.50.228.33/api/vulnerability-db/${reportId}/delete`)
+      .delete(`/api/vulnerability-db/${vulnid}/delete`)
       .then((response) => {
         console.log("Deleted successfully:", response.data);
       })
       .catch((error) => console.error("Error deleting report:", error));
   };
 
-  const handleApprove = (reportId) => {
+  const handleApprove = (vulnid) => {
     const approval_status = "approved";
+    console.log("vulnid:", vulnid);
 
     const data = { approval_status, review_comments, sub: user.sub };
 
     axios
-      .put(`https://86.50.228.33/api/vulnerability-db/${reportId}/review`, data, {
+      .put(`/api/vulnerability-db/${vulnid}/review`, data, {
         params: { sub: user.sub },
         headers: {
           "Content-Type": "application/json",
@@ -78,13 +154,13 @@ function ReviewData() {
       });
   };
 
-  const handleReject = (reportId) => {
+  const handleReject = (vulnid) => {
     const approval_status = "rejected";
 
     const data = { approval_status, review_comments, sub: user.sub };
 
     axios
-      .put(`https://86.50.228.33/api/vulnerability-db/${reportId}/review`, data, {
+      .put(`/api/vulnerability-db/${vulnid}/review`, data, {
         params: { sub: user.sub },
         headers: {
           "Content-Type": "application/json",
@@ -107,85 +183,8 @@ function ReviewData() {
     setIsExpanded((prev) => !prev);
   };
 
-  useEffect(() => {
-    const fetchUserRole = async () => {
-      try {
-        // Replace with the endpoint that fetches the user's role
-        const response = await axios.get(`https://86.50.228.33/api/auth/current-user`, {
-          params: { sub: user.sub },
-          // headers: {
-          //   Authorization: `Bearer ${user.sub}`, // Replace with the actual token if needed
-          // },
-        });
-        console.log("User role response:", response.data);
-        const { role } = response.data;
-
-        setUserRole(role);
-
-        if (role !== "admin") {
-          alert("You are not authorized to access this page.");
-          navigate(`/vulnerability-db`);
-        }
-      } catch (error) {
-        console.error("Error fetching user role:", error);
-        navigate(`/vulnerability-db`);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (isAuthenticated && user) {
-      fetchUserRole();
-    } else {
-      loginWithRedirect();
-    }
-  }, [id, isAuthenticated, user, navigate, loginWithRedirect]);
-
-  useEffect(() => {
-    if (userRole === "admin") {
-      const url = `https://86.50.228.33/api/vulnerability-db/${id}`;
-
-      axios
-        .get(url)
-        .then((response) => response.data)
-        .then((data) => {
-          console.log("JSON response:", data);
-          setVulnerability(data);
-          setReview_comments(data.review_comments || "");
-        })
-        .catch((error) => {
-          console.error("Error fetching vulnerability:", error);
-        });
-    }
-  }, [id, userRole]);
-
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(
-          `https://86.50.228.33/api/vulnerability-db/${id}/comments`
-        );
-        setComments(response.data); // Store comments in state
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
-
-    fetchComments();
-  }, [id]);
-
-  const getTruncatedDescription = (description) => {
-    if (description) {
-      const maxCharacters = MAX_LINES * MAX_CHARACTERS_PER_LINE;
-      if (description.length > maxCharacters) {
-        return description.slice(0, maxCharacters) + "...";
-      }
-    }
-    return description;
-  };
-
-  const downloadAttachment = (reportId, filename) => {
-    fetch(`https://86.50.228.33/api/vulnerability-db/attachments/${reportId}/${filename}`)
+  const downloadAttachment = (vulnid, filename) => {
+    fetch(`/api/vulnerability-db/attachments/${vulnid}/${filename}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");

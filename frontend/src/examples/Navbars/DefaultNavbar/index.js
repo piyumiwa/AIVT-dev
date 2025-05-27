@@ -42,7 +42,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
 
     if (value.length > 0) {
       try {
-        const response = await axios.get(`https://86.50.228.33/api/vulnerability-db/search`, {
+        const response = await axios.get(`https://aivt.ouspg.org/api/vulnerability-db/search`, {
           params: { query: value },
         });
         console.log("Search API Response:", response.data);
@@ -71,7 +71,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
         const email = user.email;
 
         try {
-          const response = await axios.post("https://86.50.228.33/api/auth/newaccount", {
+          const response = await axios.post("/api/auth/newaccount", {
             reporterId,
             email,
           });
@@ -143,7 +143,13 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
               onChange={handleSearchChange}
               onKeyDown={handleSearchSubmit}
               sx={{
-                input: { color: "white" },
+                "& .MuiInputBase-input": {
+                  color: "white",
+                  "::placeholder": {
+                    color: "white",
+                    opacity: 1,
+                  },
+                },
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
                     borderColor: "white",
@@ -157,10 +163,6 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
                 },
                 "& .MuiInputAdornment-root": {
                   color: "white",
-                },
-                "& .MuiInputBase-input::placeholder": {
-                  color: "white",
-                  opacity: 1,
                 },
               }}
               InputProps={{

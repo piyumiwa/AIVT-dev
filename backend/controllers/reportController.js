@@ -611,9 +611,9 @@ exports.searchReports = async (req, res) => {
           array_agg(DISTINCT an.attributeName) AS attributes
         FROM 
           Vulnerability v
-        JOIN 
+        LEFT JOIN 
           Reporter r ON v.reporterId = r.reporterId
-        JOIN 
+        LEFT JOIN 
           Vul_phase p ON v.vulnid = p.vulnid
         LEFT JOIN 
           Effect eff ON p.phId = eff.phId
@@ -725,17 +725,16 @@ exports.getPendingReports = async (req, res) => {
 exports.reviewReport = async (req, res) => {
     const { approval_status, review_comments, sub } = req.body;
     const { id } = req.params;
+    console.log("vulnid:", id);
     
     try {
         const reportResult = await pool.query("SELECT * FROM Vulnerability WHERE vulnid = $1", [id]);
         if (reportResult.rows.length === 0) {
-        return res.status(404).json({ error: "Report not found" });
+            return res.status(404).json({ error: "Report not found" });
         }
 
         await pool.query("UPDATE Vulnerability SET approval_status = $1 WHERE vulnid = $2", [
-        approval_status,
-        id,
-        ]);
+        approval_status, id]);
         
 
         if (approval_status !== "pending") {

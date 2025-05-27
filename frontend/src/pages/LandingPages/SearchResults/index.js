@@ -43,7 +43,7 @@ function SearchResults() {
   useEffect(() => {
     if (!searchQuery) return;
 
-    const url = `https://86.50.228.33/api/vulnerability-db/search?query=${encodeURIComponent(
+    const url = `https://aivt.ouspg.org/api/vulnerability-db/search?query=${encodeURIComponent(
       searchQuery
     )}&phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
 
@@ -56,14 +56,29 @@ function SearchResults() {
       .then((data) => {
         console.log("JSON response:", data);
         if (Array.isArray(data)) {
-          const formattedRows = data.map((vul) => ({
-            id: vul.id,
-            date_added: vul.date_added,
-            title: vul.title,
-            phase: vul.phase,
-            effect: vul.effect,
-            attributes: vul.attributes,
-          }));
+          const formattedRows = data.map((vul) => {
+            let formattedAttributes = vul.attributes;
+
+            if (typeof formattedAttributes === "string") {
+              formattedAttributes = formattedAttributes
+                .replace(/[{}"]/g, "") // remove {}, and any quotes
+                .split(",")
+                .map((attr) => attr.trim()) // remove extra spaces
+                .join(", ");
+            } else if (Array.isArray(formattedAttributes)) {
+              formattedAttributes = formattedAttributes.join(", ");
+            }
+
+            return {
+              id: vul.id,
+              date_added: vul.date_added,
+              title: vul.title,
+              artifact: vul.artifacttype,
+              phase: vul.phase,
+              effects: vul.effect,
+              attributes: formattedAttributes,
+            };
+          });
           setVulnerabilities(formattedRows);
         } else {
           console.error("Fetched data is not an array:", data);

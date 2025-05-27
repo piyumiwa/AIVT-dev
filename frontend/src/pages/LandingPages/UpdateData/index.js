@@ -123,10 +123,15 @@ function UpdateData() {
       }
 
       try {
-        const response = await axios.get(`https://86.50.228.33/api/vulnerability-db/${id}`);
+        const response = await axios.get(`/api/vulnerability-db/${id}`);
         const vulnerability = response.data;
+        const userresponse = await axios.get(`/api/auth/current-user`, {
+          params: { sub: user.sub },
+        });
+        const { role } = userresponse.data;
+        console.log("User role:", role);
 
-        if (vulnerability.reporterEmail === user.email) {
+        if (vulnerability.reporterEmail === user.email || role === "admin") {
           setName(vulnerability.reporterName || "");
           setOrganization(vulnerability.reporterOrganization || "");
           setTitle(vulnerability.title || "");
@@ -188,7 +193,7 @@ function UpdateData() {
     console.log("Form data: ", formData);
 
     axios
-      .put(`https://86.50.228.33/api/vulnerability-db/${id}/edit`, formData, {
+      .put(`/api/vulnerability-db/${id}/edit`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -196,7 +201,7 @@ function UpdateData() {
       .then((response) => {
         // console.log("Report created successfully:", response.data);
         console.log("Report updated successfully:", response.data);
-        navigate("/vulnerability-db");
+        navigate("/api/vulnerability-db");
       })
       .catch((error) => {
         console.error("Error updating report:", error);
@@ -322,11 +327,46 @@ function UpdateData() {
                         value={artifactType}
                         label=" Type"
                         onChange={handleArtifactChange}
-                        disabled
+                        // disabled
                       >
                         <MenuItem value={"web"}>Web Application</MenuItem>
                         <MenuItem value={"api"}>API</MenuItem>
                         <MenuItem value={"mobile"}>Mobile Application</MenuItem>
+                        <MenuItem value={"machine learning"}>Machine Learning</MenuItem>
+                        <MenuItem value={"artificial intelligence"}>
+                          Artificial Intelligence
+                        </MenuItem>
+                        <MenuItem value={"deep learning"}>Deep Learning</MenuItem>
+                        <MenuItem value={"neural network"}>Neural Network</MenuItem>
+                        <MenuItem value={"neural net"}>Neural Net</MenuItem>
+                        <MenuItem value={"language model"}>Language Model</MenuItem>
+                        <MenuItem value={"large language model"}>Large Language Model</MenuItem>
+                        <MenuItem value={"llm"}>LLM</MenuItem>
+                        <MenuItem value={"ml model"}>ML Model</MenuItem>
+                        <MenuItem value={"model inference"}>Model Inference</MenuItem>
+                        <MenuItem value={"training data"}>Training Data</MenuItem>
+                        <MenuItem value={"pretrained model"}>Pretrained Model</MenuItem>
+                        <MenuItem value={"model weights"}>Model Weights</MenuItem>
+                        <MenuItem value={"embedding model"}>Embedding Model</MenuItem>
+                        <MenuItem value={"transformer model"}>Transformer Model</MenuItem>
+                        <MenuItem value={"fine-tuning"}>Fine-Tuning</MenuItem>
+                        <MenuItem value={"prompt injection"}>Prompt Injection</MenuItem>
+                        <MenuItem value={"model serving"}>Model Serving</MenuItem>
+                        <MenuItem value={"model deployment"}>Model Deployment</MenuItem>
+                        <MenuItem value={"inference engine"}>Inference Engine</MenuItem>
+                        <MenuItem value={"ai system"}>AI System</MenuItem>
+                        <MenuItem value={"ai pipeline"}>AI Pipeline</MenuItem>
+                        <MenuItem value={"ai framework"}>AI Framework</MenuItem>
+                        <MenuItem value={"onnx model"}>ONNX Model</MenuItem>
+                        <MenuItem value={"tensorflow"}>TensorFlow</MenuItem>
+                        <MenuItem value={"pytorch"}>PyTorch</MenuItem>
+                        <MenuItem value={"huggingface"}>HuggingFace</MenuItem>
+                        <MenuItem value={"mlops"}>MLOps</MenuItem>
+                        <MenuItem value={"model registry"}>Model Registry</MenuItem>
+                        <MenuItem value={"autoML"}>AutoML</MenuItem>
+                        <MenuItem value={"gradient leakage"}>Gradient Leakage</MenuItem>
+                        <MenuItem value={"membership inference"}>Membership Inference</MenuItem>
+                        <MenuItem value={"model stealing"}>Model Stealing</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>

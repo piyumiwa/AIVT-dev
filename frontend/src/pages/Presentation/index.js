@@ -67,7 +67,7 @@ function Presentation() {
             >
               Welcome to AIVT! A comprehensive and accessible platform for reporting and sharing
               information about AI vulnerabilities, fostering a collaborative community among
-              developers, researchers, and users
+              developers, researchers, and users.
             </MKTypography>
           </Grid>
         </Container>

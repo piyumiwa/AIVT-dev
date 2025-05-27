@@ -10,8 +10,14 @@ crontab -e
 2. Add this line to schedule the job (e.g., every day at 1:00 AM):
 
 ```bash
-0 1 * * * /usr/bin/node /home/ubuntu/AIVT-dev/backend/classifier/index.js >> /var/log/cve-fetch.log 2>&1
+0 1 * * * /usr/bin/node /home/ubuntu/AIVT-dev/backend/classifier/cronTask/dailyUpdate.js >> /home/ubuntu/AIVT-dev/logs/cve-fetch.log 2>&1
 ```
+
+3. Change permission.
+
+´´´
+chmod +x /home/ubuntu/AIVT-dev/backend/classifier/cronTask/dailyUpdate.js
+´´´
 
 ### Explanation
 

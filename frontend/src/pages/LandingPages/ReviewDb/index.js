@@ -45,7 +45,7 @@ function ReviewDb() {
     const fetchUserRole = async () => {
       try {
         // Replace with the endpoint that fetches the user's role
-        const response = await axios.get(`https://86.50.228.33/api/auth/current-user`, {
+        const response = await axios.get(`/api/auth/current-user`, {
           params: { sub: user.sub },
           // headers: {
           //   Authorization: `Bearer ${user.sub}`, // Replace with the actual token if needed
@@ -82,7 +82,7 @@ function ReviewDb() {
     // const url = "/api/test";
     // const url = `https://86.50.228.33/api/vulnerability-db`;
     if (userRole === "admin") {
-      const url = `https://86.50.228.33/api/vulnerability-db/pending?phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
+      const url = `/api/vulnerability-db/pending?phase=${phase}&attribute=${attribute}&effect=${effect}&startDate=${startDate}&endDate=${endDate}`;
 
       axios
         .get(url)
@@ -165,7 +165,7 @@ function ReviewDb() {
       width: 160,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -178,7 +178,7 @@ function ReviewDb() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -191,7 +191,7 @@ function ReviewDb() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -204,7 +204,7 @@ function ReviewDb() {
       width: 135,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -217,7 +217,7 @@ function ReviewDb() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/${params.row.id}/review`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}

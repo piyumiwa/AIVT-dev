@@ -145,7 +145,7 @@ function ReportData() {
     console.log("Form data: ", formData);
 
     axios
-      .post(`https://86.50.228.33/api/report-data`, formData, {
+      .post(`/api/report-data`, formData, {
         termsAgreed: checked,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -194,7 +194,7 @@ function ReportData() {
     if (!user.sub) return;
 
     axios
-      .get(`https://86.50.228.33/api/auth/current-user`, {
+      .get(`/api/auth/current-user`, {
         params: { sub: user.sub },
       })
       .then((response) => {

@@ -17,6 +17,7 @@ app.use(cors({
 }));
 
 // app.use(bodyParser.json());
+app.use(express.json());
 
 // app.use((req, res, next) => {
 //   console.log('Authorization Header:', req.headers.authorization);

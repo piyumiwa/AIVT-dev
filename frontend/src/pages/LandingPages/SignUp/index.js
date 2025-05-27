@@ -42,7 +42,7 @@ function SignInBasic() {
   const handleSubmit = async () => {
     if (isAuthenticated) {
       try {
-        await axios.post("https://86.50.228.33/api/auth/signup", {
+        await axios.post("/api/auth/signup", {
           name: username,
           organization,
         });
