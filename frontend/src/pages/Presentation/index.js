@@ -31,9 +31,9 @@ import bgImage from "assets/images/bg-presentation.jpg";
 function Presentation() {
   return (
     <>
-      <DefaultNavbar transparent light />
+      <DefaultNavbar transparent relative />
       <MKBox
-        minHeight="120vh"
+        minHeight="110vh"
         width="100%"
         sx={{
           backgroundImage: `url(${bgImage})`,
@@ -43,11 +43,12 @@ function Presentation() {
           placeItems: "center",
         }}
       >
-        <Container>
+        <Container sx={{ mt: { xs: 8, md: 8 } }}>
           <Grid container item xs={12} lg={7} justifyContent="center" mx="auto">
             <MKTypography
               variant="h2"
               color="white"
+              textAlign="center"
               mt={-6}
               mb={1}
               sx={({ breakpoints, typography: { size } }) => ({
@@ -56,18 +57,22 @@ function Presentation() {
                 },
               })}
             >
-              AI Vulnerability Taxonomy{" "}
+              AI Vulnerability Taxonomy
             </MKTypography>
             <MKTypography
               variant="body1"
               color="white"
               textAlign="center"
-              px={{ xs: 6, lg: 12 }}
+              // px={{ xs: 6, lg: 6 }}
               mt={1}
             >
-              Welcome to AIVT! A comprehensive and accessible platform for reporting and sharing
-              information about AI vulnerabilities, fostering a collaborative community among
-              developers, researchers, and users.
+              AIVT is a collaborative platform designed to support the structured reporting,
+              classification, and sharing of vulnerabilities specific to AI systems. This platform
+              enables developers, researchers, security analysts, and policymakers to identify,
+              document, and analyze AI-related risks across the entire system lifecycle, from
+              development to deployment. Together, we aim to bridge the gap between traditional
+              cybersecurity and the rapidly evolving AI landscape, making AI systems safer, more
+              trustworthy, and resilient for everyone.
             </MKTypography>
           </Grid>
         </Container>

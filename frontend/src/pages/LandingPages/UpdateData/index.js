@@ -79,7 +79,6 @@ const style = {
 
 function UpdateData() {
   const [checked, setChecked] = useState(false);
-
   const { id } = useParams();
   const [name, setName] = useState("");
   const [organization, setOrganization] = useState("");
@@ -142,7 +141,9 @@ function UpdateData() {
           setPhase(vulnerability.phase || "");
           setPhase_description(vulnerability.phaseDescription || "");
           setAttributeName(
-            vulnerability.attributeName ? vulnerability.attributeName.split(",") : []
+            vulnerability.attributeName
+              ? vulnerability.attributeName.split(",").map((attr) => attr.trim())
+              : []
           );
           setAttr_description(vulnerability.attr_Description || "");
           setEffectName(vulnerability.effectName || "");
@@ -166,11 +167,16 @@ function UpdateData() {
   }
 
   const handleSubmit = (event) => {
+    if (!checked) {
+      alert("You must agree to the Terms and Conditions before submitting.");
+      return;
+    }
+
     event.preventDefault();
 
     const formData = new FormData();
-    formData.append("name", name);
-    formData.append("organization", organization);
+    // formData.append("name", name);
+    // formData.append("organization", organization);
     formData.append("title", title);
     formData.append("report_description", report_description);
     formData.append("artifactType", artifactType);
@@ -183,8 +189,8 @@ function UpdateData() {
     formData.append("attr_description", attr_description);
     formData.append("effectName", effectName);
     formData.append("eff_description", eff_description);
-    formData.append("sub", user.sub);
-    formData.append("email", user.email);
+    // formData.append("sub", user.sub);
+    // formData.append("email", user.email);
 
     attachments.forEach((file) => {
       formData.append("attachments", file);
@@ -201,7 +207,7 @@ function UpdateData() {
       .then((response) => {
         // console.log("Report created successfully:", response.data);
         console.log("Report updated successfully:", response.data);
-        navigate("/api/vulnerability-db");
+        navigate("/vulnerability-db");
       })
       .catch((error) => {
         console.error("Error updating report:", error);
@@ -325,48 +331,29 @@ function UpdateData() {
                         labelId="demo-simple-select-standard-label"
                         id="demo-simple-select-standard"
                         value={artifactType}
-                        label=" Type"
+                        label="artifactType"
                         onChange={handleArtifactChange}
-                        // disabled
                       >
-                        <MenuItem value={"web"}>Web Application</MenuItem>
-                        <MenuItem value={"api"}>API</MenuItem>
-                        <MenuItem value={"mobile"}>Mobile Application</MenuItem>
-                        <MenuItem value={"machine learning"}>Machine Learning</MenuItem>
-                        <MenuItem value={"artificial intelligence"}>
-                          Artificial Intelligence
+                        <MenuItem value={"Web Application"}>Web Application</MenuItem>
+                        <MenuItem value={"Desktop Application"}>Desktop Application</MenuItem>
+                        <MenuItem value={"Mobile Application"}>Mobile Application</MenuItem>
+                        <MenuItem value={"API"}>API</MenuItem>
+                        <MenuItem value={"AI Model (Standalone)"}>AI Model (Standalone)</MenuItem>
+                        <MenuItem value={"Dataset"}>Dataset</MenuItem>
+                        <MenuItem value={"Inference Service"}>Inference Service</MenuItem>
+                        <MenuItem value={"Edge Device"}>Edge Device</MenuItem>
+                        <MenuItem value={"Chatbot"}>Chatbot</MenuItem>
+                        <MenuItem value={"LLM Plugin / Extension"}>LLM Plugin / Extension</MenuItem>
+                        <MenuItem value={"ML Pipeline"}>ML Pipeline</MenuItem>
+                        <MenuItem value={"AutoML System"}>AutoML System</MenuItem>
+                        <MenuItem value={"Recommendation System"}>Recommendation System</MenuItem>
+                        <MenuItem value={"Autonomous Vehicle Software"}>
+                          Autonomous Vehicle Software
                         </MenuItem>
-                        <MenuItem value={"deep learning"}>Deep Learning</MenuItem>
-                        <MenuItem value={"neural network"}>Neural Network</MenuItem>
-                        <MenuItem value={"neural net"}>Neural Net</MenuItem>
-                        <MenuItem value={"language model"}>Language Model</MenuItem>
-                        <MenuItem value={"large language model"}>Large Language Model</MenuItem>
-                        <MenuItem value={"llm"}>LLM</MenuItem>
-                        <MenuItem value={"ml model"}>ML Model</MenuItem>
-                        <MenuItem value={"model inference"}>Model Inference</MenuItem>
-                        <MenuItem value={"training data"}>Training Data</MenuItem>
-                        <MenuItem value={"pretrained model"}>Pretrained Model</MenuItem>
-                        <MenuItem value={"model weights"}>Model Weights</MenuItem>
-                        <MenuItem value={"embedding model"}>Embedding Model</MenuItem>
-                        <MenuItem value={"transformer model"}>Transformer Model</MenuItem>
-                        <MenuItem value={"fine-tuning"}>Fine-Tuning</MenuItem>
-                        <MenuItem value={"prompt injection"}>Prompt Injection</MenuItem>
-                        <MenuItem value={"model serving"}>Model Serving</MenuItem>
-                        <MenuItem value={"model deployment"}>Model Deployment</MenuItem>
-                        <MenuItem value={"inference engine"}>Inference Engine</MenuItem>
-                        <MenuItem value={"ai system"}>AI System</MenuItem>
-                        <MenuItem value={"ai pipeline"}>AI Pipeline</MenuItem>
-                        <MenuItem value={"ai framework"}>AI Framework</MenuItem>
-                        <MenuItem value={"onnx model"}>ONNX Model</MenuItem>
-                        <MenuItem value={"tensorflow"}>TensorFlow</MenuItem>
-                        <MenuItem value={"pytorch"}>PyTorch</MenuItem>
-                        <MenuItem value={"huggingface"}>HuggingFace</MenuItem>
-                        <MenuItem value={"mlops"}>MLOps</MenuItem>
-                        <MenuItem value={"model registry"}>Model Registry</MenuItem>
-                        <MenuItem value={"autoML"}>AutoML</MenuItem>
-                        <MenuItem value={"gradient leakage"}>Gradient Leakage</MenuItem>
-                        <MenuItem value={"membership inference"}>Membership Inference</MenuItem>
-                        <MenuItem value={"model stealing"}>Model Stealing</MenuItem>
+                        <MenuItem value={"Smart Contract (AI-integrated)"}>
+                          Smart Contract (AI-integrated)
+                        </MenuItem>
+                        <MenuItem value={"Virtual Assistant"}>Virtual Assistant</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>

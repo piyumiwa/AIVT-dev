@@ -15,6 +15,9 @@ import ReviewDb from "pages/LandingPages/ReviewDb";
 import ReviewData from "pages/LandingPages/ReviewData";
 import RejectedDb from "pages/LandingPages/RejectedDb";
 import SearchResults from "pages/LandingPages/SearchResults";
+import TnC from "pages/LandingPages/TnC";
+import Privacy from "pages/LandingPages/Privacy";
+import Licenses from "pages/LandingPages/Licenses";
 
 export default function App() {
   const { pathname } = useLocation();
@@ -50,7 +53,9 @@ export default function App() {
           element={<ProtectedRouteReporter element={ReviewData} />}
         />
         <Route path="/search-results" element={<SearchResults />} />
-        {/* <Route path="*" element={<Navigate to="/" />} /> */}
+        <Route path="/terms-and-conditions" element={<TnC />} />
+        <Route path="/privacy-policy" element={<Privacy />} />
+        <Route path="/licenses" element={<Licenses />} />
       </Routes>
     </ThemeProvider>
   );

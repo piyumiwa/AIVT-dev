@@ -26,7 +26,7 @@ import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import footerRoutes from "footer.routes";
 import bgImage from "assets/images/bg-db.jpg";
 
-const paginationModel = { page: 0, pageSize: 5 };
+const paginationModel = { page: 0, pageSize: 15 };
 
 function ReviewDb() {
   const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
@@ -361,7 +361,7 @@ function ReviewDb() {
             </MKButton>
           </Grid>
         </Grid>
-        <Paper sx={{ height: 400, width: "100%" }}>
+        <Paper sx={{ height: 800, width: "100%" }}>
           <DataGrid
             rows={vulnerabilities}
             columns={columns}

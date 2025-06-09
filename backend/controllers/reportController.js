@@ -419,7 +419,13 @@ exports.updateReport = async (req, res) => {
         phase_description,
         attr_description,
         eff_description,
-        deleteAttachments
+        deleteAttachments,
+        artifactType,
+        developer,
+        deployer,
+        phase,
+        attributeName,
+        effectName
     } = req.body;
 
     const files = req.files;
@@ -428,7 +434,7 @@ exports.updateReport = async (req, res) => {
     try {
         await client.query('BEGIN');
 
-        // Update the Vulnerability table
+        // Step 1: Update Vulnerability
         let vulReportUpdates = [];
         let vulReportValues = [];
         let queryIndex = 1;
@@ -445,7 +451,7 @@ exports.updateReport = async (req, res) => {
         if (vulReportUpdates.length > 0) {
             const updateVulReportQuery = `
                 UPDATE Vulnerability 
-                SET ${vulReportUpdates.join(', ')}
+                SET ${vulReportUpdates.join(', ')} 
                 WHERE vulnid = $${queryIndex}
                 RETURNING *`;
             vulReportValues.push(id);
@@ -457,15 +463,17 @@ exports.updateReport = async (req, res) => {
             }
         }
 
-        // Update Vul_phase and get phId
+        // Step 2: Update Vul_phase
         let phId;
         if (phase_description) {
-            const updateVulPhaseQuery = `
-                UPDATE Vul_phase 
-                SET phase_description = $1 
-                WHERE vulnid = $2 
-                RETURNING phId`;
-            const resultVulPhase = await client.query(updateVulPhaseQuery, [phase_description, id]);
+            const resultVulPhase = await client.query(
+                `UPDATE Vul_phase 
+                 SET phase_description = $1,
+                     phase = $2
+                 WHERE vulnid = $3 
+                 RETURNING phId`,
+                [phase_description, phase, id]
+            );
 
             if (resultVulPhase.rows.length === 0) {
                 await client.query('ROLLBACK');
@@ -477,38 +485,80 @@ exports.updateReport = async (req, res) => {
             phId = resultVulPhase.rows.length > 0 ? resultVulPhase.rows[0].phid : null;
         }
 
-        // Update Attribute and Effect if phId is available
+        // Step 3: Update Attribute and Effect
         if (phId) {
+            // Update attr_description (optional)
             if (attr_description) {
-                const updateAttributeQuery = `
-                    UPDATE Attribute 
-                    SET attr_description = $1 
-                    WHERE phId = $2`;
-                await client.query(updateAttributeQuery, [attr_description, phId]);
+                await client.query(
+                    'UPDATE Attribute SET attr_description = $1 WHERE phId = $2',
+                    [attr_description, phId]
+                );
             }
 
-            if (eff_description) {
-                const updateEffectQuery = `
-                    UPDATE Effect 
-                    SET eff_description = $1 
-                    WHERE phId = $2`;
-                await client.query(updateEffectQuery, [eff_description, phId]);
+            // Update eff_description (optional)
+            if (effectName) {
+                await client.query(
+                    'UPDATE Effect SET eff_description = $1, effectName = $2 WHERE phId = $3',
+                    [eff_description, effectName, phId]
+                );
+            }
+
+            // Update attributeName
+            if (attributeName) {
+                const attributeArray = Array.isArray(attributeName)
+                    ? attributeName
+                    : attributeName ? [attributeName] : [];
+
+                // Step 1: Get attributeTypeId linked to this phase
+                const attributeTypeResult = await client.query(
+                    'SELECT attributeTypeId FROM Attribute WHERE phId = $1',
+                    [phId]
+                );
+
+                if (attributeTypeResult.rows.length > 0) {
+                    const attributeTypeId = attributeTypeResult.rows[0].attributetypeid;
+
+                    // Step 2: Delete existing attribute mappings
+                    await client.query(
+                        'DELETE FROM All_attributes WHERE attributeTypeId = $1',
+                        [attributeTypeId]
+                    );
+
+                    // Step 3: Re-insert updated attributes
+                    for (const attrName of attributeArray) {
+                        let attributeId;
+                        const existingAttr = await client.query(
+                            'SELECT attributeId FROM Attribute_names WHERE attributeName = $1',
+                            [attrName]
+                        );
+
+                        if (existingAttr.rows.length > 0) {
+                            attributeId = existingAttr.rows[0].attributeid;
+                        } else {
+                            const newAttr = await client.query(
+                                'INSERT INTO Attribute_names (attributeName) VALUES ($1) RETURNING attributeId',
+                                [attrName]
+                            );
+                            attributeId = newAttr.rows[0].attributeid;
+                        }
+
+                        await client.query(
+                            'INSERT INTO All_attributes (attributeTypeId, attributeId) VALUES ($1, $2)',
+                            [attributeTypeId, attributeId]
+                        );
+                    }
+                }
             }
         }
 
-        // Handle deletion of existing attachments
+        // Step 4: Handle deletion of attachments
         if (deleteAttachments) {
-            const deleteAttachmentsArray = JSON.parse(deleteAttachments); // Parse JSON string
-        
+            const deleteAttachmentsArray = JSON.parse(deleteAttachments);
             for (const filename of deleteAttachmentsArray) {
-                const deleteFilePath = path.join('uploads', filename);
-        
-                // Remove file from filesystem
+                const deleteFilePath = path.join(__dirname, '..', 'uploads', id.toString(), filename);
                 if (fs.existsSync(deleteFilePath)) {
                     fs.unlinkSync(deleteFilePath);
                 }
-        
-                // Remove file reference from the database
                 await client.query(
                     'DELETE FROM Attachments WHERE infoid = $1 AND filename = $2',
                     [id, filename]
@@ -516,17 +566,23 @@ exports.updateReport = async (req, res) => {
             }
         }
 
-        // Get artifactId for the report
+        // Step 5: Get artifactId
         let artifactId;
         const artifactResult = await client.query('SELECT artifactId FROM Artifact WHERE vulnid = $1', [id]);
         if (artifactResult.rows.length > 0) {
             artifactId = artifactResult.rows[0].artifactid;
+            if (artifactType || developer || deployer) {
+                await client.query(
+                    'UPDATE Artifact SET artifactType = $1, developer = $2, deployer = $3 WHERE artifactId = $4',
+                    [artifactType, developer, deployer, artifactId]
+                );
+            }
         } else {
             await client.query('ROLLBACK');
             return res.status(404).json({ error: 'Artifact not found for this report' });
         }
 
-        // Handle new file uploads
+        // Step 6: Handle file uploads
         if (files && files.length > 0) {
             const attachmentDir = path.join(__dirname, '..', 'uploads', id.toString());
             if (!fs.existsSync(attachmentDir)) {
@@ -548,14 +604,27 @@ exports.updateReport = async (req, res) => {
 
         await client.query('COMMIT');
         res.json({ message: 'Report and related details updated successfully' });
+        console.log("Update report payload:", {
+            title,
+            report_description,
+            phase_description,
+            attr_description,
+            eff_description,
+            effectName,
+            attributeName,
+            files,
+            deleteAttachments
+        });
     } catch (err) {
         await client.query('ROLLBACK');
-        console.error(err.message);
+        // console.error(err.message);
+        console.error("Full error:", err);
         res.status(500).json({ error: 'Internal server error' });
     } finally {
         client.release();
     }
 };
+
 
 exports.deleteReport = async (req, res) => {
     const { id } = req.params;
@@ -571,6 +640,7 @@ exports.deleteReport = async (req, res) => {
         await client.query('DELETE FROM Effect WHERE phId IN (SELECT phId FROM Vul_phase WHERE vulnid = $1)', [id]);
         await client.query('DELETE FROM Vul_phase WHERE vulnid = $1', [id]);
         await client.query('DELETE FROM Artifact WHERE vulnid = $1', [id]);
+        await client.query('DELETE FROM Admin_review WHERE vulnid = $1', [id]);
 
         // Finally, delete from Vulnerability
         const result = await client.query('DELETE FROM Vulnerability WHERE vulnid = $1 RETURNING *', [id]);
@@ -605,6 +675,8 @@ exports.searchReports = async (req, res) => {
           v.vulnid AS id, 
           v.title, 
           v.date_added,
+          v.report_description,
+          a.artifactType,
           r.organization,
           p.phase,
           eff.effectName AS effect,
@@ -613,6 +685,8 @@ exports.searchReports = async (req, res) => {
           Vulnerability v
         LEFT JOIN 
           Reporter r ON v.reporterId = r.reporterId
+        LEFT JOIN
+            Artifact a ON v.vulnid = a.vulnid
         LEFT JOIN 
           Vul_phase p ON v.vulnid = p.vulnid
         LEFT JOIN 
@@ -627,17 +701,20 @@ exports.searchReports = async (req, res) => {
           v.approval_status = 'approved'
           AND (
             v.title ILIKE $1
+            OR v.report_description ILIKE $1
             OR r.organization ILIKE $1 
             OR p.phase::TEXT ILIKE $1
             OR eff.effectName::TEXT ILIKE $1
           )
         GROUP BY 
-          v.vulnid, 
-          v.title, 
-          v.date_added,
-          r.organization,
-          p.phase,
-          eff.effectName
+            v.vulnid, 
+            v.title, 
+            v.date_added,
+            v.report_description,
+            a.artifactType,
+            r.organization,
+            p.phase,
+            eff.effectName
       `, [`%${query}%`]);
   
       res.json(result.rows);
@@ -645,7 +722,7 @@ exports.searchReports = async (req, res) => {
       console.error(err.message);
       res.status(500).json({ error: 'Internal server error' });
     }
-  };
+};
 
 exports.getPendingReports = async (req, res) => {
     const { phase, attribute, effect, startDate, endDate } = req.query;

@@ -31,7 +31,7 @@ function LinkToDatabse() {
       <Container>
         <Grid container item xs={12} lg={6} sx={{ ml: { xs: 0, lg: 6 } }}>
           <MKTypography variant="h4" color="white" fontWeight="bold">
-            Buitl by OUSPG
+            Built by OUSPG
           </MKTypography>
           <MKTypography variant="h1" color="white" mb={1} sx={{ mt: 3 }}>
             AIVT Database

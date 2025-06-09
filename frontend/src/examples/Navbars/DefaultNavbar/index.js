@@ -42,7 +42,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
 
     if (value.length > 0) {
       try {
-        const response = await axios.get(`https://aivt.ouspg.org/api/vulnerability-db/search`, {
+        const response = await axios.get(`/api/vulnerability-db/search`, {
           params: { query: value },
         });
         console.log("Search API Response:", response.data);
@@ -104,6 +104,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
         shadow={transparent ? "none" : "md"}
         color={light ? "white" : "dark"}
         position={relative ? "relative" : "absolute"}
+        // position={{ xs: "relative", md: relative ? "relative" : "absolute" }}
         left={0}
         zIndex={3}
         sx={({ palette: { transparent: transparentColor, white }, functions: { rgba } }) => ({
@@ -125,7 +126,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
           </MKBox>
 
           {/* Search Input */}
-          <MKBox
+          {/* <MKBox
             sx={{
               position: "relative",
               flexGrow: 1,
@@ -133,8 +134,16 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
               mx: 2,
               backgroundColor: "rgba(255, 255, 255, 0.2)",
             }}
+          > */}
+          <MKBox
+            sx={{
+              position: "relative",
+              flexGrow: 1,
+              maxWidth: 400,
+              mx: 2,
+            }}
           >
-            <TextField
+            {/* <TextField
               fullWidth
               variant="outlined"
               size="small"
@@ -173,8 +182,49 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
                 ),
               }}
               onBlur={() => setTimeout(() => setSearchResults([]), 150)}
+            /> */}
+            <TextField
+              fullWidth
+              variant="outlined"
+              size="small"
+              placeholder="Search vulnerabilities..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyDown={handleSearchSubmit}
+              sx={{
+                backgroundColor: "#f5f5f5", // Light background
+                borderRadius: 1,
+                "& .MuiInputBase-input": {
+                  color: "#000", // Black text
+                  "::placeholder": {
+                    color: "#555",
+                    opacity: 1,
+                  },
+                },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "#ccc",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#aaa",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#1976d2",
+                  },
+                },
+                "& .MuiInputAdornment-root": {
+                  color: "#000",
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: "#000", marginRight: 1 }} />
+                  </InputAdornment>
+                ),
+              }}
+              onBlur={() => setTimeout(() => setSearchResults([]), 150)}
             />
-
             {searchResults.length > 0 && (
               <Paper
                 elevation={3}

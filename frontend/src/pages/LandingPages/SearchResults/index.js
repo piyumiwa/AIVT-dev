@@ -26,7 +26,7 @@ import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import footerRoutes from "footer.routes";
 import bgImage from "assets/images/bg-db.jpg";
 
-const paginationModel = { page: 0, pageSize: 5 };
+const paginationModel = { page: 0, pageSize: 15 };
 
 function SearchResults() {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
@@ -225,15 +225,12 @@ function SearchResults() {
               Vulnerability Search Results
             </MKTypography>
             <MKTypography variant="body1" color="white" opacity={0.8} mt={1} mb={3}>
-              Results for your seach is shwon below. See all the vulnerabilities
+              Results for your seach is shown below. See all the vulnerabilities
               <MKTypography
                 component="a"
                 href="/vulnerability-db"
                 // target="_blank"
                 rel="noreferrer"
-                variant="body2"
-                color="white"
-                fontWeight="regular"
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -334,12 +331,12 @@ function SearchResults() {
             </MKButton>
           </Grid>
         </Grid>
-        <Paper sx={{ height: 400, width: "100%" }}>
+        <Paper sx={{ height: 600, width: "100%" }}>
           <DataGrid
             rows={vulnerabilities}
             columns={columns}
             initialState={{ pagination: { paginationModel } }}
-            pageSizeOptions={[5, 10]}
+            pageSizeOptions={[10, 10]}
             checkboxSelection
             sx={{ border: 0 }}
           />
