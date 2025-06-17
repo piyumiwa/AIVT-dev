@@ -374,7 +374,7 @@ function ReviewData() {
               color="info"
               icon="apps"
               title="Recorded date"
-              description={vulnerability.date_added}
+              description={vulnerability.date_added?.slice(0, 10)}
             />
           </Grid>
           <Grid item xs={12} md={4}>
@@ -382,39 +382,72 @@ function ReviewData() {
               color="info"
               icon="apps"
               title="Last updated date"
-              description={vulnerability.last_updated}
+              description={vulnerability.last_updated?.slice(0, 10)}
             />
           </Grid>
         </Grid>
         <Grid container spacing={2} justifyContent="left">
           <Grid item xs={12} sm={6} md={4}>
-            <MKBox
-              p={2}
-              sx={{
-                textAlign: "left",
-              }}
-            >
-              <MKTypography variant="body1">Report submitted by:</MKTypography>
-              <MKTypography variant="body2">{vulnerability.reporterOrganization}</MKTypography>
-            </MKBox>
-            <MKBox
-              p={2}
-              sx={{
-                textAlign: "left",
-              }}
-            >
-              <MKTypography variant="body1">Developer of the system: </MKTypography>
-              <MKTypography variant="body2">{vulnerability.developer}</MKTypography>
-            </MKBox>
-            <MKBox
-              p={2}
-              sx={{
-                textAlign: "left",
-              }}
-            >
-              <MKTypography variant="body1">Deployer of the system: </MKTypography>
-              <MKTypography variant="body2">{vulnerability.deployer}</MKTypography>
-            </MKBox>
+            {vulnerability.reporterOrganization && (
+              <MKBox
+                p={2}
+                sx={{
+                  textAlign: "left",
+                }}
+              >
+                <MKTypography variant="body1">Report submitted by:</MKTypography>
+                <MKTypography variant="body2">{vulnerability.reporterOrganization}</MKTypography>
+              </MKBox>
+            )}
+            {vulnerability.source && (
+              <MKBox
+                p={2}
+                sx={{
+                  textAlign: "left",
+                }}
+              >
+                <MKTypography variant="body1">Report source:</MKTypography>
+                <MKTypography variant="body2">{vulnerability.source}</MKTypography>
+              </MKBox>
+            )}
+            {vulnerability.developer && (
+              <MKBox
+                p={2}
+                sx={{
+                  textAlign: "left",
+                }}
+              >
+                <MKTypography variant="body1">Developer of the system: </MKTypography>
+                <MKTypography variant="body2">{vulnerability.developer}</MKTypography>
+              </MKBox>
+            )}
+            {vulnerability.deployer && (
+              <MKBox
+                p={2}
+                sx={{
+                  textAlign: "left",
+                }}
+              >
+                <MKTypography variant="body1">Deployer of the system: </MKTypography>
+                <MKTypography variant="body2">{vulnerability.deployer}</MKTypography>
+              </MKBox>
+            )}
+            {vulnerability.cve_link && (
+              <MKBox
+                p={2}
+                sx={{
+                  textAlign: "left",
+                }}
+              >
+                <MKTypography variant="body1">CVE Link: </MKTypography>
+                <MKTypography variant="body2">
+                  Access the CVE details{" "}
+                  <a href={vulnerability.cve_link} target="_blank" rel="noopener noreferrer">
+                    here..
+                  </a>
+                </MKTypography>
+              </MKBox>
+            )}
             <MKBox
               p={2}
               sx={{

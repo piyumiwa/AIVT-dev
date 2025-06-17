@@ -66,7 +66,21 @@ function Information() {
                 <DefaultInfoCard
                   icon="privacy_tip"
                   title="Transform AI Security"
-                  description="Dive into the Most Detailed AI Vulnerability Taxonomy Yet!"
+                  description={
+                    <>
+                      Dive into the Most Detailed AI Vulnerability Taxonomy Yet! Access the
+                      published document of AIVT taxonomy{" "}
+                      <a
+                        href="https://www.doria.fi/handle/10024/192750"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: "underline", color: "#007bff" }} // optional styling
+                      >
+                        here
+                      </a>
+                      .
+                    </>
+                  }
                 />
               </Grid>
             </Grid>

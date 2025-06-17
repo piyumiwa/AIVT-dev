@@ -74,7 +74,7 @@ CREATE TABLE Artifact (
 CREATE TABLE Vul_phase (
     phId SERIAL PRIMARY KEY,
     phase phase_enum,
-    phase_description VARCHAR(510),
+    phase_description TEXT,
     vulnid INTEGER,
     FOREIGN KEY (vulnid) REFERENCES Vulnerability(vulnid)
 );
@@ -82,7 +82,7 @@ CREATE TABLE Vul_phase (
 -- Create table Attribute_type
 CREATE TABLE Attribute (
     attributeTypeId SERIAL PRIMARY KEY,
-    attr_description VARCHAR(510),
+    attr_description TEXT,
     phId INTEGER,
     FOREIGN KEY (phId) REFERENCES Vul_phase(phId)
 );
@@ -106,7 +106,7 @@ CREATE TABLE All_attributes (
 CREATE TABLE Effect (
     effectTypeId SERIAL PRIMARY KEY,
     effectName effect_enum,
-    eff_description VARCHAR(510),
+    eff_description TEXT,
     phId INTEGER,
     FOREIGN KEY (phId) REFERENCES Vul_phase(phId)
 );
