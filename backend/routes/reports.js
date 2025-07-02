@@ -15,9 +15,11 @@ router.get('/vulnerability-db/search', reportController.searchReports);
 router.get('/vulnerability-db/pending', reportController.getPendingReports);
 router.get('/vulnerability-db/rejected', reportController.rejectedReports);
 
-router.get('/vulnerability-db/:id', reportController.getReportById);
+router.get('/vulnerability-db/id/:id', reportController.getReportById);
+router.get('/vulnerability-db/token/:token', reportController.getReportByToken);
 // router.put('/vulnerability-db/:id/edit', authMiddleware, checkOwner, upload.array('attachments'), reportController.updateReport);
-router.put('/vulnerability-db/:id/edit', upload.array('attachments'), reportController.updateReport);
+router.put('/vulnerability-db/editid/:id', upload.array('attachments'), reportController.updateReport);
+router.put('/vulnerability-db/edittoken/:token', upload.array('attachments'), reportController.updateReportByToken);
 router.delete('/vulnerability-db/:id/delete', reportController.deleteReport);
 router.put('/vulnerability-db/:id/review', reportController.reviewReport);
 router.get('/vulnerability-db/:id/comments', reportController.reportComments);

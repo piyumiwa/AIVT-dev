@@ -2,6 +2,7 @@ const pool = require('../config/database');
 const { fetchUserById } = require('../controllers/userController');
 const path = require('path');
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 // const jwt = require('jsonwebtoken');
 
 exports.getAllReports = async (req, res) => {
@@ -81,6 +82,7 @@ exports.getAllReports = async (req, res) => {
 
 exports.createReport = async (req, res) => {
     console.log('Received request for /report-data');
+    const token = uuidv4();
     const {
         sub, 
         email,
@@ -130,20 +132,6 @@ exports.createReport = async (req, res) => {
             'SELECT reporterId FROM Reporter WHERE reporterid = $1',
             [reporterId]
         );
-        
-        //  if (reporterQuery.rows.length === 0) {
-        //     // Insert new reporter if not found
-        //     reporterQuery = await client.query(
-        //         'INSERT INTO Reporter (reporterId, name, organization, email) VALUES ($1, $2, $3, $4) RETURNING reporterId',
-        //         [reporterId, name, organization, email]
-        //     );
-        // } else {
-        //     // Update existing reporter details
-        //     await client.query(
-        //         'UPDATE Reporter SET name = $1, organization = $2 WHERE reporterId = $3',
-        //         [name, organization, reporterId]
-        //     );
-        // }
 
         if (reporterQuery.rows.length === 0) {
             return res.status(404).json({ error: 'Reporter not found' });
@@ -158,8 +146,8 @@ exports.createReport = async (req, res) => {
 
         // Insert into Vulnerability
         const reportResult = await client.query(
-            'INSERT INTO Vulnerability (title, report_description, reporterId) VALUES ($1, $2, $3) RETURNING vulnid',
-            [title, report_description, reporterId]
+            'INSERT INTO Vulnerability (token, title, report_description, reporterId) VALUES ($1, $2, $3, $4) RETURNING vulnid',
+            [token, title, report_description, reporterId]
         );
         const vulnid = reportResult.rows[0].vulnid;
 
@@ -183,36 +171,6 @@ exports.createReport = async (req, res) => {
             [attr_description, phId]
         );
         const attributeTypeId = attributeTypeResult.rows[0].attributetypeid;
-
-        // Insert into Attribute_names and All_attributes
-        // for (let i = 0; i < attributeTypeArray.length; i++) {
-        //     const attributeName = attributeTypeArray[i];
-
-        //     // Retrieve the attributeId from Attribute_names
-        //     const attributeNameResult = await client.query(
-        //         'SELECT attributeId FROM Attribute_names WHERE attributeName = $1',
-        //         [attributeName]
-        //     );
-
-        //     let attributeId;
-            
-        //     if (attributeNameResult.rows.length === 0) {
-        //         // If the attributeName does not exist, insert it into Attribute_names
-        //         const newAttributeNameResult = await client.query(
-        //             'INSERT INTO Attribute_names (attributeName) VALUES ($1) RETURNING attributeId',
-        //             [attributeName]
-        //         );
-        //         attributeId = newAttributeNameResult.rows[0].attributeid;
-        //     } else {
-        //         attributeId = attributeNameResult.rows[0].attributeid;
-        //     }
-
-        //     // Insert into All_attributes
-        //     await client.query(
-        //         'INSERT INTO All_attributes (attributeTypeId, attributeId) VALUES ($1, $2)',
-        //         [attributeTypeId, attributeId]
-        //     );
-        // }
 
         for (let i = 0; i < attributeTypeArray.length; i++) {
             const attrName = attributeTypeArray[i];
@@ -265,7 +223,7 @@ exports.createReport = async (req, res) => {
         }
 
         await client.query('COMMIT');
-        res.status(201).json({ vulnid });
+        res.status(201).json({ vulnid, token });
     } catch (err) {
         await client.query('ROLLBACK');
         console.error('Error during the transaction', err.message);
@@ -401,6 +359,355 @@ exports.getReportById = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.fetchReportByToken = async (token) => {
+    try {
+        const result = await pool.query(`
+            SELECT 
+                v.vulnid AS id, 
+                v.date_added,
+                v.title, 
+                v.report_description,
+                v.last_updated,
+                v.source,
+                v.approval_status,
+                v.cve_link,
+                array_agg(DISTINCT ad.review_comments) AS review_comments, 
+                a.artifactType,
+                a.developer, 
+                a.deployer, 
+                a.artifactId, 
+                r.reporterId,
+                r.name AS reporterName,
+                r.email AS reporterEmail,
+                r.organization AS reporterOrganization,
+                r.role AS reporterRole, 
+                p.phase,
+                p.phase_description AS phaseDescription,
+                array_agg(DISTINCT an.attributeName) AS attributes,
+                attr.attr_description AS attr_Description,
+                eff.effectName AS effect,
+                eff.eff_description AS eff_Description,
+                array_agg(DISTINCT att.attachments) AS attachments,
+                array_agg(DISTINCT att.filename) AS attachmentFilenames,
+                array_agg(DISTINCT att.mimeType) AS attachmentMimeTypes
+            FROM 
+                Vulnerability v
+            LEFT JOIN 
+                Artifact a ON v.vulnid = a.vulnid
+            LEFT JOIN 
+                Reporter r ON v.reporterId = r.reporterId
+            LEFT JOIN 
+                Vul_phase p ON v.vulnid = p.vulnid
+            LEFT JOIN
+                Admin_review ad ON v.vulnid = ad.vulnid
+            LEFT JOIN 
+                Attribute attr ON p.phId = attr.phId
+            LEFT JOIN 
+                All_attributes aa ON attr.attributeTypeId = aa.attributeTypeId
+            LEFT JOIN 
+                Attribute_names an ON aa.attributeId = an.attributeId
+            LEFT JOIN 
+                Effect eff ON p.phId = eff.phId
+            LEFT JOIN 
+                Attachments att ON a.artifactId = att.artifactId
+            WHERE 
+                v.token = $1
+            GROUP BY 
+                v.vulnid, a.artifactId, r.reporterId, ad.review_id, 
+                p.phase, p.phase_description, attr.attr_description, 
+                eff.effectName, eff.eff_description
+            `, [token]);
+
+        if (result.rows.length === 0) {
+            return null;
+        }
+
+        const rawAttributes = result.rows[0].attributes;
+
+        const formattedAttributes = Array.isArray(rawAttributes)
+            ? rawAttributes.join(', ')
+            : rawAttributes.replace(/[{}"]/g, '').split(',').map(attr => attr.trim()).join(', ');
+
+        return {
+            id: result.rows[0].id,
+            title: result.rows[0].title,
+            date_added: result.rows[0].date_added,
+            report_description: result.rows[0].report_description,
+            last_updated: result.rows[0].last_updated,
+            source: result.rows[0].source,
+            approval_status: result.rows[0].approval_status,
+            cve_link: result.rows[0].cve_link,
+            review_comments: result.rows[0].review_comments,
+            artifactName: result.rows[0].artifactname,
+            artifactType: result.rows[0].artifacttype,
+            developer: result.rows[0].developer,
+            deployer: result.rows[0].deployer,
+            reporterId: result.rows[0].reporterid,
+            reporterName: result.rows[0].reportername,
+            reporterEmail: result.rows[0].reporteremail,
+            reporterOrganization: result.rows[0].reporterorganization,
+            reporterRole: result.rows[0].reporterrole,
+            phase: result.rows[0].phase,
+            phaseDescription: result.rows[0].phasedescription,
+            attributeName: formattedAttributes,
+            attr_Description: result.rows[0].attr_description,
+            effectName: result.rows[0].effect, 
+            eff_Description: result.rows[0].eff_description,
+            attachments: result.rows[0].attachmentfilenames.map((filename, index) => ({
+                filename: filename,
+                mimeType: result.rows[0].attachmentmimetypes[index]
+            }))
+        };
+
+    } catch (err) {
+        console.error(err.message);
+        throw new Error('Database query failed');
+    }
+};
+
+exports.getReportByToken = async (req, res) => {
+    const { token } = req.params;
+    console.log("Fetching report by token:", token);
+
+    try {
+        const reportData = await exports.fetchReportByToken(token);
+
+        if (!reportData) {
+            return res.status(404).json({ error: 'Report not found' });
+        }
+
+        res.json(reportData);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.updateReportByToken = async (req, res) => {
+    const { token } = req.params;
+    const {
+        title,
+        report_description,
+        phase_description,
+        attr_description,
+        eff_description,
+        artifactType,
+        developer,
+        deployer,
+        phase,
+        attributeName,
+        effectName
+    } = req.body;
+
+    const files = req.files;
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const resultId = await client.query(
+            'SELECT vulnid FROM Vulnerability WHERE token = $1',
+            [token]
+        );
+
+        if (resultId.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Report not found for this token' });
+        }
+
+        const id = resultId.rows[0].vulnid;
+
+        // Step 1: Update Vulnerability
+        let vulReportUpdates = [];
+        let vulReportValues = [];
+        let queryIndex = 1;
+
+        if (title) {
+            vulReportUpdates.push(`title = $${queryIndex++}`);
+            vulReportValues.push(title);
+        }
+        if (report_description) {
+            vulReportUpdates.push(`report_description = $${queryIndex++}`);
+            vulReportValues.push(report_description);
+        }
+
+        if (vulReportUpdates.length > 0) {
+            const updateVulReportQuery = `
+                UPDATE Vulnerability 
+                SET ${vulReportUpdates.join(', ')} 
+                WHERE vulnid = $${queryIndex}
+                RETURNING *`;
+            vulReportValues.push(id);
+
+            const resultVulReport = await client.query(updateVulReportQuery, vulReportValues);
+            if (resultVulReport.rows.length === 0) {
+                await client.query('ROLLBACK');
+                return res.status(404).json({ error: 'Report not found' });
+            }
+        }
+
+        // Step 2: Update Vul_phase
+        let phId;
+        if (phase_description) {
+            const resultVulPhase = await client.query(
+                `UPDATE Vul_phase 
+                 SET phase_description = $1,
+                     phase = $2
+                 WHERE vulnid = $3 
+                 RETURNING phId`,
+                [phase_description, phase, id]
+            );
+
+            if (resultVulPhase.rows.length === 0) {
+                await client.query('ROLLBACK');
+                return res.status(404).json({ error: 'Phase not found for this report' });
+            }
+            phId = resultVulPhase.rows[0].phid;
+        } else {
+            const resultVulPhase = await client.query('SELECT phId FROM Vul_phase WHERE vulnid = $1', [id]);
+            phId = resultVulPhase.rows.length > 0 ? resultVulPhase.rows[0].phid : null;
+        }
+
+        // Step 3: Update Attribute and Effect
+        if (phId) {
+            // Update attr_description (optional)
+            if (attr_description) {
+                await client.query(
+                    'UPDATE Attribute SET attr_description = $1 WHERE phId = $2',
+                    [attr_description, phId]
+                );
+            }
+
+            // Update eff_description (optional)
+            if (effectName) {
+                await client.query(
+                    'UPDATE Effect SET eff_description = $1, effectName = $2 WHERE phId = $3',
+                    [eff_description, effectName, phId]
+                );
+            }
+
+            // Update attributeName
+            if (attributeName) {
+                const attributeArray = Array.isArray(attributeName)
+                    ? attributeName
+                    : attributeName ? [attributeName] : [];
+
+                // Step 1: Get attributeTypeId linked to this phase
+                const attributeTypeResult = await client.query(
+                    'SELECT attributeTypeId FROM Attribute WHERE phId = $1',
+                    [phId]
+                );
+
+                if (attributeTypeResult.rows.length > 0) {
+                    const attributeTypeId = attributeTypeResult.rows[0].attributetypeid;
+
+                    // Step 2: Delete existing attribute mappings
+                    await client.query(
+                        'DELETE FROM All_attributes WHERE attributeTypeId = $1',
+                        [attributeTypeId]
+                    );
+
+                    // Step 3: Re-insert updated attributes
+                    for (const attrName of attributeArray) {
+                        let attributeId;
+                        const existingAttr = await client.query(
+                            'SELECT attributeId FROM Attribute_names WHERE attributeName = $1',
+                            [attrName]
+                        );
+
+                        if (existingAttr.rows.length > 0) {
+                            attributeId = existingAttr.rows[0].attributeid;
+                        } else {
+                            const newAttr = await client.query(
+                                'INSERT INTO Attribute_names (attributeName) VALUES ($1) RETURNING attributeId',
+                                [attrName]
+                            );
+                            attributeId = newAttr.rows[0].attributeid;
+                        }
+
+                        await client.query(
+                            'INSERT INTO All_attributes (attributeTypeId, attributeId) VALUES ($1, $2)',
+                            [attributeTypeId, attributeId]
+                        );
+                    }
+                }
+            }
+        }
+
+        // Step 4: Handle deletion of attachments
+        if (deleteAttachments) {
+            const deleteAttachmentsArray = JSON.parse(deleteAttachments);
+            for (const filename of deleteAttachmentsArray) {
+                const deleteFilePath = path.join(__dirname, '..', 'uploads', id.toString(), filename);
+                if (fs.existsSync(deleteFilePath)) {
+                    fs.unlinkSync(deleteFilePath);
+                }
+                await client.query(
+                    'DELETE FROM Attachments WHERE infoid = $1 AND filename = $2',
+                    [id, filename]
+                );
+            }
+        }
+
+        // Step 5: Get artifactId
+        let artifactId;
+        const artifactResult = await client.query('SELECT artifactId FROM Artifact WHERE vulnid = $1', [id]);
+        if (artifactResult.rows.length > 0) {
+            artifactId = artifactResult.rows[0].artifactid;
+            if (artifactType || developer || deployer) {
+                await client.query(
+                    'UPDATE Artifact SET artifactType = $1, developer = $2, deployer = $3 WHERE artifactId = $4',
+                    [artifactType, developer, deployer, artifactId]
+                );
+            }
+        } else {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Artifact not found for this report' });
+        }
+
+        // Step 6: Handle file uploads
+        if (files && files.length > 0) {
+            const attachmentDir = path.join(__dirname, '..', 'uploads', id.toString());
+            if (!fs.existsSync(attachmentDir)) {
+                fs.mkdirSync(attachmentDir, { recursive: true });
+            }
+
+            for (const file of files) {
+                if (file && file.originalname) {
+                    const filePath = path.join(attachmentDir, file.originalname);
+                    fs.writeFileSync(filePath, file.buffer);
+
+                    await client.query(
+                        'INSERT INTO Attachments (artifactId, filename, mimeType) VALUES ($1, $2, $3)',
+                        [artifactId, file.originalname, file.mimetype]
+                    );
+                }
+            }
+        }
+
+        await client.query('COMMIT');
+        res.json({ message: 'Report and related details updated successfully' });
+        console.log("Update report payload:", {
+            title,
+            report_description,
+            phase_description,
+            attr_description,
+            eff_description,
+            effectName,
+            attributeName,
+            files,
+            deleteAttachments
+        });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        // console.error(err.message);
+        console.error("Full error:", err);
+        res.status(500).json({ error: 'Internal server error' });
+    } finally {
+        client.release();
+    }
+}
 
 exports.getAttachment = async (req, res) => {
     const { id, filename } = req.params;
@@ -626,7 +933,6 @@ exports.updateReport = async (req, res) => {
         client.release();
     }
 };
-
 
 exports.deleteReport = async (req, res) => {
     const { id } = req.params;

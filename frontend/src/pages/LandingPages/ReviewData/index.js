@@ -72,7 +72,7 @@ function ReviewData() {
 
   useEffect(() => {
     if (userRole === "admin") {
-      const url = `/api/vulnerability-db/${id}`;
+      const url = `/api/vulnerability-db/id/${id}`;
 
       axios
         .get(url)
@@ -91,7 +91,7 @@ function ReviewData() {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`/api/vulnerability-db/${id}/comments`);
+        const response = await axios.get(`/api/vulnerability-db/id/${id}/comments`);
         setComments(response.data); // Store comments in state
       } catch (error) {
         console.error("Error fetching comments:", error);
@@ -555,7 +555,7 @@ function ReviewData() {
           <Grid item>
             <MKButton
               component={Link}
-              to={`/vulnerability-db/${id}/edit`}
+              to={`/vulnerability-db/editid/${id}`}
               sx={{
                 padding: 2,
                 textAlign: "center",

@@ -36,6 +36,7 @@ CREATE TABLE Vulnerability (
     source VARCHAR(50) CHECK (source IN ('AIVT', 'NVD')),  -- distinguish origin
     external_id VARCHAR(255),   -- e.g., CVE ID for NVD, null for AIVT
     title VARCHAR(255),
+    token UUID NOT NULL UNIQUE,
     report_description TEXT,
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -34,10 +34,14 @@ export default function App() {
         <Route path="/" element={<Presentation />} />
         <Route path="/report-data" element={<ProtectedRouteReporter element={ReportData} />} />
         <Route path="/vulnerability-db" element={<VulnerabilityDb />} />
-        <Route path="/vulnerability-db/:id" element={<Vulnerability />} />
-        {/* <Route path="/vulnerability-db/:id/edit" element={<UpdateData />} /> */}
+        <Route path="/vulnerability-db/id/:id" element={<Vulnerability />} />
+        {/* <Route path="/vulnerability-db/token/:token" element={<Vulnerability />} /> */}
         <Route
-          path="/vulnerability-db/:id/edit"
+          path="/vulnerability-db/editid/:id"
+          element={<ProtectedRouteReporter element={UpdateData} />}
+        />
+        <Route
+          path="/vulnerability-db/edittoken/:token"
           element={<ProtectedRouteReporter element={UpdateData} />}
         />
         <Route

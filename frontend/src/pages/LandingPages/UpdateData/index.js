@@ -80,6 +80,7 @@ const style = {
 function UpdateData() {
   const [checked, setChecked] = useState(false);
   const { id } = useParams();
+  const { token } = useParams();
   const [name, setName] = useState("");
   const [organization, setOrganization] = useState("");
   const [phase, setPhase] = useState("");
@@ -122,7 +123,14 @@ function UpdateData() {
       }
 
       try {
-        const response = await axios.get(`/api/vulnerability-db/${id}`);
+        let response;
+        console.log("Fetching vulnerability details for ID:", id, "and token:", token);
+        if (token) {
+          response = await axios.get(`/api/vulnerability-db/token/${token}`);
+        } else {
+          response = await axios.get(`/api/vulnerability-db/id/${id}`);
+        }
+
         const vulnerability = response.data;
         const userresponse = await axios.get(`/api/auth/current-user`, {
           params: { sub: user.sub },
@@ -151,7 +159,7 @@ function UpdateData() {
           setExistingAttachments(vulnerability.attachments || []);
         } else {
           alert("Unauthorized attempt to edit vulnerability. Please try again.");
-          navigate(`/vulnerability-db/${id}`);
+          navigate(`/vulnerability-db/id/${id}`);
         }
       } catch (error) {
         console.error("Error fetching vulnerability details:", error);
@@ -160,7 +168,7 @@ function UpdateData() {
       }
     };
     fetchVulnerabilityDetails();
-  }, [id, isAuthenticated, user, loginWithRedirect, navigate]);
+  }, [id, token, isAuthenticated, user, loginWithRedirect, navigate]);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -199,7 +207,7 @@ function UpdateData() {
     console.log("Form data: ", formData);
 
     axios
-      .put(`/api/vulnerability-db/${id}/edit`, formData, {
+      .put(`/api/vulnerability-db/editid/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -153,7 +153,10 @@ function ReportData() {
       })
       .then((response) => {
         console.log("Report created successfully:", response.data);
-        // console.log("attributeName:", attributeName);
+        alert(
+          "Report created successfully! Your unique token for the report is: https://aivt.ouspg.org/vulnerability-db/edittoken/" +
+            response.data.token
+        );
         setReportCreated(true);
         if (reportCreated) {
           handleClose();
