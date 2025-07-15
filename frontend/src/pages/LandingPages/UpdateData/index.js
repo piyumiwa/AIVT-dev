@@ -215,7 +215,7 @@ function UpdateData() {
       .then((response) => {
         // console.log("Report created successfully:", response.data);
         console.log("Report updated successfully:", response.data);
-        navigate("/vulnerability-db");
+        navigate(-1);
       })
       .catch((error) => {
         console.error("Error updating report:", error);

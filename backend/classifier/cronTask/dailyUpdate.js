@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
 const pool = require('../../config/database'); 
 
@@ -210,16 +211,17 @@ async function classifyVulnerability(description) {
 async function storeCVE({ external_id, title, description, phase, attributes, effect, artifact }) {
   const client = await pool.connect();
   const source = 'NVD';
+  const token = uuidv4();
   const cve_link = `https://cve.mitre.org/cgi-bin/cvename.cgi?name=${external_id}`;
   try {
     await client.query('BEGIN');
     // Insert into Vulnerability
     const vulnInsertRes = await client.query(`
-      INSERT INTO Vulnerability (source, external_id, title, report_description, cve_link)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO Vulnerability (source, external_id, title, report_description, cve_link, token)
+      VALUES ($1, $2, $3, $4, $5, $6)
       ON CONFLICT (source, external_id) DO NOTHING
       RETURNING vulnid
-    `, [source, external_id, title, description, cve_link]);
+    `, [source, external_id, title, description, cve_link, token]);
     const vulnid = vulnInsertRes.rows[0]?.vulnid;
     // if (!vulnid) {
     //   await client.query('ROLLBACK');

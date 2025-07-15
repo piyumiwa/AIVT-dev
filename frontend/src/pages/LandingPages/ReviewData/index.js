@@ -275,10 +275,12 @@ function ReviewData() {
           sx={{ ml: { xs: -2, lg: "auto" }, mt: { xs: 6, lg: 0 } }}
         >
           <Stack>
-            <MKBox display="flex" alignItems="center" p={2}>
+            <MKBox display="flex" alignItems="flex-start" p={2}>
               <MKBox
                 width="3rem"
                 height="3rem"
+                minWidth="3rem"
+                minHeight="3rem"
                 variant="gradient"
                 bgColor="info"
                 color="white"
@@ -303,10 +305,12 @@ function ReviewData() {
               </MKBox>
             </MKBox>
 
-            <MKBox display="flex" alignItems="center" p={2}>
+            <MKBox display="flex" alignItems="flex-start" p={2}>
               <MKBox
                 width="3rem"
                 height="3rem"
+                minWidth="3rem"
+                minHeight="3rem"
                 variant="gradient"
                 bgColor="info"
                 color="white"
@@ -331,10 +335,12 @@ function ReviewData() {
               </MKBox>
             </MKBox>
 
-            <MKBox display="flex" alignItems="center" p={2}>
+            <MKBox display="flex" alignItems="flex-start" p={2}>
               <MKBox
                 width="3rem"
                 height="3rem"
+                minWidth="3rem"
+                minHeight="3rem"
                 variant="gradient"
                 bgColor="info"
                 color="white"
