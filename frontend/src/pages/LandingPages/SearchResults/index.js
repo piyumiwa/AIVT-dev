@@ -24,6 +24,7 @@ import DefaultFooter from "examples/Footers/DefaultFooter";
 // import SignIn from "layouts/pages/authentication/sign-in";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import footerRoutes from "footer.routes";
+import routes from "routes";
 import bgImage from "assets/images/bg-db.jpg";
 
 const paginationModel = { page: 0, pageSize: 15 };
@@ -181,6 +182,7 @@ function SearchResults() {
   return (
     <>
       <DefaultNavbar
+        routes={routes}
         transparent
         light
         onAuthClick={handleAuthClick}

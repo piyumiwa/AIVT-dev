@@ -58,7 +58,7 @@ function SignInBasic() {
 
   return (
     <>
-      <DefaultNavbar transparent light />
+      <DefaultNavbar routes={routes} transparent light />
       <MKBox
         position="absolute"
         top={0}

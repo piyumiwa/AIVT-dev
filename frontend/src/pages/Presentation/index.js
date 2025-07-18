@@ -20,18 +20,41 @@ import Information from "pages/Presentation/sections/Information";
 
 // Presentation page components
 import LinkToDatabse from "pages/Presentation/components/LinkToDatabse";
+// import VulnerabilityDb from "pages/LandingPages/VulnerabilityDb";
 
 // Routes
-// import routes from "routes";
+import routes from "routes";
 import footerRoutes from "footer.routes";
 
 // Images
 import bgImage from "assets/images/bg-presentation.jpg";
 
+// // routes
+// const routes = [
+//   {
+//     name: "pages",
+//     icon: <Icon>dashboard</Icon>,
+//     columns: 1,
+//     rowsPerColumn: 2,
+//     collapse: [
+//       {
+//         name: "database",
+//         collapse: [
+//           {
+//             name: "Vulnerability Database",
+//             route: "/vulnerability-db",
+//             component: <VulnerabilityDb />,
+//           },
+//         ],
+//       },
+//     ],
+//   },
+// ];
+
 function Presentation() {
   return (
     <>
-      <DefaultNavbar transparent relative />
+      <DefaultNavbar routes={routes} transparent relative />
       <MKBox
         minHeight="110vh"
         width="100%"

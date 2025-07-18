@@ -22,90 +22,45 @@
 */
 
 // @mui material components
-import Icon from "@mui/material/Icon";
+// import Icon from "@mui/material/Icon";
 
 // @mui icons
 import GitHubIcon from "@mui/icons-material/GitHub";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ArchiveIcon from "@mui/icons-material/Archive";
 
-// Pages
-import AboutUs from "layouts/pages/landing-pages/about-us";
-import ContactUs from "layouts/pages/landing-pages/contact-us";
-import Author from "layouts/pages/landing-pages/author";
+// // Pages
+// import AboutUs from "layouts/pages/landing-pages/about-us";
+// import ContactUs from "layouts/pages/landing-pages/contact-us";
+// import Author from "layouts/pages/landing-pages/author";
 // import SignUp from "pages/LandingPages/SignUp";
-import ReportData from "layouts/pages/landing-pages/report-data";
-import VulnerabilityDb from "layouts/pages/landing-pages/vulnerability-db";
-import Vulnerability from "pages/LandingPages/Vulnerability";
-
-// Sections
-import PageHeaders from "layouts/sections/page-sections/page-headers";
-import Features from "layouts/sections/page-sections/featuers";
-import Navbars from "layouts/sections/navigation/navbars";
-import NavTabs from "layouts/sections/navigation/nav-tabs";
-import Pagination from "layouts/sections/navigation/pagination";
-import Inputs from "layouts/sections/input-areas/inputs";
-import Forms from "layouts/sections/input-areas/forms";
-import Alerts from "layouts/sections/attention-catchers/alerts";
-import Modals from "layouts/sections/attention-catchers/modals";
-import TooltipsPopovers from "layouts/sections/attention-catchers/tooltips-popovers";
-import Avatars from "layouts/sections/elements/avatars";
-import Badges from "layouts/sections/elements/badges";
-import BreadcrumbsEl from "layouts/sections/elements/breadcrumbs";
-import Buttons from "layouts/sections/elements/buttons";
-import Dropdowns from "layouts/sections/elements/dropdowns";
-import ProgressBars from "layouts/sections/elements/progress-bars";
-import Toggles from "layouts/sections/elements/toggles";
-import Typography from "layouts/sections/elements/typography";
-
-console.log("param");
+import ReportData from "pages/LandingPages/ReportData";
+import VulnerabilityDb from "pages/LandingPages/VulnerabilityDb";
+// import icon from "assets/theme/components/icon";
+// import Vulnerability from "pages/LandingPages/Vulnerability";
 
 const routes = [
+  // {
+  //   name: "about us",
+  //   route: "/about-us",
+  //   component: <AboutUs />,
+  // },
+  // {
+  //   name: "contact us",
+  //   route: "/contact-us",
+  //   component: <ContactUs />,
+  // },
   {
-    name: "pages",
-    icon: <Icon>dashboard</Icon>,
-    columns: 1,
-    rowsPerColumn: 2,
-    collapse: [
-      {
-        name: "landing pages",
-        collapse: [
-          {
-            name: "about us",
-            route: "/about-us",
-            component: <AboutUs />,
-          },
-          {
-            name: "contact us",
-            route: "/contact-us",
-            component: <ContactUs />,
-          },
-          {
-            name: "author",
-            route: "/pages/landing-pages/author",
-            component: <Author />,
-          },
-        ],
-      },
-      {
-        name: "report",
-        collapse: [
-          {
-            name: "new report",
-            route: "/report-data",
-            component: <ReportData />,
-          },
-          {
-            name: "vulnerability list",
-            route: "/vulnerability-db",
-            component: <VulnerabilityDb />,
-          },
-          {
-            name: "vulnerability details",
-            route: `/vulnerability-db/:id`,
-            component: <Vulnerability />,
-          },
-        ],
-      },
-    ],
+    name: "New report",
+    icon: <AddCircleIcon />,
+    route: "/report-data",
+    component: <ReportData />,
+  },
+  {
+    name: "Vulnerability list",
+    icon: <ArchiveIcon />,
+    route: "/vulnerability-db",
+    component: <VulnerabilityDb />,
   },
   {
     name: "github",

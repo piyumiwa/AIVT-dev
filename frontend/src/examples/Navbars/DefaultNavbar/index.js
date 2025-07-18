@@ -16,17 +16,49 @@ import SearchIcon from "@mui/icons-material/Search";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
+import Icon from "@mui/material/Icon";
 
 // Material Kit 2 React components
 import MKBox from "components/MKBox";
 import MKTypography from "components/MKTypography";
 import MKButton from "components/MKButton";
+import breakpoints from "assets/theme/base/breakpoints";
+import DefaultNavbarMobile from "examples/Navbars/DefaultNavbar/DefaultNavbarMobile";
 
-function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) {
+function DefaultNavbar({ brand, routes, transparent, light, action, sticky, relative }) {
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileNavbar, setMobileNavbar] = useState(false);
+  const [mobileView, setMobileView] = useState(false);
   const navigate = useNavigate();
+
+  const openMobileNavbar = () => setMobileNavbar(!mobileNavbar);
+
+  useEffect(() => {
+    // A function that sets the display state for the DefaultNavbarMobile.
+    function displayMobileNavbar() {
+      if (window.innerWidth < breakpoints.values.lg) {
+        setMobileView(true);
+        setMobileNavbar(false);
+      } else {
+        setMobileView(false);
+        setMobileNavbar(false);
+      }
+    }
+
+    /** 
+     The event listener that's calling the displayMobileNavbar function when 
+     resizing the window.
+    */
+    window.addEventListener("resize", displayMobileNavbar);
+
+    // Call the displayMobileNavbar function to set the state with the initial value.
+    displayMobileNavbar();
+
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("resize", displayMobileNavbar);
+  }, []);
 
   const handleAuthClick = async () => {
     if (isAuthenticated) {
@@ -42,7 +74,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
 
     if (value.length > 0) {
       try {
-        const response = await axios.get(`/api/vulnerability-db/search`, {
+        const response = await axios.get(`https://86.50.228.33/api/vulnerability-db/search`, {
           params: { query: value },
         });
         console.log("Search API Response:", response.data);
@@ -71,7 +103,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
         const email = user.email;
 
         try {
-          const response = await axios.post("/api/auth/newaccount", {
+          const response = await axios.post("https://86.50.228.33/api/auth/newaccount", {
             reporterId,
             email,
           });
@@ -104,7 +136,6 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
         shadow={transparent ? "none" : "md"}
         color={light ? "white" : "dark"}
         position={relative ? "relative" : "absolute"}
-        // position={{ xs: "relative", md: relative ? "relative" : "absolute" }}
         left={0}
         zIndex={3}
         sx={({ palette: { transparent: transparentColor, white }, functions: { rgba } }) => ({
@@ -126,7 +157,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
           </MKBox>
 
           {/* Search Input */}
-          {/* <MKBox
+          <MKBox
             sx={{
               position: "relative",
               flexGrow: 1,
@@ -134,16 +165,8 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
               mx: 2,
               backgroundColor: "rgba(255, 255, 255, 0.2)",
             }}
-          > */}
-          <MKBox
-            sx={{
-              position: "relative",
-              flexGrow: 1,
-              maxWidth: 400,
-              mx: 2,
-            }}
           >
-            {/* <TextField
+            <TextField
               fullWidth
               variant="outlined"
               size="small"
@@ -152,13 +175,7 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
               onChange={handleSearchChange}
               onKeyDown={handleSearchSubmit}
               sx={{
-                "& .MuiInputBase-input": {
-                  color: "white",
-                  "::placeholder": {
-                    color: "white",
-                    opacity: 1,
-                  },
-                },
+                input: { color: "white" },
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
                     borderColor: "white",
@@ -172,6 +189,10 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
                 },
                 "& .MuiInputAdornment-root": {
                   color: "white",
+                },
+                "& .MuiInputBase-input::placeholder": {
+                  color: "white",
+                  opacity: 1,
                 },
               }}
               InputProps={{
@@ -182,49 +203,8 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
                 ),
               }}
               onBlur={() => setTimeout(() => setSearchResults([]), 150)}
-            /> */}
-            <TextField
-              fullWidth
-              variant="outlined"
-              size="small"
-              placeholder="Search vulnerabilities..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              onKeyDown={handleSearchSubmit}
-              sx={{
-                backgroundColor: "#f5f5f5", // Light background
-                borderRadius: 1,
-                "& .MuiInputBase-input": {
-                  color: "#000", // Black text
-                  "::placeholder": {
-                    color: "#555",
-                    opacity: 1,
-                  },
-                },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "#ccc",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#aaa",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#1976d2",
-                  },
-                },
-                "& .MuiInputAdornment-root": {
-                  color: "#000",
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: "#000", marginRight: 1 }} />
-                  </InputAdornment>
-                ),
-              }}
-              onBlur={() => setTimeout(() => setSearchResults([]), 150)}
             />
+
             {searchResults.length > 0 && (
               <Paper
                 elevation={3}
@@ -259,6 +239,115 @@ function DefaultNavbar({ brand, transparent, light, action, sticky, relative }) 
               </Paper>
             )}
           </MKBox>
+          {/* <MKBox
+            py={1}
+            px={{ xs: 4, sm: transparent ? 2 : 3, lg: transparent ? 0 : 2 }}
+            my={relative ? 0 : 2}
+            mx={relative ? 0 : 3}
+            width={relative ? "100%" : "calc(100% - 48px)"}
+            borderRadius="xl"
+            shadow={transparent ? "none" : "md"}
+            color={light ? "white" : "dark"}
+            position={relative ? "relative" : "absolute"}
+            left={0}
+            zIndex={3}
+            sx={({ palette: { transparent: transparentColor, white }, functions: { rgba } }) => ({
+              backgroundColor: transparent ? transparentColor.main : rgba(white.main, 0.8),
+              backdropFilter: transparent ? "none" : `saturate(200%) blur(30px)`,
+            })}
+          > */}
+          <MKBox display="flex" justifyContent="space-between" alignItems="center">
+            <MKBox ml={{ xs: "auto", lg: 0 }}>
+              {action &&
+                (action.type === "internal" ? (
+                  <MKButton
+                    component={Link}
+                    to={action.route}
+                    variant={
+                      action.color === "white" || action.color === "default"
+                        ? "contained"
+                        : "gradient"
+                    }
+                    color={action.color ? action.color : "info"}
+                    size="small"
+                  >
+                    {action.label}
+                  </MKButton>
+                ) : (
+                  <MKButton
+                    component="a"
+                    href={action.route}
+                    target="_blank"
+                    rel="noreferrer"
+                    variant={
+                      action.color === "white" || action.color === "default"
+                        ? "contained"
+                        : "gradient"
+                    }
+                    color={action.color ? action.color : "info"}
+                    size="small"
+                  >
+                    {action.label}
+                  </MKButton>
+                ))}
+            </MKBox>
+            <MKBox display={{ xs: "none", lg: "flex" }} alignItems="center" ml={4}>
+              {routes.map(({ name, route, href, icon }) => {
+                if (href) {
+                  return (
+                    <MKTypography
+                      key={name}
+                      component="a"
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      variant="button"
+                      fontWeight="regular"
+                      color={light ? "white" : "dark"}
+                      mx={2}
+                    >
+                      {icon && <Icon sx={{ mr: 0.5 }}>{icon}</Icon>} {name}
+                    </MKTypography>
+                  );
+                } else if (route) {
+                  return (
+                    <MKTypography
+                      key={name}
+                      component={Link}
+                      to={route}
+                      variant="button"
+                      fontWeight="regular"
+                      color={light ? "white" : "dark"}
+                      mx={2}
+                    >
+                      {icon && <Icon sx={{ mr: 0.5 }}>{icon}</Icon>} {name}
+                    </MKTypography>
+                  );
+                }
+                return null;
+              })}
+            </MKBox>
+            <MKBox
+              display={{ xs: "inline-block", lg: "none" }}
+              lineHeight={0}
+              py={1.5}
+              pl={1.5}
+              color={transparent ? "white" : "inherit"}
+              sx={{ cursor: "pointer" }}
+              onClick={openMobileNavbar}
+            >
+              <Icon fontSize="default">{mobileNavbar ? "close" : "menu"}</Icon>
+            </MKBox>
+          </MKBox>
+          <MKBox
+            bgColor={transparent ? "white" : "transparent"}
+            shadow={transparent ? "lg" : "none"}
+            borderRadius="xl"
+            px={transparent ? 2 : 0}
+          >
+            {mobileView && <DefaultNavbarMobile routes={routes} open={mobileNavbar} />}
+          </MKBox>
+          {/* </MKBox> */}
 
           {/* Authentication Button */}
           <MKBox ml={{ xs: "auto", lg: 0 }}>
@@ -294,14 +383,14 @@ DefaultNavbar.defaultProps = {
 // Typechecking props for the DefaultNavbar
 DefaultNavbar.propTypes = {
   brand: PropTypes.string,
-  // routes: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  routes: PropTypes.arrayOf(PropTypes.shape).isRequired,
   transparent: PropTypes.bool,
   light: PropTypes.bool,
   action: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.shape({
       type: PropTypes.oneOf(["external", "internal"]).isRequired,
-      // route: PropTypes.string.isRequired,
+      route: PropTypes.string.isRequired,
       color: PropTypes.oneOf([
         "primary",
         "secondary",
