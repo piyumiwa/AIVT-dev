@@ -32,8 +32,27 @@ function DefaultNavbar({ brand, routes, transparent, light, action, sticky, rela
   const [mobileNavbar, setMobileNavbar] = useState(false);
   const [mobileView, setMobileView] = useState(false);
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState(null);
 
   const openMobileNavbar = () => setMobileNavbar(!mobileNavbar);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      axios
+        .get(`/api/auth/current-user`, {
+          params: { sub: user.sub },
+        })
+        .then((res) => {
+          setUserRole(res.data.role);
+          console.log("User role fetched:", res.data.role);
+        })
+        .catch((error) => {
+          console.error("Error fetching user role:", error);
+        });
+    } else {
+      console.warn("Error fetching user role:");
+    }
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     // A function that sets the display state for the DefaultNavbarMobile.
@@ -239,23 +258,6 @@ function DefaultNavbar({ brand, routes, transparent, light, action, sticky, rela
               </Paper>
             )}
           </MKBox>
-          {/* <MKBox
-            py={1}
-            px={{ xs: 4, sm: transparent ? 2 : 3, lg: transparent ? 0 : 2 }}
-            my={relative ? 0 : 2}
-            mx={relative ? 0 : 3}
-            width={relative ? "100%" : "calc(100% - 48px)"}
-            borderRadius="xl"
-            shadow={transparent ? "none" : "md"}
-            color={light ? "white" : "dark"}
-            position={relative ? "relative" : "absolute"}
-            left={0}
-            zIndex={3}
-            sx={({ palette: { transparent: transparentColor, white }, functions: { rgba } }) => ({
-              backgroundColor: transparent ? transparentColor.main : rgba(white.main, 0.8),
-              backdropFilter: transparent ? "none" : `saturate(200%) blur(30px)`,
-            })}
-          > */}
           <MKBox display="flex" justifyContent="space-between" alignItems="center">
             <MKBox ml={{ xs: "auto", lg: 0 }}>
               {action &&
@@ -347,22 +349,21 @@ function DefaultNavbar({ brand, routes, transparent, light, action, sticky, rela
           >
             {mobileView && <DefaultNavbarMobile routes={routes} open={mobileNavbar} />}
           </MKBox>
-          {/* </MKBox> */}
-
-          {/* Authentication Button */}
-          <MKBox ml={{ xs: "auto", lg: 0 }}>
-            <MKButton
-              component={Link}
-              variant={
-                action.color === "white" || action.color === "default" ? "contained" : "gradient"
-              }
-              color={action.color ? action.color : "info"}
-              size="small"
-              onClick={handleAuthClick}
-            >
-              {isAuthenticated ? "Logout" : "Sign in"}
-            </MKButton>
-          </MKBox>
+          {userRole && (
+            <MKBox ml={{ xs: "auto", lg: 0 }}>
+              <MKButton
+                component={Link}
+                variant={
+                  action.color === "white" || action.color === "default" ? "contained" : "gradient"
+                }
+                color={action.color ? action.color : "info"}
+                size="small"
+                onClick={handleAuthClick}
+              >
+                {isAuthenticated ? "Logout" : "Sign in"}
+              </MKButton>
+            </MKBox>
+          )}
         </MKBox>
       </MKBox>
     </Container>

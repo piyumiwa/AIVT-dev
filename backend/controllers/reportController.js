@@ -86,8 +86,9 @@ exports.createReport = async (req, res) => {
     const {
         sub, 
         email,
-        name,
-        organization,
+        // name,
+        // organization,
+        occupation,
         title,
         report_description,
         // artifactName,
@@ -140,8 +141,8 @@ exports.createReport = async (req, res) => {
         // Update Reporter
         await client.query (
             // 'INSERT INTO Reporter (name, organization) VALUES ($1, $2) RETURNING reporterId',
-            'UPDATE Reporter SET name = $1, organization = $2 WHERE reporterId = $3', 
-            [name, organization, reporterId]
+            'UPDATE Reporter SET occupation = $1 WHERE reporterId = $2', 
+            [occupation, reporterId]
         );
 
         // Insert into Vulnerability
@@ -254,7 +255,9 @@ exports.fetchReportById = async (id) => {
                 r.name AS reporterName,
                 r.email AS reporterEmail,
                 r.organization AS reporterOrganization,
-                r.role AS reporterRole, 
+                r.role AS reporterRole
+                r.occupation, 
+                r.reportbase AS reportBase,
                 p.phase,
                 p.phase_description AS phaseDescription,
                 array_agg(DISTINCT an.attributeName) AS attributes,
@@ -321,6 +324,8 @@ exports.fetchReportById = async (id) => {
             reporterEmail: result.rows[0].reporteremail,
             reporterOrganization: result.rows[0].reporterorganization,
             reporterRole: result.rows[0].reporterrole,
+            occupation: result.rows[0].occupation,
+            reportBase: result.rows[0].reportbase,
             phase: result.rows[0].phase,
             phaseDescription: result.rows[0].phasedescription,
             // attributeName: Array.isArray(result.rows[0].attributes)
@@ -382,6 +387,8 @@ exports.fetchReportByToken = async (token) => {
                 r.email AS reporterEmail,
                 r.organization AS reporterOrganization,
                 r.role AS reporterRole, 
+                r.occupation, 
+                r.reportbase AS reportBase,
                 p.phase,
                 p.phase_description AS phaseDescription,
                 array_agg(DISTINCT an.attributeName) AS attributes,
@@ -448,6 +455,8 @@ exports.fetchReportByToken = async (token) => {
             reporterEmail: result.rows[0].reporteremail,
             reporterOrganization: result.rows[0].reporterorganization,
             reporterRole: result.rows[0].reporterrole,
+            occupation: result.rows[0].occupation,
+            reportBase: result.rows[0].reportbase,
             phase: result.rows[0].phase,
             phaseDescription: result.rows[0].phasedescription,
             attributeName: formattedAttributes,

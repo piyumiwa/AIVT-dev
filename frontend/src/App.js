@@ -32,7 +32,8 @@ export default function App() {
       <CssBaseline />
       <Routes>
         <Route path="/" element={<Presentation />} />
-        <Route path="/report-data" element={<ProtectedRouteReporter element={ReportData} />} />
+        <Route path="/report-data" element={<ReportData />} />
+        {/* <Route path="/report-data" element={<ProtectedRouteReporter element={ReportData} />} /> */}
         <Route path="/vulnerability-db" element={<VulnerabilityDb />} />
         <Route path="/vulnerability-db/id/:id" element={<Vulnerability />} />
         {/* <Route path="/vulnerability-db/token/:token" element={<Vulnerability />} /> */}

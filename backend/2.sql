@@ -27,6 +27,7 @@ CREATE TABLE Reporter (
     name VARCHAR(255),
     email VARCHAR(255),
     organization VARCHAR(255),
+    occupation VARCHAR(255),
 	role VARCHAR(50) DEFAULT 'reporter'
 );
 

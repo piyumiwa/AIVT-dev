@@ -1,5 +1,5 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { useState, useEffect } from "react";
+// import { useAuth0 } from "@auth0/auth0-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as React from "react";
 import axios from "axios";
@@ -20,7 +20,7 @@ import ListItemText from "@mui/material/ListItemText";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import TextField from "@mui/material/TextField";
+// import TextField from "@mui/material/TextField";
 
 // // Material Kit 2 React components
 import MKBox from "components/MKBox";
@@ -80,8 +80,10 @@ const style = {
 function ReportData() {
   const [checked, setChecked] = useState(false);
   // const [artifact, setArtifact] = React.useState("");
-  const [name, setName] = useState("");
-  const [organization, setOrganization] = useState("");
+  // const [name, setName] = useState("");
+  // const [organization, setOrganization] = useState("");
+  const [occupation, setOccupation] = useState("");
+  const [reportbase, setReportbase] = useState("");
   const [phase, setPhase] = useState("");
   const [attributeName, setAttributeName] = useState([]);
   const [effectName, setEffectName] = useState("");
@@ -95,8 +97,8 @@ function ReportData() {
   const [eff_description, setEff_description] = useState("");
   const [attachments, setAttachments] = useState([]);
 
-  const { isAuthenticated, user } = useAuth0();
-  const [isEditable, setIsEditable] = useState({ name: true, organization: true });
+  // const { isAuthenticated, user } = useAuth0();
+  // const [isEditable, setIsEditable] = useState({ name: true, organization: true });
   const [reportCreated, setReportCreated] = useState(false);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -121,8 +123,10 @@ function ReportData() {
     event.preventDefault();
 
     const formData = new FormData();
-    formData.append("name", name);
-    formData.append("organization", organization);
+    // formData.append("name", name);
+    // formData.append("organization", organization);
+    formData.append("occupation", occupation);
+    formData.append("reportbase", reportbase);
     formData.append("title", title);
     formData.append("report_description", report_description);
     formData.append("artifactType", artifactType);
@@ -135,8 +139,8 @@ function ReportData() {
     formData.append("attr_description", attr_description);
     formData.append("effectName", effectName);
     formData.append("eff_description", eff_description);
-    formData.append("sub", user.sub);
-    formData.append("email", user.email);
+    // formData.append("sub", user.sub);
+    // formData.append("email", user.email);
 
     attachments.forEach((file) => {
       formData.append("attachments", file);
@@ -170,6 +174,14 @@ function ReportData() {
       });
   };
 
+  const handleOccupChange = (event) => {
+    setOccupation(event.target.value);
+  };
+
+  const handleBaseChange = (event) => {
+    setReportbase(event.target.value);
+  };
+
   const handleAttributeChange = (event) => {
     const {
       target: { value },
@@ -193,27 +205,27 @@ function ReportData() {
 
   const handleChecked = () => setChecked(!checked);
 
-  useEffect(() => {
-    if (!user.sub) return;
+  // useEffect(() => {
+  //   if (!user.sub) return;
 
-    axios
-      .get(`/api/auth/current-user`, {
-        params: { sub: user.sub },
-      })
-      .then((response) => {
-        const { name, organization } = response.data;
-        console.log("Fetched user data: ", response.data);
+  //   axios
+  //     .get(`/api/auth/current-user`, {
+  //       params: { sub: user.sub },
+  //     })
+  //     .then((response) => {
+  //       const { name, organization } = response.data;
+  //       console.log("Fetched user data: ", response.data);
 
-        setName(name || "");
-        setOrganization(organization || "");
+  //       setName(name || "");
+  //       setOrganization(organization || "");
 
-        setIsEditable({
-          name: !name,
-          organization: !organization,
-        });
-      })
-      .catch((error) => console.error("Error fetching user data:", error));
-  }, [user]);
+  //       setIsEditable({
+  //         name: !name,
+  //         organization: !organization,
+  //       });
+  //     })
+  //     .catch((error) => console.error("Error fetching user data:", error));
+  // }, [user]);
 
   return (
     <>
@@ -238,21 +250,101 @@ function ReportData() {
             <MKBox p={3}>
               <Grid container spacing={3}>
                 <Grid container spacing={3}>
-                  {/* <MKTypography variant="h4" mb={1} p={3} my={4}>
+                  <MKTypography variant="h4" mb={1} p={3} my={4}>
                     Reporter Details
-                  </MKTypography> */}
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      // disabled
-                      variant="standard"
-                      label="Name"
-                      fullWidth
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      readOnly={!isEditable.name}
-                    />
+                  </MKTypography>
+                  <Grid item xs={12}>
+                    <FormControl variant="standard" fullWidth>
+                      <InputLabel id="demo-simple-select-standard-label">I am a...</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-standard-label"
+                        id="demo-simple-select-standard"
+                        value={occupation}
+                        label="Occupation"
+                        onChange={handleOccupChange}
+                      >
+                        <MenuItem value={"AI Developer/ML Engineer"}>
+                          AI Developer / ML Engineer
+                        </MenuItem>
+                        <MenuItem value={"Cybersecurity Researcher"}>
+                          Cybersecurity Researcher
+                        </MenuItem>
+                        <MenuItem value={"Security Analyst/Red Teamer"}>
+                          Security Analyst / Red Teamer
+                        </MenuItem>
+                        <MenuItem value={"Software Engineer"}>Software Engineer</MenuItem>
+                        <MenuItem value={"Data Scientist"}>Data Scientist</MenuItem>
+                        <MenuItem value={"Academic Researcher/Professor"}>
+                          Academic Researcher / Professor
+                        </MenuItem>
+                        <MenuItem value={"System Administrator"}>System Administrator</MenuItem>
+                        <MenuItem value={"Penetration Tester/Ethical Hacker"}>
+                          Penetration Tester / Ethical Hacker
+                        </MenuItem>
+
+                        <MenuItem value={"Independent Researcher"}>Independent Researcher</MenuItem>
+                        <MenuItem value={"Open-Source Contributor"}>
+                          Open-Source Contributor
+                        </MenuItem>
+                        <MenuItem value={"Bug Bounty Hunter"}>Bug Bounty Hunter</MenuItem>
+                        <MenuItem value={"Policy Analyst/Ethics Researcher"}>
+                          Policy Analyst / Ethics Researcher
+                        </MenuItem>
+
+                        <MenuItem value={"Healthcare IT Professional"}>
+                          Healthcare IT Professional
+                        </MenuItem>
+                        <MenuItem value={"Critical Infrastructure Engineer"}>
+                          Critical Infrastructure Engineer
+                        </MenuItem>
+                        <MenuItem value={"Defense/Military Technologist"}>
+                          Defense / Military Technologist
+                        </MenuItem>
+                        <MenuItem value={"Financial Services Security Specialist"}>
+                          Financial Services Security Specialist
+                        </MenuItem>
+
+                        <MenuItem value={"Masters/PhD Student"}>Master’s / PhD Student</MenuItem>
+                        <MenuItem value={"Undergraduate Student"}>
+                          Undergraduate Student in Relevant Field
+                        </MenuItem>
+                        <MenuItem value={"AI/ML Enthusiast"}>AI/ML Enthusiast or Hobbyist</MenuItem>
+
+                        <MenuItem value={"Vulnerability Reporter"}>Vulnerability Reporter</MenuItem>
+                        <MenuItem value={"CVE Contributor"}>CVE Contributor</MenuItem>
+                        <MenuItem value={"CTI Platform/CERT Member"}>
+                          Member of a CTI Platform or CERT Team
+                        </MenuItem>
+
+                        <MenuItem value={"Other"}>Other (please specify)</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12}>
+                    <FormControl variant="standard" fullWidth>
+                      <InputLabel id="demo-simple-select-standard-label">
+                        The report is based on...
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-standard-label"
+                        id="demo-simple-select-standard"
+                        value={reportbase}
+                        label="Report Base"
+                        onChange={handleBaseChange}
+                      >
+                        <MenuItem value={"Original research"}>Original research</MenuItem>
+                        <MenuItem value={"Personal experience"}>Personal experience</MenuItem>
+                        <MenuItem value={"Public dataset / article"}>
+                          Public dataset / article
+                        </MenuItem>
+                        <MenuItem value={"News or incident report"}>
+                          News or incident report
+                        </MenuItem>
+                        <MenuItem value={"Other"}>Other</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  {/* <Grid item xs={12} md={6}>
                     <TextField
                       // disabled
                       variant="standard"
@@ -260,10 +352,10 @@ function ReportData() {
                       value={organization}
                       fullWidth
                       onChange={(e) => setOrganization(e.target.value)}
-                      readOnly={!isEditable.organization}
+                      // readOnly={!isEditable.organization}
                     />
-                  </Grid>
-                  <Grid item xs={12}>
+                  </Grid> */}
+                  {/* <Grid item xs={12}>
                     {isAuthenticated && user && (
                       <TextField
                         disabled
@@ -274,7 +366,7 @@ function ReportData() {
                         fullWidth
                       />
                     )}
-                  </Grid>
+                  </Grid> */}
                 </Grid>
                 <Grid container spacing={3}>
                   <MKTypography variant="h4" mb={1} p={3} my={4}>

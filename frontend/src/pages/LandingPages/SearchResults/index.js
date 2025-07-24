@@ -118,7 +118,7 @@ function SearchResults() {
       width: 160,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/id/${params.row.id}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -131,7 +131,7 @@ function SearchResults() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/id/${params.row.id}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -144,7 +144,7 @@ function SearchResults() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/id/${params.row.id}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -157,7 +157,7 @@ function SearchResults() {
       width: 135,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/id/${params.row.id}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
@@ -170,7 +170,7 @@ function SearchResults() {
       width: 130,
       renderCell: (params) => (
         <a
-          href={`/vulnerability-db/${params.row.id}`}
+          href={`/vulnerability-db/id/${params.row.id}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {params.value}
