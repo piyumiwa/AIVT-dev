@@ -1,4 +1,6 @@
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -7,12 +9,6 @@ import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
 import Switch from "@mui/material/Switch";
 import Grid from "@mui/material/Grid";
-import MuiLink from "@mui/material/Link";
-
-// @mui icons
-import FacebookIcon from "@mui/icons-material/Facebook";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import GoogleIcon from "@mui/icons-material/Google";
 
 // Material Kit 2 React components
 import MKBox from "components/MKBox";
@@ -28,26 +24,40 @@ import SimpleFooter from "examples/Footers/SimpleFooter";
 import routes from "routes";
 
 // Images
-import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import bgImage from "assets/images/bg-sign-in.jpg";
 
 function SignInBasic() {
   const [rememberMe, setRememberMe] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("/api/auth/login", {
+        username,
+        password,
+      });
+
+      const { token } = response.data;
+
+      // Save the token (secure handling is advised, e.g. HttpOnly cookie for production)
+      localStorage.setItem("jwt", token);
+
+      // Redirect after login
+      navigate("/vulnerability-db/pending");
+    } catch (error) {
+      console.error("Login failed", error);
+      alert("Invalid credentials. Please try again.");
+    }
+  };
+
   return (
     <>
-      <DefaultNavbar
-        routes={routes}
-        action={{
-          type: "external",
-          route: "https://www.creative-tim.com/product/material-kit-react",
-          label: "free download",
-          color: "info",
-        }}
-        transparent
-        light
-      />
+      <DefaultNavbar routes={routes} transparent light />
       <MKBox
         position="absolute"
         top={0}
@@ -82,33 +92,28 @@ function SignInBasic() {
                 textAlign="center"
               >
                 <MKTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-                  Sign in
+                  Sign In
                 </MKTypography>
-                <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
-                  <Grid item xs={2}>
-                    <MKTypography component={MuiLink} href="#" variant="body1" color="white">
-                      <FacebookIcon color="inherit" />
-                    </MKTypography>
-                  </Grid>
-                  <Grid item xs={2}>
-                    <MKTypography component={MuiLink} href="#" variant="body1" color="white">
-                      <GitHubIcon color="inherit" />
-                    </MKTypography>
-                  </Grid>
-                  <Grid item xs={2}>
-                    <MKTypography component={MuiLink} href="#" variant="body1" color="white">
-                      <GoogleIcon color="inherit" />
-                    </MKTypography>
-                  </Grid>
-                </Grid>
               </MKBox>
               <MKBox pt={4} pb={3} px={3}>
-                <MKBox component="form" role="form">
+                <form role="form" onSubmit={handleSubmit}>
                   <MKBox mb={2}>
-                    <MKInput type="email" label="Email" fullWidth />
+                    <MKInput
+                      type="username"
+                      label="Username"
+                      fullWidth
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
                   </MKBox>
                   <MKBox mb={2}>
-                    <MKInput type="password" label="Password" fullWidth />
+                    <MKInput
+                      type="password"
+                      label="Password"
+                      fullWidth
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
                   </MKBox>
                   <MKBox display="flex" alignItems="center" ml={-1}>
                     <Switch checked={rememberMe} onChange={handleSetRememberMe} />
@@ -123,7 +128,7 @@ function SignInBasic() {
                     </MKTypography>
                   </MKBox>
                   <MKBox mt={4} mb={1}>
-                    <MKButton variant="gradient" color="info" fullWidth>
+                    <MKButton variant="gradient" color="info" fullWidth type="submit">
                       sign in
                     </MKButton>
                   </MKBox>
@@ -132,7 +137,7 @@ function SignInBasic() {
                       Don&apos;t have an account?{" "}
                       <MKTypography
                         component={Link}
-                        to="/authentication/sign-up/cover"
+                        to="/authentication/sign-up"
                         variant="button"
                         color="info"
                         fontWeight="medium"
@@ -142,7 +147,7 @@ function SignInBasic() {
                       </MKTypography>
                     </MKTypography>
                   </MKBox>
-                </MKBox>
+                </form>
               </MKBox>
             </Card>
           </Grid>

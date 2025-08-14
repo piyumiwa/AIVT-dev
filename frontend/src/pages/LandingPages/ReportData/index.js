@@ -83,7 +83,7 @@ function ReportData() {
   // const [name, setName] = useState("");
   // const [organization, setOrganization] = useState("");
   const [occupation, setOccupation] = useState("");
-  const [reportbase, setReportbase] = useState("");
+  const [report_base, setReport_base] = useState("");
   const [phase, setPhase] = useState("");
   const [attributeName, setAttributeName] = useState([]);
   const [effectName, setEffectName] = useState("");
@@ -126,7 +126,7 @@ function ReportData() {
     // formData.append("name", name);
     // formData.append("organization", organization);
     formData.append("occupation", occupation);
-    formData.append("reportbase", reportbase);
+    formData.append("report_base", report_base);
     formData.append("title", title);
     formData.append("report_description", report_description);
     formData.append("artifactType", artifactType);
@@ -179,7 +179,7 @@ function ReportData() {
   };
 
   const handleBaseChange = (event) => {
-    setReportbase(event.target.value);
+    setReport_base(event.target.value);
   };
 
   const handleAttributeChange = (event) => {
@@ -328,7 +328,7 @@ function ReportData() {
                       <Select
                         labelId="demo-simple-select-standard-label"
                         id="demo-simple-select-standard"
-                        value={reportbase}
+                        value={report_base}
                         label="Report Base"
                         onChange={handleBaseChange}
                       >

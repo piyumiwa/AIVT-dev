@@ -1,20 +1,41 @@
-import React, { useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode"; // optional but useful
 
 const ProtectedRouteReporter = ({ element: Component }) => {
-  const { isLoading, user, loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      loginWithRedirect();
+    const token = localStorage.getItem("jwt");
+
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        const isExpired = decoded.exp * 1000 < Date.now();
+        if (isExpired) {
+          localStorage.removeItem("token");
+          setIsAuthenticated(false);
+          navigate("/authentication/sign-in");
+        } else {
+          setIsAuthenticated(true);
+        }
+      } catch (err) {
+        console.error("Invalid token", err);
+        localStorage.removeItem("token");
+        setIsAuthenticated(false);
+        navigate("/authentication/sign-in");
+      }
+    } else {
+      setIsAuthenticated(false);
+      navigate("/authentication/sign-in");
     }
-  }, [isLoading, user, loginWithRedirect]);
+  }, [navigate]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isAuthenticated === null) return <div>Loading...</div>;
 
-  // Render the protected component if the user is authenticated
-  return user ? <Component /> : null;
+  return isAuthenticated ? <Component /> : null;
 };
 
 ProtectedRouteReporter.propTypes = {

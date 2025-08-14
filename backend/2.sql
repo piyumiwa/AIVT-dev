@@ -28,8 +28,16 @@ CREATE TABLE Reporter (
     email VARCHAR(255),
     organization VARCHAR(255),
     occupation VARCHAR(255),
+    report_base VARCHAR(255),
 	role VARCHAR(50) DEFAULT 'reporter'
 );
+
+CREATE TABLE admins (
+  adminId SERIAL PRIMARY KEY,
+  username VARCHAR(100) UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL
+);
+
 
 -- Create table Vulnerability
 CREATE TABLE Vulnerability (

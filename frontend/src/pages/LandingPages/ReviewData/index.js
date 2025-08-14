@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { useParams, Link, useNavigate } from "react-router-dom";
 
@@ -22,76 +21,46 @@ import FilledInfoCard from "examples/Cards/InfoCards/FilledInfoCard";
 import footerRoutes from "footer.routes";
 
 function ReviewData() {
-  const { user, loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const [review_comments, setReview_comments] = useState("");
   // const [approval_status, setApproval_status] = useState("");
   const [comments, setComments] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [vulnerability, setVulnerability] = useState([]);
-  const [userRole, setUserRole] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const navigate = useNavigate();
 
   const MAX_LINES = 2;
   const MAX_CHARACTERS_PER_LINE = 50;
 
+  const token = localStorage.getItem("jwt");
+
   useEffect(() => {
-    const fetchUserRole = async () => {
+    const fetchVulnerability = async () => {
       try {
-        // Replace with the endpoint that fetches the user's role
-        const response = await axios.get(`/api/auth/current-user`, {
-          params: { sub: user.sub },
-          // headers: {
-          //   Authorization: `Bearer ${user.sub}`, // Replace with the actual token if needed
-          // },
+        const response = await axios.get(`/api/vulnerability-db/id/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-        // console.log("User role response:", response.data);
-        const { role } = response.data;
-
-        setUserRole(role);
-
-        if (role !== "admin") {
-          alert("You are not authorized to access this page.");
-          navigate(`/vulnerability-db`);
-        }
+        setVulnerability(response.data);
+        setReview_comments(response.data.review_comments || "");
       } catch (error) {
-        console.error("Error fetching user role:", error);
-        navigate(`/vulnerability-db`);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching vulnerability:", error);
       }
     };
 
-    if (isAuthenticated && user) {
-      fetchUserRole();
-    } else {
-      loginWithRedirect();
-    }
-  }, [isAuthenticated, user, navigate, loginWithRedirect]);
-
-  useEffect(() => {
-    if (userRole === "admin") {
-      const url = `/api/vulnerability-db/id/${id}`;
-
-      axios
-        .get(url)
-        .then((response) => response.data)
-        .then((data) => {
-          // console.log("JSON response:", data);
-          setVulnerability(data);
-          setReview_comments(data.review_comments || "");
-        })
-        .catch((error) => {
-          console.error("Error fetching vulnerability:", error);
-        });
-    }
-  }, [id, userRole]);
+    fetchVulnerability();
+  }, [id, token]);
 
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`/api/vulnerability-db/id/${id}/comments`);
+        const response = await axios.get(`/api/vulnerability-db/id/${id}/comments`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setComments(response.data); // Store comments in state
       } catch (error) {
         console.error("Error fetching comments:", error);
@@ -99,7 +68,7 @@ function ReviewData() {
     };
 
     fetchComments();
-  }, [id]);
+  }, [id, token]);
 
   const getTruncatedDescription = (description) => {
     if (description) {
@@ -111,72 +80,56 @@ function ReviewData() {
     return description;
   };
 
-  const handleAuthClick = () => {
-    if (isAuthenticated) {
-      logout({ returnTo: window.location.origin });
-    } else {
-      loginWithRedirect();
+  const handleDelete = async (vulnid) => {
+    try {
+      await axios.delete(`/api/vulnerability-db/${vulnid}/delete`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("Deleted successfully");
+      navigate("/vulnerability-db/pending");
+    } catch (error) {
+      console.error("Error deleting report:", error);
     }
   };
 
-  const handleDelete = (vulnid) => {
-    axios
-      .delete(`/api/vulnerability-db/${vulnid}/delete`)
-      .then((response) => {
-        console.log("Deleted successfully:", response.data);
-      })
-      .catch((error) => console.error("Error deleting report:", error));
-  };
-
-  const handleApprove = (vulnid) => {
-    const approval_status = "approved";
+  const handleApprove = async (vulnid) => {
     console.log("vulnid:", vulnid);
 
-    const data = { approval_status, review_comments, sub: user.sub };
+    const data = { approval_status: "approved", review_comments };
 
-    axios
-      .put(`/api/vulnerability-db/${vulnid}/review`, data, {
-        params: { sub: user.sub },
+    try {
+      await axios.put(`/api/vulnerability-db/${vulnid}/review`, data, {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-      })
-      .then((response) => {
-        console.log(response.data.message);
-        alert("Report approved successfully!");
-        setReview_comments("");
-        // window.location.reload();
-        navigate(`/vulnerability-db/pending`);
-      })
-      .catch((error) => {
-        console.error("Error approving report: ", error);
-        alert("Failed to approve the report.");
       });
+      alert("Report approved successfully!");
+      setReview_comments("");
+      navigate("/vulnerability-db/pending");
+    } catch (error) {
+      console.error("Error approving report: ", error);
+      alert("Failed to approve the report.");
+    }
   };
 
-  const handleReject = (vulnid) => {
-    const approval_status = "rejected";
+  const handleReject = async (vulnid) => {
+    const data = { approval_status: "rejected", review_comments };
 
-    const data = { approval_status, review_comments, sub: user.sub };
-
-    axios
-      .put(`/api/vulnerability-db/${vulnid}/review`, data, {
-        params: { sub: user.sub },
+    try {
+      await axios.put(`/api/vulnerability-db/${vulnid}/review`, data, {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-      })
-      .then((response) => {
-        console.log(response.data.message);
-        alert("Report rejected successfully!");
-        setReview_comments("");
-        // window.location.reload();
-        navigate(`/vulnerability-db/rejected`);
-      })
-      .catch((error) => {
-        console.error("Error approving report: ", error);
-        alert("Failed to reject the report.");
       });
+      alert("Report rejected successfully!");
+      setReview_comments("");
+      navigate("/vulnerability-db/rejected");
+    } catch (error) {
+      console.error("Error rejecting report: ", error);
+      alert("Failed to reject the report.");
+    }
   };
 
   const toggleExpandText = () => {
@@ -184,10 +137,12 @@ function ReviewData() {
   };
 
   const downloadAttachment = (vulnid, filename) => {
-    fetch(`/api/vulnerability-db/attachments/${vulnid}/${filename}`)
+    fetch(`/api/vulnerability-db/attachments/${vulnid}/${filename}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("Download failed");
         }
         return response.blob();
       })
@@ -203,22 +158,13 @@ function ReviewData() {
       .catch((error) => console.error("Error downloading the file:", error));
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (!isAuthenticated || userRole !== "admin") {
-    return <p>You are not authorized to view this page.</p>;
-  }
+  // if (loading) {
+  //   return <p>Loading...</p>;
+  // }
 
   return (
     <>
-      <NavbarDark
-        transparent
-        light
-        onAuthClick={handleAuthClick}
-        isAuthenticated={isAuthenticated}
-      />
+      <NavbarDark transparent light />
       <Container sx={{ mt: 4, maxWidth: "100%" }}>
         <Grid container spacing={0} alignItems="center">
           <Grid item xs={12}>

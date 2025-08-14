@@ -1,27 +1,22 @@
 const express = require('express');
-const { body } = require('express-validator');
-const userController = require('../controllers/userController');
-const authMiddleware = require('../middleware/authMiddleware');
-const adminMiddleware = require('../middleware/adminMiddleware');
 const router = express.Router();
 
-// Inserting email 
-router.post('/newaccount', userController.createEmail);
+const userController = require('../controllers/userController');
+const adminMiddleware = require('../middleware/adminMiddleware');
 
-// Sign-up Route:
-// router.post('/signup', userController.createUser);
+// Login route for admins
+router.post('/login', userController.loginUser);
 
-// Get users
-// router.get('/users', authMiddleware, userController.getAllUsers);
-router.get('/users', userController.getAllUsers);
-// router.get('/users/:id', authMiddleware, userController.getUserById);
-router.get('/users/:id', userController.getUserById);
-router.get('/current-user', userController.getCurrentUser);
-// router.get('/profile', authMiddleware, userController.getCurrentUser);
-// router.get('/admin/dashboard', authMiddleware, adminMiddleware, );
+// Signup route for admins
+router.post('/signup', userController.singupUser);
 
-// Login Route
-router.post('/login', userController.findUserByEmail);
+// Get all admins (protected route)
+router.get('/users', adminMiddleware, userController.getAllAdmins);
 
+// Get current logged-in admin profile
+router.get('/current-user', adminMiddleware, userController.getCurrentAdmin);
+
+// Get admin by ID (protected)
+router.get('/users/:id', adminMiddleware, userController.getAdminById);
 
 module.exports = router;

@@ -20,7 +20,6 @@ import ListItemText from "@mui/material/ListItemText";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import TextField from "@mui/material/TextField";
 
 // // Material Kit 2 React components
 import MKBox from "components/MKBox";
@@ -81,8 +80,10 @@ function UpdateData() {
   const [checked, setChecked] = useState(false);
   const { id } = useParams();
   const { token } = useParams();
-  const [name, setName] = useState("");
-  const [organization, setOrganization] = useState("");
+  // const [name, setName] = useState("");
+  // const [organization, setOrganization] = useState("");
+  const [occupation, setOccupation] = useState("");
+  const [report_base, setReport_base] = useState("");
   const [phase, setPhase] = useState("");
   const [attributeName, setAttributeName] = useState([]);
   const [effectName, setEffectName] = useState("");
@@ -139,8 +140,8 @@ function UpdateData() {
         console.log("User role:", role);
 
         if (vulnerability.reporterEmail === user.email || role === "admin") {
-          setName(vulnerability.reporterName || "");
-          setOrganization(vulnerability.reporterOrganization || "");
+          setOccupation(vulnerability.occupation || "");
+          setReport_base(vulnerability.report_base || "");
           setTitle(vulnerability.title || "");
           setReport_description(vulnerability.report_description || "");
           setArtifactType(vulnerability.artifactType || "");
@@ -185,6 +186,8 @@ function UpdateData() {
     const formData = new FormData();
     // formData.append("name", name);
     // formData.append("organization", organization);
+    formData.append("occupation", occupation);
+    formData.append("report_base", report_base);
     formData.append("title", title);
     formData.append("report_description", report_description);
     formData.append("artifactType", artifactType);
@@ -220,6 +223,14 @@ function UpdateData() {
       .catch((error) => {
         console.error("Error updating report:", error);
       });
+  };
+
+  const handleOccupChange = (event) => {
+    setOccupation(event.target.value);
+  };
+
+  const handleBaseChange = (event) => {
+    setReport_base(event.target.value);
   };
 
   const handleAttributeChange = (event) => {
@@ -268,42 +279,99 @@ function UpdateData() {
             <MKBox p={3}>
               <Grid container spacing={3}>
                 <Grid container spacing={3}>
-                  {/* <MKTypography variant="h4" mb={1} p={3} my={4}>
+                  <MKTypography variant="h4" mb={1} p={3} my={4}>
                     Reporter Details
-                  </MKTypography> */}
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      disabled
-                      id="filled-disabled"
-                      variant="standard"
-                      label="Name"
-                      fullWidth
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      disabled
-                      id="filled-disabled"
-                      variant="standard"
-                      label="Organization"
-                      value={organization}
-                      fullWidth
-                      onChange={(e) => setOrganization(e.target.value)}
-                    />
+                  </MKTypography>
+                  <Grid item xs={12}>
+                    <FormControl variant="standard" fullWidth>
+                      <InputLabel id="demo-simple-select-standard-label">Occupation</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-standard-label"
+                        id="demo-simple-select-standard"
+                        value={occupation}
+                        label="Occupation"
+                        onChange={handleOccupChange}
+                      >
+                        <MenuItem value={"AI Developer/ML Engineer"}>
+                          AI Developer / ML Engineer
+                        </MenuItem>
+                        <MenuItem value={"Cybersecurity Researcher"}>
+                          Cybersecurity Researcher
+                        </MenuItem>
+                        <MenuItem value={"Security Analyst/Red Teamer"}>
+                          Security Analyst / Red Teamer
+                        </MenuItem>
+                        <MenuItem value={"Software Engineer"}>Software Engineer</MenuItem>
+                        <MenuItem value={"Data Scientist"}>Data Scientist</MenuItem>
+                        <MenuItem value={"Academic Researcher/Professor"}>
+                          Academic Researcher / Professor
+                        </MenuItem>
+                        <MenuItem value={"System Administrator"}>System Administrator</MenuItem>
+                        <MenuItem value={"Penetration Tester/Ethical Hacker"}>
+                          Penetration Tester / Ethical Hacker
+                        </MenuItem>
+
+                        <MenuItem value={"Independent Researcher"}>Independent Researcher</MenuItem>
+                        <MenuItem value={"Open-Source Contributor"}>
+                          Open-Source Contributor
+                        </MenuItem>
+                        <MenuItem value={"Bug Bounty Hunter"}>Bug Bounty Hunter</MenuItem>
+                        <MenuItem value={"Policy Analyst/Ethics Researcher"}>
+                          Policy Analyst / Ethics Researcher
+                        </MenuItem>
+
+                        <MenuItem value={"Healthcare IT Professional"}>
+                          Healthcare IT Professional
+                        </MenuItem>
+                        <MenuItem value={"Critical Infrastructure Engineer"}>
+                          Critical Infrastructure Engineer
+                        </MenuItem>
+                        <MenuItem value={"Defense/Military Technologist"}>
+                          Defense / Military Technologist
+                        </MenuItem>
+                        <MenuItem value={"Financial Services Security Specialist"}>
+                          Financial Services Security Specialist
+                        </MenuItem>
+
+                        <MenuItem value={"Masters/PhD Student"}>Master’s / PhD Student</MenuItem>
+                        <MenuItem value={"Undergraduate Student"}>
+                          Undergraduate Student in Relevant Field
+                        </MenuItem>
+                        <MenuItem value={"AI/ML Enthusiast"}>AI/ML Enthusiast or Hobbyist</MenuItem>
+
+                        <MenuItem value={"Vulnerability Reporter"}>Vulnerability Reporter</MenuItem>
+                        <MenuItem value={"CVE Contributor"}>CVE Contributor</MenuItem>
+                        <MenuItem value={"CTI Platform/CERT Member"}>
+                          Member of a CTI Platform or CERT Team
+                        </MenuItem>
+
+                        <MenuItem value={"Other"}>Other (please specify)</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={12}>
-                    {isAuthenticated && user && (
-                      <TextField
-                        disabled
-                        id="filled-disabled"
-                        label="Email"
-                        defaultValue={user.email}
-                        variant="standard"
-                        fullWidth
-                      />
-                    )}
+                    <FormControl variant="standard" fullWidth>
+                      <InputLabel id="demo-simple-select-standard-label">
+                        The report is based on...
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-standard-label"
+                        id="demo-simple-select-standard"
+                        value={report_base}
+                        label="Report Base"
+                        onChange={handleBaseChange}
+                      >
+                        <MenuItem value={"Original research"}>Original research</MenuItem>
+                        <MenuItem value={"Personal experience"}>Personal experience</MenuItem>
+                        <MenuItem value={"Public dataset / article"}>
+                          Public dataset / article
+                        </MenuItem>
+                        <MenuItem value={"News or incident report"}>
+                          News or incident report
+                        </MenuItem>
+                        <MenuItem value={"Other"}>Other</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3}>

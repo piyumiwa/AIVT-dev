@@ -1,8 +1,6 @@
-import { useAuth0 } from "@auth0/auth0-react";
-// import * as React from "react";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
@@ -30,7 +28,6 @@ import bgImage from "assets/images/bg-db.jpg";
 const paginationModel = { page: 0, pageSize: 15 };
 
 function ReviewDb() {
-  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
   const [vulnerabilities, setVulnerabilities] = useState([]);
   // const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
@@ -39,44 +36,40 @@ function ReviewDb() {
   const [effect, setEffect] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   // const { id } = useParams();
 
   useEffect(() => {
-    const fetchUserRole = async () => {
-      try {
-        // Replace with the endpoint that fetches the user's role
-        const response = await axios.get(`/api/auth/current-user`, {
-          params: { sub: user.sub },
-          // headers: {
-          //   Authorization: `Bearer ${user.sub}`, // Replace with the actual token if needed
-          // },
-        });
-        console.log("User role response:", response.data);
-        const { role } = response.data;
+    const token = localStorage.getItem("jwt");
+    if (!token || token.split(".").length !== 3) return;
 
-        setUserRole(role);
-
-        if (role !== "admin") {
-          console.log("User role response:", response);
-          alert("You are not authorized to access this page.");
-          navigate(`/vulnerability-db`);
-        }
-      } catch (error) {
-        console.error("Error fetching user role:", error);
-        navigate(`/vulnerability-db`);
+    try {
+      const decoded = jwtDecode(token);
+      const isExpired = decoded.exp * 1000 < Date.now();
+      if (isExpired) {
+        console.warn("Token expired");
+        localStorage.removeItem("jwt");
+        return;
       }
-      // finally {
-      //   setLoading(false);
-      // }
-    };
+      setIsAuthenticated(true);
 
-    if (isAuthenticated && user) {
-      fetchUserRole();
-    } else {
-      loginWithRedirect();
+      axios
+        .get(`/api/auth/current-user`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          setUserRole(res.data.role); // Set the role
+          console.log("User role fetched:", res.data.role);
+        })
+        .catch((error) => {
+          console.error("Error fetching user role:", error);
+        });
+    } catch (err) {
+      console.error("Invalid token", err);
     }
-  }, [isAuthenticated, user, navigate, loginWithRedirect]);
+  }, []);
 
   useEffect(() => {
     // const url = "/api/vulnerability-db";
@@ -145,14 +138,6 @@ function ReviewDb() {
     setEffect("");
     setStartDate("");
     setEndDate("");
-  };
-
-  const handleAuthClick = () => {
-    if (isAuthenticated) {
-      logout({ returnTo: window.location.origin });
-    } else {
-      loginWithRedirect();
-    }
   };
 
   const columns = [
@@ -233,13 +218,7 @@ function ReviewDb() {
 
   return (
     <>
-      <DefaultNavbar
-        routes={routes}
-        transparent
-        light
-        onAuthClick={handleAuthClick}
-        isAuthenticated={isAuthenticated}
-      />
+      <DefaultNavbar routes={routes} transparent light isAuthenticated={isAuthenticated} />
       <MKBox
         minHeight="60vh"
         width="100%"

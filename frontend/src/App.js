@@ -7,9 +7,12 @@ import CssBaseline from "@mui/material/CssBaseline";
 import theme from "assets/theme";
 import Presentation from "layouts/pages/presentation";
 import ProtectedRouteReporter from "ProtectedRouteReporter";
+import ProtectedRouteWithRole from "ProtectedRouteWithRole";
 import ReportData from "pages/LandingPages/ReportData";
 import VulnerabilityDb from "pages/LandingPages/VulnerabilityDb";
 import Vulnerability from "pages/LandingPages/Vulnerability";
+import SignUp from "pages/LandingPages/SignUp";
+import SignIn from "pages/LandingPages/SignIn";
 import UpdateData from "pages/LandingPages/UpdateData";
 import ReviewDb from "pages/LandingPages/ReviewDb";
 import ReviewData from "pages/LandingPages/ReviewData";
@@ -36,7 +39,8 @@ export default function App() {
         {/* <Route path="/report-data" element={<ProtectedRouteReporter element={ReportData} />} /> */}
         <Route path="/vulnerability-db" element={<VulnerabilityDb />} />
         <Route path="/vulnerability-db/id/:id" element={<Vulnerability />} />
-        {/* <Route path="/vulnerability-db/token/:token" element={<Vulnerability />} /> */}
+        <Route path="/authentication/sign-up" element={<SignUp />} />
+        <Route path="/authentication/sign-in" element={<SignIn />} />
         <Route
           path="/vulnerability-db/editid/:id"
           element={<ProtectedRouteReporter element={UpdateData} />}
@@ -55,7 +59,7 @@ export default function App() {
         />
         <Route
           path="/vulnerability-db/:id/review"
-          element={<ProtectedRouteReporter element={ReviewData} />}
+          element={<ProtectedRouteWithRole element={ReviewData} requiredRole="admin" />}
         />
         <Route path="/search-results" element={<SearchResults />} />
         <Route path="/terms-and-conditions" element={<TnC />} />

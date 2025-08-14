@@ -1,5 +1,5 @@
 const pool = require('../config/database'); 
-const { fetchUserById } = require('../controllers/userController');
+// const { fetchUserById } = require('../controllers/userController');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
@@ -84,14 +84,10 @@ exports.createReport = async (req, res) => {
     console.log('Received request for /report-data');
     const token = uuidv4();
     const {
-        sub, 
-        email,
-        // name,
-        // organization,
         occupation,
+        report_base,
         title,
         report_description,
-        // artifactName,
         artifactType,
         developer,
         deployer,
@@ -105,10 +101,6 @@ exports.createReport = async (req, res) => {
     console.log("Received attributeName from body:", req.body.attributeName);
 
     const attachments = req.files;
-
-    if (!sub || !email) {
-        return res.status(400).json({ error: 'User ID and email are required' });
-    }
 
     // Ensure attributeName is an array
     let attributeTypeArray;
@@ -125,24 +117,11 @@ exports.createReport = async (req, res) => {
     try {
         await client.query('BEGIN');
 
-        const reporterId = sub;
-        console.log('Id: ', reporterId);
+        const reporterId = uuidv4(); // Generate new unique reporter ID
 
-        // Get reporterId from authenticated user
-        const reporterQuery = await client.query(
-            'SELECT reporterId FROM Reporter WHERE reporterid = $1',
-            [reporterId]
-        );
-
-        if (reporterQuery.rows.length === 0) {
-            return res.status(404).json({ error: 'Reporter not found' });
-        }
-
-        // Update Reporter
         await client.query (
-            // 'INSERT INTO Reporter (name, organization) VALUES ($1, $2) RETURNING reporterId',
-            'UPDATE Reporter SET occupation = $1 WHERE reporterId = $2', 
-            [occupation, reporterId]
+            'INSERT INTO Reporter (reporterId, occupation, report_base) VALUES ($1, $2, $3)',
+            [reporterId, occupation, report_base]
         );
 
         // Insert into Vulnerability
@@ -252,12 +231,9 @@ exports.fetchReportById = async (id) => {
                 a.deployer, 
                 a.artifactId, 
                 r.reporterId,
-                r.name AS reporterName,
-                r.email AS reporterEmail,
-                r.organization AS reporterOrganization,
-                r.role AS reporterRole
+                r.role AS reporterRole,
                 r.occupation, 
-                r.reportbase AS reportBase,
+                r.report_base,
                 p.phase,
                 p.phase_description AS phaseDescription,
                 array_agg(DISTINCT an.attributeName) AS attributes,
@@ -320,20 +296,11 @@ exports.fetchReportById = async (id) => {
             developer: result.rows[0].developer,
             deployer: result.rows[0].deployer,
             reporterId: result.rows[0].reporterid,
-            reporterName: result.rows[0].reportername,
-            reporterEmail: result.rows[0].reporteremail,
-            reporterOrganization: result.rows[0].reporterorganization,
             reporterRole: result.rows[0].reporterrole,
             occupation: result.rows[0].occupation,
-            reportBase: result.rows[0].reportbase,
+            report_base: result.rows[0].report_base,
             phase: result.rows[0].phase,
             phaseDescription: result.rows[0].phasedescription,
-            // attributeName: Array.isArray(result.rows[0].attributes)
-            //     ? result.rows[0].attributes
-            //     : result.rows[0].attributes
-            //         .replace(/[{}]/g, '') // remove curly braces
-            //         .split(',')           // split into array
-            //         .map(attr => attr.trim()),
             attributeName: formattedAttributes,
             attr_Description: result.rows[0].attr_description,
             effectName: result.rows[0].effect, 
@@ -383,12 +350,9 @@ exports.fetchReportByToken = async (token) => {
                 a.deployer, 
                 a.artifactId, 
                 r.reporterId,
-                r.name AS reporterName,
-                r.email AS reporterEmail,
-                r.organization AS reporterOrganization,
                 r.role AS reporterRole, 
                 r.occupation, 
-                r.reportbase AS reportBase,
+                r.report_base,
                 p.phase,
                 p.phase_description AS phaseDescription,
                 array_agg(DISTINCT an.attributeName) AS attributes,
@@ -451,12 +415,9 @@ exports.fetchReportByToken = async (token) => {
             developer: result.rows[0].developer,
             deployer: result.rows[0].deployer,
             reporterId: result.rows[0].reporterid,
-            reporterName: result.rows[0].reportername,
-            reporterEmail: result.rows[0].reporteremail,
-            reporterOrganization: result.rows[0].reporterorganization,
             reporterRole: result.rows[0].reporterrole,
             occupation: result.rows[0].occupation,
-            reportBase: result.rows[0].reportbase,
+            report_base: result.rows[0].report_base,
             phase: result.rows[0].phase,
             phaseDescription: result.rows[0].phasedescription,
             attributeName: formattedAttributes,

@@ -1,4 +1,4 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -26,33 +26,47 @@ import breakpoints from "assets/theme/base/breakpoints";
 import DefaultNavbarMobile from "examples/Navbars/DefaultNavbar/DefaultNavbarMobile";
 
 function DefaultNavbar({ brand, routes, transparent, light, action, sticky, relative }) {
-  const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileNavbar, setMobileNavbar] = useState(false);
   const [mobileView, setMobileView] = useState(false);
-  const navigate = useNavigate();
   const [userRole, setUserRole] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
   const openMobileNavbar = () => setMobileNavbar(!mobileNavbar);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    const token = localStorage.getItem("jwt");
+    if (!token || token.split(".").length !== 3) return;
+
+    try {
+      const decoded = jwtDecode(token);
+      const isExpired = decoded.exp * 1000 < Date.now();
+      if (isExpired) {
+        console.warn("Token expired");
+        localStorage.removeItem("jwt");
+        return;
+      }
+      setIsAuthenticated(true);
+
       axios
         .get(`/api/auth/current-user`, {
-          params: { sub: user.sub },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
         .then((res) => {
-          setUserRole(res.data.role);
+          setUserRole(res.data.role); // Set the role
           console.log("User role fetched:", res.data.role);
         })
         .catch((error) => {
           console.error("Error fetching user role:", error);
         });
-    } else {
-      console.warn("Error fetching user role:");
+    } catch (err) {
+      console.error("Invalid token", err);
     }
-  }, [isAuthenticated, user]);
+  }, []);
 
   useEffect(() => {
     // A function that sets the display state for the DefaultNavbarMobile.
@@ -79,24 +93,15 @@ function DefaultNavbar({ brand, routes, transparent, light, action, sticky, rela
     return () => window.removeEventListener("resize", displayMobileNavbar);
   }, []);
 
-  const handleAuthClick = async () => {
-    if (isAuthenticated) {
-      logout({ returnTo: window.location.origin });
-    } else {
-      await loginWithRedirect();
-    }
-  };
-
   const handleSearchChange = async (e) => {
     const value = e.target.value;
-    setSearchQuery(value);
-
+    setSearchQuery(value.replace(/</g, "&lt;").replace(/>/g, "&gt;"));
     if (value.length > 0) {
       try {
-        const response = await axios.get(`https://86.50.228.33/api/vulnerability-db/search`, {
+        const response = await axios.get(`/api/vulnerability-db/search`, {
           params: { query: value },
         });
-        console.log("Search API Response:", response.data);
+        // console.log("Search API Response:", response.data);
         setSearchResults(response.data);
       } catch (error) {
         console.error("Error fetching search results:", error?.response?.data || error.message);
@@ -115,33 +120,12 @@ function DefaultNavbar({ brand, routes, transparent, light, action, sticky, rela
     }
   };
 
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      const submitEmailIfNew = async () => {
-        const reporterId = user.sub;
-        const email = user.email;
-
-        try {
-          const response = await axios.post("https://86.50.228.33/api/auth/newaccount", {
-            reporterId,
-            email,
-          });
-          console.log(response.data.message || "Email submitted successfully");
-        } catch (error) {
-          if (
-            error.response &&
-            error.response.status === 400 &&
-            error.response.data.message === "User already exists"
-          ) {
-            console.log("User already exists; no need to submit again.");
-          } else {
-            console.error("Error submitting email:", error);
-          }
-        }
-      };
-      submitEmailIfNew();
-    }
-  }, [isAuthenticated, user]);
+  const handleLogout = () => {
+    localStorage.removeItem("jwt");
+    setIsAuthenticated(false);
+    setUserRole(null);
+    navigate("/authentication/sign-in");
+  };
 
   return (
     <Container sx={sticky ? { position: "sticky", top: 0, zIndex: 10 } : null}>
@@ -349,18 +333,10 @@ function DefaultNavbar({ brand, routes, transparent, light, action, sticky, rela
           >
             {mobileView && <DefaultNavbarMobile routes={routes} open={mobileNavbar} />}
           </MKBox>
-          {userRole && (
-            <MKBox ml={{ xs: "auto", lg: 0 }}>
-              <MKButton
-                component={Link}
-                variant={
-                  action.color === "white" || action.color === "default" ? "contained" : "gradient"
-                }
-                color={action.color ? action.color : "info"}
-                size="small"
-                onClick={handleAuthClick}
-              >
-                {isAuthenticated ? "Logout" : "Sign in"}
+          {userRole && isAuthenticated && (
+            <MKBox ml={2}>
+              <MKButton variant="gradient" color="info" onClick={handleLogout}>
+                Logout
               </MKButton>
             </MKBox>
           )}

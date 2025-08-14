@@ -1,18 +1,10 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
-// import Switch from "@mui/material/Switch";
 import Grid from "@mui/material/Grid";
-// import MuiLink from "@mui/material/Link";
-
-// @mui icons
-// import FacebookIcon from "@mui/icons-material/Facebook";
-// import GitHubIcon from "@mui/icons-material/GitHub";
-// import GoogleIcon from "@mui/icons-material/Google";
 
 // Material Kit 2 React components
 import MKBox from "components/MKBox";
@@ -25,34 +17,28 @@ import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import SimpleFooter from "examples/Footers/SimpleFooter";
 
 // Material Kit 2 React page layout routes
-// import routes from "routes";
+import routes from "routes";
 
 // Images
-import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import bgImage from "assets/images/bg-sign-in.jpg";
 
-function SignInBasic() {
-  // const [rememberMe, setRememberMe] = useState(false);
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+function SignUpBasic() {
   const [username, setUsername] = useState("");
-  const [organization, setOrganization] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  // const handleSetRememberMe = () => setRememberMe(!rememberMe);
-
-  const handleSubmit = async () => {
-    if (isAuthenticated) {
-      try {
-        await axios.post("/api/auth/signup", {
-          name: username,
-          organization,
-        });
-        navigate("/"); // Navigate to the home page or the intended page after successful sign-up
-        logout({ returnTo: window.location.origin });
-      } catch (error) {
-        console.error("Error submitting user:", error);
-      }
-    } else {
-      await loginWithRedirect();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("/api/auth/signup", {
+        username,
+        password,
+      });
+      alert("Account created successfully.");
+      navigate("/authentication/sign-in");
+    } catch (error) {
+      console.error("Signup failed", error);
+      alert("Signup failed. Try another username.");
     }
   };
 
@@ -93,11 +79,11 @@ function SignInBasic() {
                 textAlign="center"
               >
                 <MKTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-                  User Info
+                  Sign Up
                 </MKTypography>
               </MKBox>
               <MKBox pt={4} pb={3} px={3}>
-                <MKBox component="form" role="form">
+                <form role="form" onSubmit={handleSubmit}>
                   <MKBox mb={2}>
                     <MKInput
                       type="text"
@@ -105,56 +91,40 @@ function SignInBasic() {
                       fullWidth
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
+                      required
                     />
                   </MKBox>
                   <MKBox mb={2}>
                     <MKInput
-                      type="text"
-                      label="organization"
+                      type="password"
+                      label="Password"
                       fullWidth
-                      value={organization}
-                      onChange={(e) => setOrganization(e.target.value)}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
                     />
                   </MKBox>
-                  {/* <MKBox display="flex" alignItems="center" ml={-1}>
-                    <Switch checked={rememberMe} onChange={handleSetRememberMe} />
-                    <MKTypography
-                      variant="button"
-                      fontWeight="regular"
-                      color="text"
-                      onClick={handleSetRememberMe}
-                      sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
-                    >
-                      &nbsp;&nbsp;Remember me
-                    </MKTypography>
-                  </MKBox> */}
                   <MKBox mt={4} mb={1}>
-                    <MKButton
-                      component={Link}
-                      onClick={handleSubmit}
-                      variant="gradient"
-                      color="info"
-                      fullWidth
-                    >
-                      Submit
+                    <MKButton variant="gradient" color="info" fullWidth type="submit">
+                      Sign Up
                     </MKButton>
                   </MKBox>
-                  {/* <MKBox mt={3} mb={1} textAlign="center">
+                  <MKBox mt={3} mb={1} textAlign="center">
                     <MKTypography variant="button" color="text">
-                      Don&apos;t have an account?{" "}
+                      Already have an account?{" "}
                       <MKTypography
                         component={Link}
-                        to="/authentication/sign-up/cover"
+                        to="/authentication/sign-in"
                         variant="button"
                         color="info"
                         fontWeight="medium"
                         textGradient
                       >
-                        Sign up
+                        Sign in
                       </MKTypography>
                     </MKTypography>
-                  </MKBox> */}
-                </MKBox>
+                  </MKBox>
+                </form>
               </MKBox>
             </Card>
           </Grid>
@@ -167,4 +137,4 @@ function SignInBasic() {
   );
 }
 
-export default SignInBasic;
+export default SignUpBasic;
