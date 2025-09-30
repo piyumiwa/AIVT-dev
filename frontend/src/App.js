@@ -43,7 +43,7 @@ export default function App() {
         <Route path="/authentication/sign-in" element={<SignIn />} />
         <Route
           path="/vulnerability-db/editid/:id"
-          element={<ProtectedRouteReporter element={UpdateData} />}
+          element={<ProtectedRouteWithRole element={UpdateData} requiredRole="admin" />}
         />
         <Route
           path="/vulnerability-db/edittoken/:token"
@@ -51,11 +51,11 @@ export default function App() {
         />
         <Route
           path="/vulnerability-db/pending"
-          element={<ProtectedRouteReporter element={ReviewDb} />}
+          element={<ProtectedRouteWithRole element={ReviewDb} />}
         />
         <Route
           path="/vulnerability-db/rejected"
-          element={<ProtectedRouteReporter element={RejectedDb} />}
+          element={<ProtectedRouteWithRole element={RejectedDb} />}
         />
         <Route
           path="/vulnerability-db/:id/review"
