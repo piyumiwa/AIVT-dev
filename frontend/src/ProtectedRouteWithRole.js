@@ -30,6 +30,7 @@ const ProtectedRouteWithRole = ({ element: Component, requiredRole }) => {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
+          console.log("User role:", res.data.role);
           if (res.data.role === requiredRole) {
             setIsAllowed(true);
           } else {

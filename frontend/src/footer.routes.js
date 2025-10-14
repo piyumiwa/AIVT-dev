@@ -57,7 +57,7 @@ export default {
     {
       name: "help & support",
       items: [
-        { name: "contact us", href: "/contact-us" },
+        { name: "about us", href: "/about-us" },
         // { name: "knowledge center", href: "https://www.creative-tim.com/knowledge-center" },
         // { name: "custom development", href: "https://services.creative-tim.com/" },
         // { name: "sponsorships", href: "https://www.creative-tim.com/sponsorships" },

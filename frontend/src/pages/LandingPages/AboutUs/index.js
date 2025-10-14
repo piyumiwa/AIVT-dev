@@ -1,10 +1,12 @@
-import { useAuth0 } from "@auth0/auth0-react";
+// import { useAuth0 } from "@auth0/auth0-react";
+import React, { useEffect, useState } from "react";
+// import { jwtDecode } from "jwt-decode";
 
 // @mui material components
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import Icon from "@mui/material/Icon";
+// import Icon from "@mui/material/Icon";
 
 // Material Kit 2 React components
 import MKBox from "components/MKBox";
@@ -19,59 +21,39 @@ import DefaultFooter from "examples/Footers/DefaultFooter";
 
 import Team from "pages/LandingPages/AboutUs/sections/Team";
 import Information from "pages/LandingPages/AboutUs/sections/Information";
-import ReportData from "layouts/pages/landing-pages/report-data";
+// import ReportData from "layouts/pages/landing-pages/report-data";
 
 // Routes
 import footerRoutes from "footer.routes";
 // Images
 import bgImage from "assets/images/bg-about-us.jpg";
-
-const routes = [
-  {
-    name: "pages",
-    icon: <Icon>dashboard</Icon>,
-    columns: 1,
-    rowsPerColumn: 2,
-    collapse: [
-      {
-        name: "report data",
-        collapse: [
-          {
-            name: "new report",
-            route: "/report-data",
-            component: <ReportData />,
-          },
-        ],
-      },
-    ],
-  },
-];
+import routes from "routes";
 
 function AboutUs() {
-  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const handleAuthClick = () => {
-    if (isAuthenticated) {
-      logout({ returnTo: window.location.origin });
-    } else {
-      loginWithRedirect();
+  // const handleAuthClick = () => {
+  //   if (isAuthenticated) {
+  //     logout({ returnTo: window.location.origin });
+  //   } else {
+  //     loginWithRedirect();
+  //   }
+  // };
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      try {
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error("Failed to decode token:", error);
+      }
     }
-  };
+  }, []);
 
   return (
     <>
-      <DefaultNavbar
-        routes={routes}
-        action={{
-          type: "internal",
-          label: isAuthenticated ? "Logout" : "Sign in",
-          color: "default",
-        }}
-        transparent
-        light
-        onAuthClick={handleAuthClick}
-        isAuthenticated={isAuthenticated}
-      />
+      <DefaultNavbar routes={routes} isAuthenticated={isAuthenticated} transparent light />
       <MKBox
         minHeight="75vh"
         width="100%"
@@ -120,9 +102,9 @@ function AboutUs() {
             {/* <MKButton color="default" sx={{ color: ({ palette: { dark } }) => dark.main }}>
               create account
             </MKButton> */}
-            <MKTypography variant="h6" color="white" mt={8} mb={1}>
+            {/* <MKTypography variant="h6" color="white" mt={8} mb={1}>
               Find us on
-            </MKTypography>
+            </MKTypography> */}
             <MKBox display="flex" justifyContent="center" alignItems="center">
               <MKTypography component="a" variant="body1" color="white" href="#" mr={3}>
                 <i className="fab fa-facebook" />

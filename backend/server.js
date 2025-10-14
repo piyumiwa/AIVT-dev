@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const cors = require('cors');
 const reportRoutes = require('./routes/reports');
 const authRoutes = require('./routes/auth');
@@ -16,7 +16,6 @@ app.use(cors({
   credentials: true
 }));
 
-// app.use(bodyParser.json());
 app.use(express.json());
 
 // app.use((req, res, next) => {

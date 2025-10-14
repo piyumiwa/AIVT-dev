@@ -21,6 +21,7 @@ import SearchResults from "pages/LandingPages/SearchResults";
 import TnC from "pages/LandingPages/TnC";
 import Privacy from "pages/LandingPages/Privacy";
 import Licenses from "pages/LandingPages/Licenses";
+import AboutUs from "pages/LandingPages/AboutUs";
 
 export default function App() {
   const { pathname } = useLocation();
@@ -51,7 +52,7 @@ export default function App() {
         />
         <Route
           path="/vulnerability-db/pending"
-          element={<ProtectedRouteWithRole element={ReviewDb} />}
+          element={<ProtectedRouteWithRole element={ReviewDb} requiredRole="admin" />}
         />
         <Route
           path="/vulnerability-db/rejected"
@@ -62,6 +63,7 @@ export default function App() {
           element={<ProtectedRouteWithRole element={ReviewData} requiredRole="admin" />}
         />
         <Route path="/search-results" element={<SearchResults />} />
+        <Route path="/about-us" element={<AboutUs />} />
         <Route path="/terms-and-conditions" element={<TnC />} />
         <Route path="/privacy-policy" element={<Privacy />} />
         <Route path="/licenses" element={<Licenses />} />

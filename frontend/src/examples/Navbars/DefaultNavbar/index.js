@@ -124,7 +124,7 @@ function DefaultNavbar({ brand, routes, transparent, light, action, sticky, rela
     localStorage.removeItem("jwt");
     setIsAuthenticated(false);
     setUserRole(null);
-    navigate("/authentication/sign-in");
+    navigate(-1);
   };
 
   return (

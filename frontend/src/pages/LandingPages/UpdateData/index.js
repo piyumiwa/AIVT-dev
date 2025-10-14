@@ -1,8 +1,8 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as React from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 // @mui material components
 import Container from "@mui/material/Container";
@@ -78,8 +78,8 @@ const style = {
 
 function UpdateData() {
   const [checked, setChecked] = useState(false);
-  const { id } = useParams();
-  const { token } = useParams();
+  const { id, token } = useParams();
+  // const [userRole, setUserRole] = useState(null);
   // const [name, setName] = useState("");
   // const [organization, setOrganization] = useState("");
   const [occupation, setOccupation] = useState("");
@@ -97,13 +97,12 @@ function UpdateData() {
   const [eff_description, setEff_description] = useState("");
   const [attachments, setAttachments] = useState([]);
   const [existingAttachments, setExistingAttachments] = useState([]);
-
-  const { isAuthenticated, loginWithRedirect, user } = useAuth0();
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const navigate = useNavigate();
+  const storedToken = localStorage.getItem("jwt");
 
   const handleFileChange = (event) => {
     const newFiles = Array.from(event.target.files);
@@ -114,32 +113,79 @@ function UpdateData() {
     setAttachments((prevAttachments) => prevAttachments.filter((_, i) => i !== index));
   };
 
-  console.log("Rendering UpdateData");
+  // console.log("Rendering UpdateData");
+
+  // useEffect(() => {
+  //   const fetchVulnerabilityDetails = async () => {
+  //     try {
+  //       if (!authToken) {
+  //         alert("You must be logged in to edit a vulnerability.");
+  //         navigate("/authentication/sign-in");
+  //         return;
+  //       }
+
+  //       // ✅ Decode JWT
+  //       const decoded = jwtDecode(authToken);
+  //       console.log("Decoded JWT:", decoded);
+
+  //       let response;
+  //       console.log("Fetching vulnerability details for ID:", id, "and token:", authToken);
+  //       if (token) {
+  //         response = await axios.get(`/api/vulnerability-db/token/${token}`);
+  //       } else {
+  //         response = await axios.get(`/api/vulnerability-db/id/${id}`);
+  //       }
+
+  //       const vulnerability = response.data;
+  //       const userresponse = await axios.get(`/api/auth/current-user`, {
+  //         headers: {
+  //           Authorization: `Bearer ${storedToken}`,
+  //         },
+  //       });
+  //       const { role, email } = userresponse.data;
+  //       // setUserRole(role);
+  //       // console.log("User role:", userRole);
+
+  //       if (vulnerability.reporterEmail === email || role === "admin") {
+  //         setOccupation(vulnerability.occupation || "");
+  //         setReport_base(vulnerability.report_base || "");
+  //         setTitle(vulnerability.title || "");
+  //         setReport_description(vulnerability.report_description || "");
+  //         setArtifactType(vulnerability.artifactType || "");
+  //         setDeveloper(vulnerability.developer || "");
+  //         setDeployer(vulnerability.deployer || "");
+  //         setPhase(vulnerability.phase || "");
+  //         setPhase_description(vulnerability.phaseDescription || "");
+  //         setAttributeName(
+  //           vulnerability.attributeName
+  //             ? vulnerability.attributeName.split(",").map((attr) => attr.trim())
+  //             : []
+  //         );
+  //         setAttr_description(vulnerability.attr_Description || "");
+  //         setEffectName(vulnerability.effectName || "");
+  //         setEff_description(vulnerability.eff_Description || "");
+  //         setExistingAttachments(vulnerability.attachments || []);
+  //       } else {
+  //         alert("Unauthorized attempt to edit vulnerability. Please try again.");
+  //         navigate(`/vulnerability-db/id/${id}`);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching vulnerability details:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchVulnerabilityDetails();
+  // }, [id, authToken, navigate]);
+
   useEffect(() => {
     const fetchVulnerabilityDetails = async () => {
-      if (!isAuthenticated || !user) {
-        console.error("User is not authenticated or user object is unavailable.");
-        await loginWithRedirect();
-        return;
-      }
-
       try {
         let response;
-        console.log("Fetching vulnerability details for ID:", id, "and token:", token);
         if (token) {
           response = await axios.get(`/api/vulnerability-db/token/${token}`);
-        } else {
-          response = await axios.get(`/api/vulnerability-db/id/${id}`);
-        }
+          const vulnerability = response.data;
 
-        const vulnerability = response.data;
-        const userresponse = await axios.get(`/api/auth/current-user`, {
-          params: { sub: user.sub },
-        });
-        const { role } = userresponse.data;
-        console.log("User role:", role);
-
-        if (vulnerability.reporterEmail === user.email || role === "admin") {
           setOccupation(vulnerability.occupation || "");
           setReport_base(vulnerability.report_base || "");
           setTitle(vulnerability.title || "");
@@ -158,9 +204,52 @@ function UpdateData() {
           setEffectName(vulnerability.effectName || "");
           setEff_description(vulnerability.eff_Description || "");
           setExistingAttachments(vulnerability.attachments || []);
+        } else if (storedToken) {
+          const decoded = jwtDecode(storedToken);
+          const isExpired = decoded.exp * 1000 < Date.now();
+          if (isExpired) {
+            console.warn("Token expired");
+            localStorage.removeItem("jwt");
+            return;
+          }
+
+          response = await axios.get(`/api/vulnerability-db/id/${id}`);
+          const vulnerability = response.data;
+
+          const userresponse = await axios.get(`/api/auth/current-user`, {
+            headers: {
+              Authorization: `Bearer ${storedToken}`,
+            },
+          });
+          const { role, email } = userresponse.data;
+
+          if (vulnerability.reporterEmail === email || role === "admin") {
+            setOccupation(vulnerability.occupation || "");
+            setReport_base(vulnerability.report_base || "");
+            setTitle(vulnerability.title || "");
+            setReport_description(vulnerability.report_description || "");
+            setArtifactType(vulnerability.artifactType || "");
+            setDeveloper(vulnerability.developer || "");
+            setDeployer(vulnerability.deployer || "");
+            setPhase(vulnerability.phase || "");
+            setPhase_description(vulnerability.phaseDescription || "");
+            setAttributeName(
+              vulnerability.attributeName
+                ? vulnerability.attributeName.split(",").map((attr) => attr.trim())
+                : []
+            );
+            setAttr_description(vulnerability.attr_Description || "");
+            setEffectName(vulnerability.effectName || "");
+            setEff_description(vulnerability.eff_Description || "");
+            setExistingAttachments(vulnerability.attachments || []);
+          } else {
+            alert("Unauthorized attempt to edit vulnerability. Please try again.");
+            navigate(`/vulnerability-db/id/${id}`);
+          }
         } else {
-          alert("Unauthorized attempt to edit vulnerability. Please try again.");
-          navigate(`/vulnerability-db/id/${id}`);
+          alert("You must be logged in to edit a vulnerability.");
+          navigate("/authentication/sign-in");
+          return;
         }
       } catch (error) {
         console.error("Error fetching vulnerability details:", error);
@@ -168,8 +257,9 @@ function UpdateData() {
         setLoading(false);
       }
     };
+
     fetchVulnerabilityDetails();
-  }, [id, token, isAuthenticated, user, loginWithRedirect, navigate]);
+  }, [id, token, storedToken, navigate]);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -207,16 +297,14 @@ function UpdateData() {
       formData.append("attachments", file);
     });
 
-    console.log("Form data: ", formData);
-
     axios
       .put(`/api/vulnerability-db/editid/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${storedToken}`,
         },
       })
       .then((response) => {
-        // console.log("Report created successfully:", response.data);
         console.log("Report updated successfully:", response.data);
         navigate(-1);
       })
