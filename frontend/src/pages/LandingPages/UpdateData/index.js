@@ -26,7 +26,6 @@ import MKBox from "components/MKBox";
 import MKInput from "components/MKInput";
 import MKButton from "components/MKButton";
 import MKTypography from "components/MKTypography";
-
 import NavbarDark from "layouts/sections/navigation/navbars/components/NavbarDark";
 import DefaultFooter from "examples/Footers/DefaultFooter";
 import footerRoutes from "footer.routes";
@@ -77,31 +76,32 @@ const style = {
 };
 
 function UpdateData() {
-  const [checked, setChecked] = useState(false);
   const { id, token } = useParams();
-  // const [userRole, setUserRole] = useState(null);
-  // const [name, setName] = useState("");
-  // const [organization, setOrganization] = useState("");
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(true);
+  const [checked, setChecked] = useState(false);
+
   const [occupation, setOccupation] = useState("");
   const [report_base, setReport_base] = useState("");
-  const [phase, setPhase] = useState("");
-  const [attributeName, setAttributeName] = useState([]);
-  const [effectName, setEffectName] = useState("");
   const [title, setTitle] = useState("");
   const [report_description, setReport_description] = useState("");
   const [artifactType, setArtifactType] = useState("");
   const [developer, setDeveloper] = useState("");
   const [deployer, setDeployer] = useState("");
+  const [phase, setPhase] = useState("");
   const [phase_description, setPhase_description] = useState("");
+  const [attributeName, setAttributeName] = useState([]);
   const [attr_description, setAttr_description] = useState("");
+  const [effectName, setEffectName] = useState("");
   const [eff_description, setEff_description] = useState("");
   const [attachments, setAttachments] = useState([]);
   const [existingAttachments, setExistingAttachments] = useState([]);
-  const [loading, setLoading] = useState(true);
+
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const navigate = useNavigate();
+
   const storedToken = localStorage.getItem("jwt");
 
   const handleFileChange = (event) => {
@@ -113,40 +113,14 @@ function UpdateData() {
     setAttachments((prevAttachments) => prevAttachments.filter((_, i) => i !== index));
   };
 
-  // console.log("Rendering UpdateData");
-
   // useEffect(() => {
   //   const fetchVulnerabilityDetails = async () => {
   //     try {
-  //       if (!authToken) {
-  //         alert("You must be logged in to edit a vulnerability.");
-  //         navigate("/authentication/sign-in");
-  //         return;
-  //       }
-
-  //       // ✅ Decode JWT
-  //       const decoded = jwtDecode(authToken);
-  //       console.log("Decoded JWT:", decoded);
-
   //       let response;
-  //       console.log("Fetching vulnerability details for ID:", id, "and token:", authToken);
   //       if (token) {
   //         response = await axios.get(`/api/vulnerability-db/token/${token}`);
-  //       } else {
-  //         response = await axios.get(`/api/vulnerability-db/id/${id}`);
-  //       }
+  //         const vulnerability = response.data;
 
-  //       const vulnerability = response.data;
-  //       const userresponse = await axios.get(`/api/auth/current-user`, {
-  //         headers: {
-  //           Authorization: `Bearer ${storedToken}`,
-  //         },
-  //       });
-  //       const { role, email } = userresponse.data;
-  //       // setUserRole(role);
-  //       // console.log("User role:", userRole);
-
-  //       if (vulnerability.reporterEmail === email || role === "admin") {
   //         setOccupation(vulnerability.occupation || "");
   //         setReport_base(vulnerability.report_base || "");
   //         setTitle(vulnerability.title || "");
@@ -165,9 +139,52 @@ function UpdateData() {
   //         setEffectName(vulnerability.effectName || "");
   //         setEff_description(vulnerability.eff_Description || "");
   //         setExistingAttachments(vulnerability.attachments || []);
+  //       } else if (storedToken) {
+  //         const decoded = jwtDecode(storedToken);
+  //         const isExpired = decoded.exp * 1000 < Date.now();
+  //         if (isExpired) {
+  //           console.warn("Token expired");
+  //           localStorage.removeItem("jwt");
+  //           return;
+  //         }
+
+  //         response = await axios.get(`/api/vulnerability-db/id/${id}`);
+  //         const vulnerability = response.data;
+
+  //         const userresponse = await axios.get(`/api/auth/current-user`, {
+  //           headers: {
+  //             Authorization: `Bearer ${storedToken}`,
+  //           },
+  //         });
+  //         const { role, email } = userresponse.data;
+
+  //         if (vulnerability.reporterEmail === email || role === "admin") {
+  //           setOccupation(vulnerability.occupation || "");
+  //           setReport_base(vulnerability.report_base || "");
+  //           setTitle(vulnerability.title || "");
+  //           setReport_description(vulnerability.report_description || "");
+  //           setArtifactType(vulnerability.artifactType || "");
+  //           setDeveloper(vulnerability.developer || "");
+  //           setDeployer(vulnerability.deployer || "");
+  //           setPhase(vulnerability.phase || "");
+  //           setPhase_description(vulnerability.phaseDescription || "");
+  //           setAttributeName(
+  //             vulnerability.attributeName
+  //               ? vulnerability.attributeName.split(",").map((attr) => attr.trim())
+  //               : []
+  //           );
+  //           setAttr_description(vulnerability.attr_Description || "");
+  //           setEffectName(vulnerability.effectName || "");
+  //           setEff_description(vulnerability.eff_Description || "");
+  //           setExistingAttachments(vulnerability.attachments || []);
+  //         } else {
+  //           alert("Unauthorized attempt to edit vulnerability. Please try again.");
+  //           navigate(`/vulnerability-db/id/${id}`);
+  //         }
   //       } else {
-  //         alert("Unauthorized attempt to edit vulnerability. Please try again.");
-  //         navigate(`/vulnerability-db/id/${id}`);
+  //         alert("You must be logged in to edit a vulnerability.");
+  //         navigate("/authentication/sign-in");
+  //         return;
   //       }
   //     } catch (error) {
   //       console.error("Error fetching vulnerability details:", error);
@@ -175,82 +192,73 @@ function UpdateData() {
   //       setLoading(false);
   //     }
   //   };
+
   //   fetchVulnerabilityDetails();
-  // }, [id, authToken, navigate]);
+  // }, [id, token, storedToken, navigate]);
 
   useEffect(() => {
     const fetchVulnerabilityDetails = async () => {
       try {
-        let response;
+        let vulnerability;
+        // ✅ 1. If the reporter is accessing via unique token
         if (token) {
-          response = await axios.get(`/api/vulnerability-db/token/${token}`);
-          const vulnerability = response.data;
-
-          setOccupation(vulnerability.occupation || "");
-          setReport_base(vulnerability.report_base || "");
-          setTitle(vulnerability.title || "");
-          setReport_description(vulnerability.report_description || "");
-          setArtifactType(vulnerability.artifactType || "");
-          setDeveloper(vulnerability.developer || "");
-          setDeployer(vulnerability.deployer || "");
-          setPhase(vulnerability.phase || "");
-          setPhase_description(vulnerability.phaseDescription || "");
-          setAttributeName(
-            vulnerability.attributeName
-              ? vulnerability.attributeName.split(",").map((attr) => attr.trim())
-              : []
-          );
-          setAttr_description(vulnerability.attr_Description || "");
-          setEffectName(vulnerability.effectName || "");
-          setEff_description(vulnerability.eff_Description || "");
-          setExistingAttachments(vulnerability.attachments || []);
-        } else if (storedToken) {
+          const response = await axios.get(`/api/vulnerability-db/edittoken/${token}`);
+          vulnerability = response.data;
+          console.log("Reporter access with token:", vulnerability);
+        }
+        // ✅ 2. If admin or logged-in user
+        else if (storedToken) {
           const decoded = jwtDecode(storedToken);
           const isExpired = decoded.exp * 1000 < Date.now();
           if (isExpired) {
-            console.warn("Token expired");
             localStorage.removeItem("jwt");
+            navigate("/authentication/sign-in");
             return;
           }
 
-          response = await axios.get(`/api/vulnerability-db/id/${id}`);
-          const vulnerability = response.data;
+          const [vulnRes, userRes] = await Promise.all([
+            axios.get(`/api/vulnerability-db/id/${id}`),
+            axios.get(`/api/auth/current-user`, {
+              headers: { Authorization: `Bearer ${storedToken}` },
+            }),
+          ]);
 
-          const userresponse = await axios.get(`/api/auth/current-user`, {
-            headers: {
-              Authorization: `Bearer ${storedToken}`,
-            },
-          });
-          const { role, email } = userresponse.data;
+          vulnerability = vulnRes.data;
+          const { role, email } = userRes.data;
 
-          if (vulnerability.reporterEmail === email || role === "admin") {
-            setOccupation(vulnerability.occupation || "");
-            setReport_base(vulnerability.report_base || "");
-            setTitle(vulnerability.title || "");
-            setReport_description(vulnerability.report_description || "");
-            setArtifactType(vulnerability.artifactType || "");
-            setDeveloper(vulnerability.developer || "");
-            setDeployer(vulnerability.deployer || "");
-            setPhase(vulnerability.phase || "");
-            setPhase_description(vulnerability.phaseDescription || "");
-            setAttributeName(
-              vulnerability.attributeName
-                ? vulnerability.attributeName.split(",").map((attr) => attr.trim())
-                : []
-            );
-            setAttr_description(vulnerability.attr_Description || "");
-            setEffectName(vulnerability.effectName || "");
-            setEff_description(vulnerability.eff_Description || "");
-            setExistingAttachments(vulnerability.attachments || []);
-          } else {
-            alert("Unauthorized attempt to edit vulnerability. Please try again.");
+          // ✅ Only allow if admin OR reporter owns the record
+          if (vulnerability.reporterEmail !== email && role !== "admin") {
+            alert("Unauthorized attempt to edit vulnerability.");
             navigate(`/vulnerability-db/id/${id}`);
+            return;
           }
-        } else {
-          alert("You must be logged in to edit a vulnerability.");
+        }
+        // ❌ 3. If neither token nor login
+        else {
+          alert("You must be logged in or have a valid token to access this page.");
           navigate("/authentication/sign-in");
           return;
         }
+
+        // ✅ Populate fields
+        setOccupation(vulnerability.occupation || "");
+        setReport_base(vulnerability.report_base || "");
+        setTitle(vulnerability.title || "");
+        setReport_description(vulnerability.report_description || "");
+        setArtifactType(vulnerability.artifactType || "");
+        setDeveloper(vulnerability.developer || "");
+        setDeployer(vulnerability.deployer || "");
+        setPhase(vulnerability.phase || "");
+        setPhase_description(vulnerability.phaseDescription || "");
+        setAttributeName(
+          vulnerability.attributeName
+            ? vulnerability.attributeName.split(",").map((attr) => attr.trim())
+            : []
+        );
+        setAttr_description(vulnerability.attr_Description || "");
+        setEffectName(vulnerability.effectName || "");
+        setEff_description(vulnerability.eff_Description || "");
+        setExistingAttachments(vulnerability.attachments || []);
       } catch (error) {
         console.error("Error fetching vulnerability details:", error);
       } finally {
@@ -265,7 +273,7 @@ function UpdateData() {
     return <p>Loading...</p>;
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     if (!checked) {
       alert("You must agree to the Terms and Conditions before submitting.");
       return;
@@ -297,20 +305,24 @@ function UpdateData() {
       formData.append("attachments", file);
     });
 
-    axios
-      .put(`/api/vulnerability-db/editid/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${storedToken}`,
-        },
-      })
-      .then((response) => {
-        console.log("Report updated successfully:", response.data);
-        navigate(-1);
-      })
-      .catch((error) => {
-        console.error("Error updating report:", error);
-      });
+    try {
+      const headers = token
+        ? {}
+        : { Authorization: `Bearer ${storedToken}`, "Content-Type": "multipart/form-data" };
+
+      const url = token
+        ? `/api/vulnerability-db/edittoken/${token}`
+        : `/api/vulnerability-db/editid/${id}`;
+
+      const response = await axios.put(url, formData, { headers });
+      console.log("Report updated successfully:", response.data);
+
+      alert("Vulnerability updated successfully.");
+      navigate(-1);
+    } catch (error) {
+      console.error("Error updating report:", error);
+      alert("Failed to update report.");
+    }
   };
 
   const handleOccupChange = (event) => {

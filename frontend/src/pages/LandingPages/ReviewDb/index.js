@@ -13,6 +13,8 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 // import Button from "@mui/material/Button";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 
 import MKBox from "components/MKBox";
 import MKTypography from "components/MKTypography";
@@ -25,9 +27,8 @@ import footerRoutes from "footer.routes";
 import routes from "routes";
 import bgImage from "assets/images/bg-db.jpg";
 
-const paginationModel = { page: 0, pageSize: 15 };
-
 function ReviewDb() {
+  // const { id } = useParams();
   const [vulnerabilities, setVulnerabilities] = useState([]);
   // const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
@@ -37,7 +38,7 @@ function ReviewDb() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // const { id } = useParams();
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 15 });
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
@@ -342,7 +343,7 @@ function ReviewDb() {
             </MKButton>
           </Grid>
         </Grid>
-        <Paper sx={{ height: 800, width: "100%" }}>
+        {/* <Paper sx={{ height: 800, width: "100%" }}>
           <DataGrid
             rows={vulnerabilities}
             columns={columns}
@@ -351,7 +352,31 @@ function ReviewDb() {
             checkboxSelection
             sx={{ border: 0 }}
           />
+        </Paper> */}
+        <Paper sx={{ height: 800, width: "100%" }}>
+          <DataGrid
+            rows={vulnerabilities}
+            columns={columns}
+            // pagination
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            pageSizeOptions={[5, 10]}
+            // checkboxSelection
+            sx={{ border: 0 }}
+          />
         </Paper>
+        <Stack spacing={2} alignItems="center" sx={{ mt: 2, mb: 4 }}>
+          <Pagination // number of pages: total rows / rows per page
+            count={Math.max(1, Math.ceil(vulnerabilities.length / paginationModel.pageSize))}
+            page={paginationModel.page + 1}
+            onChange={(e, value) =>
+              setPaginationModel((prev) => ({
+                ...prev,
+                page: value - 1,
+              }))
+            }
+          />{" "}
+        </Stack>
       </Container>
       <MKBox pt={6} px={1} mt={6}>
         <DefaultFooter content={footerRoutes} />
