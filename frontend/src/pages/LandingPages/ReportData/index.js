@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as React from "react";
 import axios from "axios";
+import Turnstile from "react-turnstile";
 
 // @mui material components
 import Container from "@mui/material/Container";
@@ -96,6 +97,7 @@ function ReportData() {
   const [attr_description, setAttr_description] = useState("");
   const [eff_description, setEff_description] = useState("");
   const [attachments, setAttachments] = useState([]);
+  const [captchaToken, setCaptchaToken] = useState(""); // For Turnstile CAPTCHA
 
   // const { isAuthenticated, user } = useAuth0();
   // const [isEditable, setIsEditable] = useState({ name: true, organization: true });
@@ -117,6 +119,11 @@ function ReportData() {
   const handleSubmit = (event) => {
     if (!checked) {
       alert("You must agree to the Terms and Conditions before submitting.");
+      return;
+    }
+
+    if (!captchaToken) {
+      alert("Please complete the CAPTCHA before submitting.");
       return;
     }
 
@@ -145,8 +152,10 @@ function ReportData() {
     attachments.forEach((file) => {
       formData.append("attachments", file);
     });
+    formData.append("captchaToken", captchaToken);
+    console.log("Turnstile key:", process.env.REACT_APP_TURNSTILE_SITE_KEY);
 
-    console.log("Form data: ", formData);
+    // console.log("Form data: ", formData);
 
     axios
       .post(`/api/report-data`, formData, {
@@ -570,6 +579,14 @@ function ReportData() {
                     </div>
                   ))}
                 </Grid>
+                <Grid item xs={12}>
+                  <Turnstile
+                    sitekey={process.env.REACT_APP_TURNSTILE_SITE_KEY}
+                    onVerify={(token) => setCaptchaToken(token)}
+                    onExpire={() => setCaptchaToken("")}
+                    onError={() => setCaptchaToken("")}
+                  />
+                </Grid>
                 <Grid item xs={12} alignItems="center" ml={-1}>
                   <Switch checked={checked} onChange={handleChecked} />
                   <MKTypography
@@ -595,7 +612,13 @@ function ReportData() {
               </Grid>
               <Grid container item justifyContent="center" xs={12} my={2}>
                 <form>
-                  <MKButton onClick={handleOpen} variant="gradient" color="dark" fullWidth>
+                  <MKButton
+                    onClick={handleOpen}
+                    variant="gradient"
+                    color="dark"
+                    fullWidth
+                    disabled={!checked || !captchaToken}
+                  >
                     Submit Vulnerability
                   </MKButton>
                   <Modal

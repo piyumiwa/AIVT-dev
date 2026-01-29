@@ -5,6 +5,27 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 // const jwt = require('jsonwebtoken');
 
+// If Node < 18, uncomment next line:
+// const fetch = require("node-fetch");
+
+async function verifyTurnstileToken({ token, ip }) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) throw new Error("TURNSTILE_SECRET_KEY is not set");
+
+  const resp = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      secret,
+      response: token,
+      remoteip: ip || "",
+    }),
+  });
+
+  return resp.json();
+}
+
+
 exports.getAllReports = async (req, res) => {
     const { phase, attribute, effect, startDate, endDate } = req.query;
 
@@ -82,6 +103,24 @@ exports.getAllReports = async (req, res) => {
 
 exports.createReport = async (req, res) => {
     console.log('Received request for /report-data');
+
+     // 1) CAPTCHA verify (Turnstile)
+    try {
+        const captchaToken = req.body.captchaToken;
+        if (!captchaToken) {
+        return res.status(400).json({ error: "Missing CAPTCHA token" });
+        }
+
+        const result = await verifyTurnstileToken({ token: captchaToken, ip: req.ip });
+
+        if (!result.success) {
+        return res.status(403).json({ error: "CAPTCHA verification failed", details: result });
+        }
+    } catch (e) {
+        console.error("CAPTCHA verification error:", e.message);
+        return res.status(500).json({ error: "CAPTCHA verification error" });
+    }
+    
     const token = uuidv4();
     const {
         occupation,
@@ -467,7 +506,8 @@ exports.updateReportByToken = async (req, res) => {
         deployer,
         phase,
         attributeName,
-        effectName
+        effectName,
+        deleteAttachments
     } = req.body;
 
     const files = req.files;
@@ -605,22 +645,7 @@ exports.updateReportByToken = async (req, res) => {
             }
         }
 
-        // Step 4: Handle deletion of attachments
-        if (deleteAttachments) {
-            const deleteAttachmentsArray = JSON.parse(deleteAttachments);
-            for (const filename of deleteAttachmentsArray) {
-                const deleteFilePath = path.join(__dirname, '..', 'uploads', id.toString(), filename);
-                if (fs.existsSync(deleteFilePath)) {
-                    fs.unlinkSync(deleteFilePath);
-                }
-                await client.query(
-                    'DELETE FROM Attachments WHERE infoid = $1 AND filename = $2',
-                    [id, filename]
-                );
-            }
-        }
-
-        // Step 5: Get artifactId
+        // Step 4: Get artifactId
         let artifactId;
         const artifactResult = await client.query('SELECT artifactId FROM Artifact WHERE vulnid = $1', [id]);
         if (artifactResult.rows.length > 0) {
@@ -635,6 +660,23 @@ exports.updateReportByToken = async (req, res) => {
             await client.query('ROLLBACK');
             return res.status(404).json({ error: 'Artifact not found for this report' });
         }
+
+        // Step 5: Handle deletion of attachments
+        if (deleteAttachments) {
+            const deleteAttachmentsArray = typeof deleteAttachments === "string"
+                ? JSON.parse(deleteAttachments)
+                : deleteAttachments;
+            for (const filename of deleteAttachmentsArray) {
+                const deleteFilePath = path.join(__dirname, '..', 'uploads', id.toString(), filename);
+                if (fs.existsSync(deleteFilePath)) {
+                    fs.unlinkSync(deleteFilePath);
+                }
+                await client.query(
+                    'DELETE FROM Attachments WHERE artifactId = $1 AND filename = $2',
+                    [id, filename]
+                );
+            }
+        }        
 
         // Step 6: Handle file uploads
         if (files && files.length > 0) {

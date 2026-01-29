@@ -162,24 +162,29 @@ async function classifyVulnerability(description) {
   const prompt = `
     You are an AI security analyst. Based on the following CVE description, classify:
     1. Phase: One of ['Development', 'Training', 'Deployment and Use']
-    2. Attributes affected (can be multiple): Choose from [Accuracy, Fairness, Privacy, Reliability, Resiliency, Robustness, Safety]
-    3. Effect: One of ["0: Correct functioning", "1: Reduced functioning", "2: No actions", "3: Chaotic", "4: Directed actions", "5: Random actions OoB", "6: Directed actions OoB"]
-    4. Artifact: Choose exactly one from ["Web Application", "Desktop Application", "API", "Mobile Application", "AI Model (Standalone)", "Dataset", "Inference Service", "Edge Device", "Chatbot", "LLM Plugin / Extension", "ML Pipeline", "AutoML System", "Recommendation System", "Autonomous Vehicle Software", "Smart Contract (AI-integrated)", "Virtual Assistant"]
+    2. Attributes affected (can be multiple): Choose from [Accuracy, Fairness, Privacy, Reliability, Resiliency, Robustness, Safety] 
+    3. attr_description: Explanation of the attributes why those are more appropriate
+    4. Effect: One of [0: Correct functioning, "1: Reduced functioning", "2: No actions", "3: Chaotic", "4: Directed actions", "5: Random actions OoB", "6: Directed actions OoB"] 
+        
+        "0: Correct functioning" = At this level there is little to no effect on the functioning of the AI system in general, or other safety controls make sure that any deviation from regular use is corrected before any meaningful change from normal operation is able to manifest. This level is to be used for mostly informational vulnerabilities so they can be monitored in case some other vulnerability or change in environment makes actual exploitation of the vulnerability more feasible or impactful.
+        "1: Reduced functioning" = Here the normal functioning of the AI system has been affected in some way, but it still manages to function as it is intended to function, just in some way reduced capacity. Examples are degradation of prediction accuracy, increase in noise of the results, slowness in response times, excessive data/compute usage running up abnormal operating expenses, etc.
+        "2: No actions" = At this level the normal operation of the AI system is denied to it’s users and the organisation utilising it, either by making the system unresponsive in totality by overloading the AI system or its functions, or affecting the underlying infrastructure in a way that creates a Denial of Service situation for the system as a whole. Examples include logic bombs, DoS attacks on infrastructure and open APIs, inability to discard malformed data causing ingestion methods to clog up, degrading analysis enough that no meaningful decision on data can be made, etc.
+        "3: Chaotic" = At this point the attacker is able to cause the AI system to take actions, but is unable to cause it to take actions that it wouldn’t normally be expected to take, while also not being able to direct which actions precisely the system takes. Examples include affecting self-driving systems in such a way that the vehicle acts erratically, but being unable to cause the system to take specific actions, or causing an AI system to erroneously evaluate loan applications, but not being able to cause certain loans to be accepted, or others to be rejected.
+        "4: Directed actions" = Here the attacker is able to direct what the AI system does, or how it acts, but is unable to break out of the bounds of the regular operating environment of the AI system. Examples include being able to cause a self-driving system to brake or accelerate on command, or causing an AI system processing loan application to process certain loan applications such that the attacker is able to always cause certain applications to be approved or disapproved if they wish.
+        "5: Random actions OoB" = At this level the attacker is able to break out of the AI system itself through the AI system and perform actions outside the AI system itself, although not being able to fully control the actions. Examples include for example being able to corrupt databases connected to the AI system, or causing an AI powered robot to flail around uncontrollably without obeying regular limitations on joint movement or movement envelope.
+        "6: Directed actions OoB" = Here the attacker is able to essentially gain full control of the AI system, both to remove regular limitations on actions the AI system is able to take, as well as possibly breaking out of the system itself to run commands on the machines running the system. Examples include being able to install additional software on the machines running the AI system, or gaining full control of the system while being able to disable all safety systems that would limit system usage.
 
-    "0: Correct functioning" = At this level there is little to no effect on the functioning of the AI system in general, or other safety controls make sure that any deviation from regular use is corrected before any meaningful change from normal operation is able to manifest. This level is to be used for mostly informational vulnerabilities so they can be monitored in case some other vulnerability or change in environment makes actual exploitation of the vulnerability more feasible or impactful.
-    "1: Reduced functioning" = Here the normal functioning of the AI system has been affected in some way, but it still manages to function as it is intended to function, just in some way reduced capacity. Examples are degradation of prediction accuracy, increase in noise of the results, slowness in response times, excessive data/compute usage running up abnormal operating expenses, etc.
-    "2: No actions" = At this level the normal operation of the AI system is denied to it’s users and the organisation utilising it, either by making the system unresponsive in totality by overloading the AI system or its functions, or affecting the underlying infrastructure in a way that creates a Denial of Service situation for the system as a whole. Examples include logic bombs, DoS attacks on infrastructure and open APIs, inability to discard malformed data causing ingestion methods to clog up, degrading analysis enough that no meaningful decision on data can be made, etc.
-    "3: Chaotic" = At this point the attacker is able to cause the AI system to take actions, but is unable to cause it to take actions that it wouldn’t normally be expected to take, while also not being able to direct which actions precisely the system takes. Examples include affecting self-driving systems in such a way that the vehicle acts erratically, but being unable to cause the system to take specific actions, or causing an AI system to erroneously evaluate loan applications, but not being able to cause certain loans to be accepted, or others to be rejected.
-    "4: Directed actions" = Here the attacker is able to direct what the AI system does, or how it acts, but is unable to break out of the bounds of the regular operating environment of the AI system. Examples include being able to cause a self-driving system to brake or accelerate on command, or causing an AI system processing loan application to process certain loan applications such that the attacker is able to always cause certain applications to be approved or disapproved if they wish.
-    "5: Random actions OoB" = At this level the attacker is able to break out of the AI system itself through the AI system and perform actions outside the AI system itself, although not being able to fully control the actions. Examples include for example being able to corrupt databases connected to the AI system, or causing an AI powered robot to flail around uncontrollably without obeying regular limitations on joint movement or movement envelope.
-    "6: Directed actions OoB" = Here the attacker is able to essentially gain full control of the AI system, both to remove regular limitations on actions the AI system is able to take, as well as possibly breaking out of the system itself to run commands on the machines running the system. Examples include being able to install additional software on the machines running the AI system, or gaining full control of the system while being able to disable all safety systems that would limit system usage.
+    5. eff_description: Explanation of the effect why those are more appropriate
+    6. Artifact: Choose exactly one from ["Web Application", "Desktop Application", "API", "Mobile Application", "AI Model (Standalone)", "Dataset", "Inference Service", "Edge Device", "Chatbot", "LLM Plugin / Extension", "ML Pipeline", "AutoML System", "Recommendation System", "Autonomous Vehicle Software", "Smart Contract (AI-integrated)", "Virtual Assistant"]
 
     Respond in this exact JSON format:
     {
-      "phase": "value",
-      "attributes": ["value1", "value2"],
-      "effect": "value",
-      "artifact": "value"
+      "artifact": "value",
+      "phase": "value", 
+      "attributes": ["value1", "value2",...], 
+      "attr_description": "value", 
+      "effect": "value", 
+      "eff_description": "value" 
     }
 
     Response values should be always the full exact term given in the list above inside quotes. 
@@ -200,15 +205,17 @@ async function classifyVulnerability(description) {
   } catch (err) {
     console.error('Classification error:', err?.response?.data || err.message || err);
     return {
+      artifact: 'Unknown',
       phase: 'Unknown',
       attributes: [],
+      attr_description: 'Unknown',
       effect: 'Unknown',
-      artifact: 'Unknown'
+      eff_description: 'Unknown'
     };
   }
 }
 
-async function storeCVE({ external_id, title, description, phase, attributes, effect, artifact }) {
+async function storeCVE({ external_id, title, description, phase, attributes, attr_description, effect, eff_description, artifact }) {
   const client = await pool.connect();
   const source = 'NVD';
   const token = uuidv4();
@@ -242,7 +249,7 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
     INSERT INTO Attribute (attr_description, phId)
     VALUES ($1, $2)
     RETURNING attributeTypeId
-  `, ['Auto classified and verified by a human.', phId]);
+  `, [attr_description, phId]);
 
   const attributeTypeId = attrInsertRes.rows[0].attributetypeid;
 
@@ -268,9 +275,9 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
 
     // Insert into Vul_effect
     await client.query(`
-      INSERT INTO Effect (effectName, phId)
-      VALUES ($1, $2)
-    `, [effect, phId]);
+      INSERT INTO Effect (effectName, eff_description, phId)
+      VALUES ($1, $2, $3)
+    `, [effect, eff_description, phId]);
 
     // Insert into Artifact
     await client.query(`
@@ -279,10 +286,10 @@ async function storeCVE({ external_id, title, description, phase, attributes, ef
     `, [artifact, vulnid]);
 
     await client.query('COMMIT');
-    console.log(`CVE ${external_id} stored in DB`);
+    return true;
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error(`Error inserting CVE ${external_id}:`, err.message);
+    return false;
   } finally {
     client.release();
   }
@@ -327,7 +334,7 @@ async function main() {
     }
 
     console.log(`Classifying ${cveId}`);
-    const { phase, attributes, effect, artifact } = await classifyVulnerability(description);
+    const { phase, attributes, attr_description, effect, eff_description, artifact } = await classifyVulnerability(description);
 
     await storeCVE({
       external_id: cveId,
@@ -335,11 +342,12 @@ async function main() {
       description,
       phase,
       attributes,
+      attr_description,
       effect,
+      eff_description,
       artifact
     });
-
-    console.log(`Stored ${cveId} ✅`);
+    console.log(ok ? `Stored ${cveId} ✅` : `Failed to store ${cveId} ❌`);
   }
 }
 

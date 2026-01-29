@@ -77,6 +77,23 @@ Before deploying the AIVT system, ensure that your environment meets the followi
 - Nginx
 - PM2
 
+### Create the secret token
+
+1. Type `node` in the terminal. 
+2. Generate the token using 
+
+```cli
+require('crypto').randomBytes(64).toString('hex')
+```
+
+3. Create a new file called `.env` in the **backend** directory. and create a new environment `JWT_SECRET`. 
+
+4. Assign the generated key by copy and paste to the `JWY_SECRET`. At the end, the `.env` file looks like below. 
+
+```txt
+JWT_SECRET=the_generated_key
+```
+
 ### Setting Up the Environment
 
 #### Step 1: Update and Upgrade Your System

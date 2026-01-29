@@ -97,6 +97,7 @@ function UpdateData() {
   const [eff_description, setEff_description] = useState("");
   const [attachments, setAttachments] = useState([]);
   const [existingAttachments, setExistingAttachments] = useState([]);
+  const [deletedAttachments, setDeletedAttachments] = useState([]);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -104,105 +105,13 @@ function UpdateData() {
 
   const storedToken = localStorage.getItem("jwt");
 
-  const handleFileChange = (event) => {
-    const newFiles = Array.from(event.target.files);
-    setAttachments((prevAttachments) => [...prevAttachments, ...newFiles]);
-  };
-
-  const handleDeleteFile = (index) => {
-    setAttachments((prevAttachments) => prevAttachments.filter((_, i) => i !== index));
-  };
-
-  // useEffect(() => {
-  //   const fetchVulnerabilityDetails = async () => {
-  //     try {
-  //       let response;
-  //       if (token) {
-  //         response = await axios.get(`/api/vulnerability-db/token/${token}`);
-  //         const vulnerability = response.data;
-
-  //         setOccupation(vulnerability.occupation || "");
-  //         setReport_base(vulnerability.report_base || "");
-  //         setTitle(vulnerability.title || "");
-  //         setReport_description(vulnerability.report_description || "");
-  //         setArtifactType(vulnerability.artifactType || "");
-  //         setDeveloper(vulnerability.developer || "");
-  //         setDeployer(vulnerability.deployer || "");
-  //         setPhase(vulnerability.phase || "");
-  //         setPhase_description(vulnerability.phaseDescription || "");
-  //         setAttributeName(
-  //           vulnerability.attributeName
-  //             ? vulnerability.attributeName.split(",").map((attr) => attr.trim())
-  //             : []
-  //         );
-  //         setAttr_description(vulnerability.attr_Description || "");
-  //         setEffectName(vulnerability.effectName || "");
-  //         setEff_description(vulnerability.eff_Description || "");
-  //         setExistingAttachments(vulnerability.attachments || []);
-  //       } else if (storedToken) {
-  //         const decoded = jwtDecode(storedToken);
-  //         const isExpired = decoded.exp * 1000 < Date.now();
-  //         if (isExpired) {
-  //           console.warn("Token expired");
-  //           localStorage.removeItem("jwt");
-  //           return;
-  //         }
-
-  //         response = await axios.get(`/api/vulnerability-db/id/${id}`);
-  //         const vulnerability = response.data;
-
-  //         const userresponse = await axios.get(`/api/auth/current-user`, {
-  //           headers: {
-  //             Authorization: `Bearer ${storedToken}`,
-  //           },
-  //         });
-  //         const { role, email } = userresponse.data;
-
-  //         if (vulnerability.reporterEmail === email || role === "admin") {
-  //           setOccupation(vulnerability.occupation || "");
-  //           setReport_base(vulnerability.report_base || "");
-  //           setTitle(vulnerability.title || "");
-  //           setReport_description(vulnerability.report_description || "");
-  //           setArtifactType(vulnerability.artifactType || "");
-  //           setDeveloper(vulnerability.developer || "");
-  //           setDeployer(vulnerability.deployer || "");
-  //           setPhase(vulnerability.phase || "");
-  //           setPhase_description(vulnerability.phaseDescription || "");
-  //           setAttributeName(
-  //             vulnerability.attributeName
-  //               ? vulnerability.attributeName.split(",").map((attr) => attr.trim())
-  //               : []
-  //           );
-  //           setAttr_description(vulnerability.attr_Description || "");
-  //           setEffectName(vulnerability.effectName || "");
-  //           setEff_description(vulnerability.eff_Description || "");
-  //           setExistingAttachments(vulnerability.attachments || []);
-  //         } else {
-  //           alert("Unauthorized attempt to edit vulnerability. Please try again.");
-  //           navigate(`/vulnerability-db/id/${id}`);
-  //         }
-  //       } else {
-  //         alert("You must be logged in to edit a vulnerability.");
-  //         navigate("/authentication/sign-in");
-  //         return;
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching vulnerability details:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchVulnerabilityDetails();
-  // }, [id, token, storedToken, navigate]);
-
   useEffect(() => {
     const fetchVulnerabilityDetails = async () => {
       try {
         let vulnerability;
         // ✅ 1. If the reporter is accessing via unique token
         if (token) {
-          const response = await axios.get(`/api/vulnerability-db/edittoken/${token}`);
+          const response = await axios.get(`/api/vulnerability-db/token/${token}`);
           vulnerability = response.data;
           console.log("Reporter access with token:", vulnerability);
         }
@@ -273,58 +182,6 @@ function UpdateData() {
     return <p>Loading...</p>;
   }
 
-  const handleSubmit = async (event) => {
-    if (!checked) {
-      alert("You must agree to the Terms and Conditions before submitting.");
-      return;
-    }
-
-    event.preventDefault();
-
-    const formData = new FormData();
-    // formData.append("name", name);
-    // formData.append("organization", organization);
-    formData.append("occupation", occupation);
-    formData.append("report_base", report_base);
-    formData.append("title", title);
-    formData.append("report_description", report_description);
-    formData.append("artifactType", artifactType);
-    formData.append("developer", developer);
-    formData.append("deployer", deployer);
-    formData.append("phase", phase);
-    formData.append("phase_description", phase_description);
-    // formData.append("attributeName", attributeName);
-    attributeName.forEach((attr) => formData.append("attributeName", attr));
-    formData.append("attr_description", attr_description);
-    formData.append("effectName", effectName);
-    formData.append("eff_description", eff_description);
-    // formData.append("sub", user.sub);
-    // formData.append("email", user.email);
-
-    attachments.forEach((file) => {
-      formData.append("attachments", file);
-    });
-
-    try {
-      const headers = token
-        ? {}
-        : { Authorization: `Bearer ${storedToken}`, "Content-Type": "multipart/form-data" };
-
-      const url = token
-        ? `/api/vulnerability-db/edittoken/${token}`
-        : `/api/vulnerability-db/editid/${id}`;
-
-      const response = await axios.put(url, formData, { headers });
-      console.log("Report updated successfully:", response.data);
-
-      alert("Vulnerability updated successfully.");
-      navigate(-1);
-    } catch (error) {
-      console.error("Error updating report:", error);
-      alert("Failed to update report.");
-    }
-  };
-
   const handleOccupChange = (event) => {
     setOccupation(event.target.value);
   };
@@ -352,6 +209,82 @@ function UpdateData() {
 
   const handleArtifactChange = (event) => {
     setArtifactType(event.target.value);
+  };
+
+  const handleFileChange = (event) => {
+    const newFiles = Array.from(event.target.files);
+    setAttachments((prevAttachments) => [...prevAttachments, ...newFiles]);
+  };
+
+  const handleDeleteFile = (index) => {
+    setAttachments((prevAttachments) => prevAttachments.filter((_, i) => i !== index));
+  };
+
+  const handleDeleteExistingAttachment = (index) => {
+    const file = existingAttachments[index]; // { filename, mimeType }
+
+    // Remove from the UI list
+    setExistingAttachments((prev) => prev.filter((_, i) => i !== index));
+
+    // Record that we want this file removed on the server
+    if (file && file.filename) {
+      setDeletedAttachments((prev) => [...prev, file.filename]);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    if (!checked) {
+      alert("You must agree to the Terms and Conditions before submitting.");
+      return;
+    }
+
+    event.preventDefault();
+
+    const formData = new FormData();
+    // formData.append("name", name);
+    // formData.append("organization", organization);
+    formData.append("occupation", occupation);
+    formData.append("report_base", report_base);
+    formData.append("title", title);
+    formData.append("report_description", report_description);
+    formData.append("artifactType", artifactType);
+    formData.append("developer", developer);
+    formData.append("deployer", deployer);
+    formData.append("phase", phase);
+    formData.append("phase_description", phase_description);
+    // formData.append("attributeName", attributeName);
+    attributeName.forEach((attr) => formData.append("attributeName", attr));
+    formData.append("attr_description", attr_description);
+    formData.append("effectName", effectName);
+    formData.append("eff_description", eff_description);
+    // formData.append("sub", user.sub);
+    // formData.append("email", user.email);
+    if (deletedAttachments.length > 0) {
+      formData.append("deleteAttachments", JSON.stringify(deletedAttachments));
+    }
+
+    attachments.forEach((file) => {
+      formData.append("attachments", file);
+    });
+
+    try {
+      const headers = token
+        ? {}
+        : { Authorization: `Bearer ${storedToken}`, "Content-Type": "multipart/form-data" };
+
+      const url = token
+        ? `/api/vulnerability-db/edittoken/${token}`
+        : `/api/vulnerability-db/editid/${id}`;
+
+      const response = await axios.put(url, formData, { headers });
+      console.log("Report updated successfully:", response.data);
+
+      alert("Vulnerability updated successfully.");
+      navigate(-1);
+    } catch (error) {
+      console.error("Error updating report:", error);
+      alert("Failed to update report.");
+    }
   };
 
   const handleChecked = () => setChecked(!checked);
@@ -666,11 +599,13 @@ function UpdateData() {
                 <Grid item xs={12}>
                   {existingAttachments.map((file, index) => (
                     <div key={index}>
-                      <span>{file.name}</span>
-                      <Button onClick={() => handleDeleteFile(index)}>Remove</Button>
+                      {/* backend sends { filename, mimeType } */}
+                      <span>{file.filename || file.name}</span>
+                      <Button onClick={() => handleDeleteExistingAttachment(index)}>Remove</Button>
                     </div>
                   ))}
                 </Grid>
+
                 <Grid item xs={12}>
                   <Button variant="contained" startIcon={<CloudUploadIcon />} component="label">
                     Upload files

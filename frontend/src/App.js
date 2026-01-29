@@ -56,7 +56,7 @@ export default function App() {
         />
         <Route
           path="/vulnerability-db/rejected"
-          element={<ProtectedRouteWithRole element={RejectedDb} />}
+          element={<ProtectedRouteWithRole element={RejectedDb} requiredRole="admin" />}
         />
         <Route
           path="/vulnerability-db/:id/review"
